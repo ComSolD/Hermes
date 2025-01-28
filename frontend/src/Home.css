@@ -1,0 +1,56 @@
+/* Убираем белые рамки */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-color: #0f292f;
+    color: #cccccc;
+    font-family: Arial, sans-serif;
+  }
+  
+  header {
+    background-color: #501f3a;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative; /* Для абсолютного позиционирования навигации */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  header .logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #cccccc;
+    z-index: 1; /* Чтобы логотип всегда оставался видимым */
+  }
+  
+  header nav {
+    position: absolute; /* Абсолютное позиционирование */
+    left: 50%; /* Центрируем относительно ширины */
+    transform: translateX(-50%); /* Смещаем на половину ширины */
+    display: flex;
+    gap: 20px;
+  }
+  
+  header nav a {
+    color: #cccccc;
+    text-decoration: none;
+    font-size: 18px;
+  }
+  
+  header nav a:hover {
+    text-decoration: underline;
+  }
+  
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 70px);
+    font-size: 32px;
+    text-align: center;
+  }
+  
