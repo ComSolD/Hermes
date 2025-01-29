@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'main',
+    'nba',
+    'nfl',
+    'nhl',
 ]
 
 MIDDLEWARE = [

@@ -7,6 +7,7 @@ function Home() {
   const [loading, setLoading] = useState(true); // Индикатор загрузки
 
   useEffect(() => {
+    document.title = "Главная страница";
     // Загрузка данных с сервера
     axios.get("http://127.0.0.1:8000/") // Укажите ваш URL
       .then((response) => {
