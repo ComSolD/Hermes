@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 
 class NFLTeam(models.Model):
-    team_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
 
     class Meta():
@@ -11,7 +11,7 @@ class NFLTeam(models.Model):
         verbose_name_plural = 'Команды'
 
 class NFLMatch(models.Model):
-    match_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    match_id = models.CharField(max_length=20, primary_key=True, editable=False)
     team1 = models.ForeignKey(NFLTeam, related_name='home_matches', on_delete=models.CASCADE)
     team2 = models.ForeignKey(NFLTeam, related_name='away_matches', on_delete=models.CASCADE)
     season = models.CharField(max_length=10)
@@ -24,7 +24,7 @@ class NFLMatch(models.Model):
         verbose_name_plural = 'Матчи'
 
 class NFLTeamStat(models.Model):
-    team_stat_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team_stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NFLMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NFLTeam, on_delete=models.CASCADE)
     result = models.CharField(max_length=10)
@@ -36,19 +36,19 @@ class NFLTeamStat(models.Model):
         verbose_name_plural = 'Статистика команд'
 
 class NFLTeamPtsStat(models.Model):
-    team_pts_stat_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team_pts_stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NFLMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NFLTeam, on_delete=models.CASCADE)
     total = models.IntegerField()
-    totalMissed = models.IntegerField()
-    total_Q1 = models.IntegerField()
-    total_Q1Missed = models.IntegerField()
-    total_Q2 = models.IntegerField()
-    total_Q2Missed = models.IntegerField()
-    total_Q3 = models.IntegerField()
-    total_Q3Missed = models.IntegerField()
-    total_Q4 = models.IntegerField()
-    total_Q4Missed = models.IntegerField()
+    total_missed = models.IntegerField()
+    total_q1 = models.IntegerField()
+    total_q1_missed = models.IntegerField()
+    total_q2 = models.IntegerField()
+    total_q2_missed = models.IntegerField()
+    total_q3 = models.IntegerField()
+    total_q3_missed = models.IntegerField()
+    total_q4 = models.IntegerField()
+    total_q4_missed = models.IntegerField()
 
     class Meta():
         db_table = 'nfl_team_pts_stat'
@@ -56,7 +56,7 @@ class NFLTeamPtsStat(models.Model):
         verbose_name_plural = 'Статистика команд по очкам'
 
 class NFLPlayer(models.Model):
-    player_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    player_id = models.CharField(max_length=20, primary_key=True, editable=False)
     name = models.CharField(max_length=100)
 
     class Meta():
@@ -65,42 +65,42 @@ class NFLPlayer(models.Model):
         verbose_name_plural = 'Игроки'
 
 class NFLPlayerStat(models.Model):
-    stat_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     player = models.ForeignKey(NFLPlayer, on_delete=models.CASCADE)
     match = models.ForeignKey(NFLMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NFLTeam, on_delete=models.CASCADE)
-    position = models.CharField(max_length=10)
-    C = models.IntegerField()
-    ATT = models.IntegerField()
-    YDS = models.IntegerField()
-    AVG = models.FloatField()
-    TD = models.IntegerField()
-    interception = models.IntegerField()
-    SACK = models.IntegerField()
-    trying_SACK = models.IntegerField()
-    QBR = models.FloatField()
-    RTG = models.FloatField()
-    CAR = models.IntegerField()
-    LONG = models.IntegerField()
-    REC = models.IntegerField()
-    TGTS = models.IntegerField()
-    FUM = models.IntegerField()
-    LOST = models.IntegerField()
-    TOT = models.IntegerField()
-    SOLO = models.IntegerField()
-    SACKS = models.IntegerField()
-    TFL = models.IntegerField()
-    PD = models.IntegerField()
-    QB_HTS = models.IntegerField()
-    NO = models.IntegerField()
-    FG = models.IntegerField()
-    trying_FG = models.IntegerField()
-    PCT = models.IntegerField()
-    XP = models.IntegerField()
-    trying_XP = models.IntegerField()
-    PTS = models.IntegerField()
-    TB = models.IntegerField()
-    In_20 = models.IntegerField()
+    position = models.CharField(max_length=50)
+    c = models.IntegerField(null = True)
+    att = models.IntegerField(null = True)
+    yds = models.IntegerField(null = True)
+    avg = models.FloatField(null = True)
+    td = models.IntegerField(null = True)
+    interception = models.IntegerField(null = True)
+    sack = models.IntegerField(null = True)
+    trying_sack = models.IntegerField(null = True)
+    qbr = models.FloatField(null = True)
+    rtg = models.FloatField(null = True)
+    car = models.IntegerField(null = True)
+    long = models.IntegerField(null = True)
+    rec = models.IntegerField(null = True)
+    tgts = models.IntegerField(null = True)
+    fum = models.IntegerField(null = True)
+    lost = models.IntegerField(null = True)
+    tot = models.IntegerField(null = True)
+    solo = models.IntegerField(null = True)
+    sacks = models.IntegerField(null = True)
+    tfl = models.IntegerField(null = True)
+    pd = models.IntegerField(null = True)
+    qb_hts = models.IntegerField(null = True)
+    no = models.IntegerField(null = True)
+    fg = models.IntegerField(null = True)
+    trying_fg = models.IntegerField(null = True)
+    pct = models.IntegerField(null = True)
+    xp = models.IntegerField(null = True)
+    trying_xp = models.IntegerField(null = True)
+    pts = models.IntegerField(null = True)
+    tb = models.IntegerField(null = True)
+    in_20 = models.IntegerField(null = True)
 
     class Meta():
         db_table = 'nfl_player_stat'
@@ -108,13 +108,13 @@ class NFLPlayerStat(models.Model):
         verbose_name_plural = 'Статистика игроков'
 
 class NFLBet(models.Model):
-    bet_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NFLMatch, on_delete=models.CASCADE)
     team1 = models.ForeignKey(NFLTeam, related_name='bets_as_team1', on_delete=models.CASCADE)
     team2 = models.ForeignKey(NFLTeam, related_name='bets_as_team2', on_delete=models.CASCADE)
-    ML_team1_parlay = models.FloatField(null=True, blank=True)
-    ML_team2_parlay = models.FloatField(null=True, blank=True)
-    ML_result = models.CharField(max_length=36, null=True, blank=True)
+    ml_team1_parlay = models.FloatField(null=True, blank=True)
+    ml_team2_parlay = models.FloatField(null=True, blank=True)
+    ml_result = models.CharField(max_length=36, null=True, blank=True)
     total = models.FloatField()
     over_total_parlay = models.FloatField(null=True, blank=True)
     under_total_parlay = models.FloatField(null=True, blank=True)

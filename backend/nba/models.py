@@ -1,8 +1,9 @@
+from enum import unique
 from django.db import models
 import uuid
 
 class NBATeam(models.Model):
-    team_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
 
     class Meta():
@@ -11,7 +12,7 @@ class NBATeam(models.Model):
         verbose_name_plural = 'Команды'
 
 class NBAMatch(models.Model):
-    match_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    match_id = models.CharField(max_length=20, primary_key=True, editable=False)
     team1 = models.ForeignKey(NBATeam, related_name='home_matches', on_delete=models.CASCADE)
     team2 = models.ForeignKey(NBATeam, related_name='away_matches', on_delete=models.CASCADE)
     season = models.CharField(max_length=10)
@@ -24,25 +25,25 @@ class NBAMatch(models.Model):
         verbose_name_plural = 'Матчи'
 
 class NBATeamStat(models.Model):
-    team_stat_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team_stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NBATeam, on_delete=models.CASCADE)
     result = models.CharField(max_length=10)
     status = models.CharField(max_length=10)
-    FG = models.IntegerField()
-    trying_FG = models.IntegerField()
-    three_PT = models.IntegerField()
-    attempted_three_PT = models.IntegerField()
-    FT = models.IntegerField()
-    trying_FT = models.IntegerField()
-    OREB = models.IntegerField()
-    DREB = models.IntegerField()
-    REB = models.IntegerField()
-    AST = models.IntegerField()
-    STL = models.IntegerField()
-    BLK = models.IntegerField()
-    turnovers = models.IntegerField()
-    PF = models.IntegerField()
+    fg = models.IntegerField(null = True)
+    trying_fg = models.IntegerField(null = True)
+    three_pt = models.IntegerField(null = True)
+    attempted_three_pt = models.IntegerField(null = True)
+    ft = models.IntegerField(null = True)
+    trying_ft = models.IntegerField(null = True)
+    oreb = models.IntegerField(null = True)
+    dreb = models.IntegerField(null = True)
+    reb = models.IntegerField(null = True)
+    ast = models.IntegerField(null = True)
+    stl = models.IntegerField(null = True)
+    blk = models.IntegerField(null = True)
+    turnovers = models.IntegerField(null = True)
+    pf = models.IntegerField(null = True)
 
     class Meta():
         db_table = 'nba_team_stat'
@@ -50,19 +51,19 @@ class NBATeamStat(models.Model):
         verbose_name_plural = 'Статистика команд'
 
 class NBATeamPtsStat(models.Model):
-    team_pts_stat_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team_pts_stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NBATeam, on_delete=models.CASCADE)
     total = models.IntegerField()
-    totalMissed = models.IntegerField()
-    total_Q1 = models.IntegerField()
-    total_Q1Missed = models.IntegerField()
-    total_Q2 = models.IntegerField()
-    total_Q2Missed = models.IntegerField()
-    total_Q3 = models.IntegerField()
-    total_Q3Missed = models.IntegerField()
-    total_Q4 = models.IntegerField()
-    total_Q4Missed = models.IntegerField()
+    total_missed = models.IntegerField()
+    total_q1 = models.IntegerField()
+    total_q1_missed = models.IntegerField()
+    total_q2 = models.IntegerField()
+    total_q2_missed = models.IntegerField()
+    total_q3 = models.IntegerField()
+    total_q3_missed = models.IntegerField()
+    total_q4 = models.IntegerField()
+    total_q4_missed = models.IntegerField()
 
     class Meta():
         db_table = 'nba_team_pts_stat'
@@ -70,7 +71,7 @@ class NBATeamPtsStat(models.Model):
         verbose_name_plural = 'Статистика команд по очкам'
 
 class NBAPlayer(models.Model):
-    player_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    player_id = models.CharField(max_length=20, primary_key=True, editable=False)
     name = models.CharField(max_length=100)
 
     class Meta():
@@ -79,28 +80,28 @@ class NBAPlayer(models.Model):
         verbose_name_plural = 'Игроки'
 
 class NBAPlayerStat(models.Model):
-    stat_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     player = models.ForeignKey(NBAPlayer, on_delete=models.CASCADE)
     match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NBATeam, on_delete=models.CASCADE)
     position = models.CharField(max_length=10)
-    PTS = models.IntegerField()
-    FG = models.IntegerField()
-    trying_FG = models.IntegerField()
-    three_PT = models.IntegerField()
-    attempted_three_PT = models.IntegerField()
-    FT = models.IntegerField()
-    trying_FT = models.IntegerField()
-    OREB = models.IntegerField()
-    DREB = models.IntegerField()
-    REB = models.IntegerField()
-    AST = models.IntegerField()
-    STL = models.IntegerField()
-    BLK = models.IntegerField()
-    turnovers = models.IntegerField()
-    PF = models.IntegerField()
-    plusMinus = models.IntegerField()
-    MIN = models.IntegerField()
+    pts = models.IntegerField(null = True)
+    fg = models.IntegerField(null = True)
+    trying_fg = models.IntegerField(null = True)
+    three_pt = models.IntegerField(null = True)
+    attempted_three_pt = models.IntegerField(null = True)
+    ft = models.IntegerField(null = True)
+    trying_ft = models.IntegerField(null = True)
+    oreb = models.IntegerField(null = True)
+    dreb = models.IntegerField(null = True)
+    reb = models.IntegerField(null = True)
+    ast = models.IntegerField(null = True)
+    stl = models.IntegerField(null = True)
+    blk = models.IntegerField(null = True)
+    turnovers = models.IntegerField(null = True)
+    pf = models.IntegerField(null = True)
+    plus_minus = models.IntegerField(null = True)
+    min = models.IntegerField(null = True)
 
     class Meta():
         db_table = 'nba_player_stat'
@@ -108,13 +109,13 @@ class NBAPlayerStat(models.Model):
         verbose_name_plural = 'Статистика игроков'
 
 class NBABet(models.Model):
-    bet_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
     team1 = models.ForeignKey(NBATeam, related_name='bets_as_team1', on_delete=models.CASCADE)
     team2 = models.ForeignKey(NBATeam, related_name='bets_as_team2', on_delete=models.CASCADE)
-    ML_team1_parlay = models.FloatField(null=True, blank=True)
-    ML_team2_parlay = models.FloatField(null=True, blank=True)
-    ML_result = models.CharField(max_length=36, null=True, blank=True)
+    ml_team1_parlay = models.FloatField(null=True, blank=True)
+    ml_team2_parlay = models.FloatField(null=True, blank=True)
+    ml_result = models.CharField(max_length=36, null=True, blank=True)
     total = models.FloatField()
     over_total_parlay = models.FloatField(null=True, blank=True)
     under_total_parlay = models.FloatField(null=True, blank=True)

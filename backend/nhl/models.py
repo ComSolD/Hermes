@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 
 class NHLTeam(models.Model):
-    team_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
 
     class Meta():
@@ -11,7 +11,7 @@ class NHLTeam(models.Model):
         verbose_name_plural = 'Команды'
 
 class NHLMatch(models.Model):
-    match_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    match_id = models.CharField(max_length=20,primary_key=True, editable=False)
     team1 = models.ForeignKey(NHLTeam, related_name='home_matches', on_delete=models.CASCADE)
     team2 = models.ForeignKey(NHLTeam, related_name='away_matches', on_delete=models.CASCADE)
     status = models.CharField(max_length=20)
@@ -25,7 +25,7 @@ class NHLMatch(models.Model):
         verbose_name_plural = 'Матчи'
 
 class NHLTeamStat(models.Model):
-    team_stat_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team_stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NHLMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE)
     result = models.CharField(max_length=10)
@@ -37,17 +37,17 @@ class NHLTeamStat(models.Model):
         verbose_name_plural = 'Статистика команд'
 
 class NHLTeamPtsStat(models.Model):
-    team_pts_stat_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team_pts_stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NHLMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE)
     total = models.IntegerField()
-    totalMissed = models.IntegerField()
-    total_T1 = models.IntegerField()
-    total_T1Missed = models.IntegerField()
-    total_T2 = models.IntegerField()
-    total_T2Missed = models.IntegerField()
-    total_T3 = models.IntegerField()
-    total_T3Missed = models.IntegerField()
+    total_missed = models.IntegerField()
+    total_t1 = models.IntegerField()
+    total_t1_missed = models.IntegerField()
+    total_t2 = models.IntegerField()
+    total_t2_missed = models.IntegerField()
+    total_t3 = models.IntegerField()
+    total_t3_missed = models.IntegerField()
 
     class Meta():
         db_table = 'nhl_team_pts_stat'
@@ -55,7 +55,7 @@ class NHLTeamPtsStat(models.Model):
         verbose_name_plural = 'Статистика команд по очкам'
 
 class NHLPlayer(models.Model):
-    player_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    player_id = models.CharField(max_length=20, primary_key=True, editable=False)
     name = models.CharField(max_length=100)
 
     class Meta():
@@ -64,28 +64,28 @@ class NHLPlayer(models.Model):
         verbose_name_plural = 'Игроки'
 
 class NHLPlayerStat(models.Model):
-    stat_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     player = models.ForeignKey(NHLPlayer, on_delete=models.CASCADE)
     match = models.ForeignKey(NHLMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE)
     position = models.CharField(max_length=20)
-    G = models.IntegerField()
-    A = models.IntegerField()
-    plusMinus = models.IntegerField()
-    S = models.IntegerField()
-    SM = models.IntegerField()
-    BS = models.IntegerField()
-    PN = models.IntegerField()
-    PIM = models.IntegerField()
-    HT = models.IntegerField()
-    TK = models.IntegerField()
-    GV = models.IntegerField()
-    SA = models.IntegerField()
-    GA = models.IntegerField()
-    SV = models.IntegerField()
-    SVProcent = models.IntegerField()
-    ESSV = models.IntegerField()
-    PPSV = models.IntegerField()
+    g = models.IntegerField()
+    a = models.IntegerField()
+    plus_minus = models.IntegerField()
+    s = models.IntegerField()
+    sm = models.IntegerField()
+    bs = models.IntegerField()
+    pn = models.IntegerField()
+    pim = models.IntegerField()
+    ht = models.IntegerField()
+    tk = models.IntegerField()
+    gv = models.IntegerField()
+    sa = models.IntegerField()
+    ga = models.IntegerField()
+    sv = models.IntegerField()
+    sv_procent = models.IntegerField()
+    essv = models.IntegerField()
+    ppsv = models.IntegerField()
 
     class Meta():
         db_table = 'nhl_player_stat'
@@ -93,13 +93,13 @@ class NHLPlayerStat(models.Model):
         verbose_name_plural = 'Статистика игроков'
 
 class NHLBet(models.Model):
-    bet_ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NHLMatch, on_delete=models.CASCADE)
     team1 = models.ForeignKey(NHLTeam, related_name='bets_as_team1', on_delete=models.CASCADE)
     team2 = models.ForeignKey(NHLTeam, related_name='bets_as_team2', on_delete=models.CASCADE)
-    ML_team1_parlay = models.FloatField(null=True, blank=True)
-    ML_team2_parlay = models.FloatField(null=True, blank=True)
-    ML_result = models.CharField(max_length=36, null=True, blank=True)
+    ml_team1_parlay = models.FloatField(null=True, blank=True)
+    ml_team2_parlay = models.FloatField(null=True, blank=True)
+    ml_result = models.CharField(max_length=36, null=True, blank=True)
     total = models.FloatField()
     over_total_parlay = models.FloatField(null=True, blank=True)
     under_total_parlay = models.FloatField(null=True, blank=True)
