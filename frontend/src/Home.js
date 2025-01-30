@@ -31,11 +31,11 @@ function Home() {
         {/* Логотип */}
         <div className="logo">
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
+            src="/image.png"
             alt="React Logo"
             style={{ width: "40px", marginRight: "10px" }}
           />
-          Гермес
+          InsightFlow
         </div>
 
         {/* Навигация */}
