@@ -14,7 +14,7 @@ class NHLMatch(models.Model):
     match_id = models.CharField(max_length=20,primary_key=True, editable=False)
     team1 = models.ForeignKey(NHLTeam, related_name='home_matches', on_delete=models.CASCADE)
     team2 = models.ForeignKey(NHLTeam, related_name='away_matches', on_delete=models.CASCADE)
-    status = models.CharField(max_length=20)
+    status = models.CharField(null=True, blank=True, max_length=20)
     season = models.CharField(max_length=10)
     stage = models.CharField(max_length=20)
     date = models.DateField()
@@ -114,6 +114,17 @@ class NHLBet(models.Model):
         db_table = 'nhl_bet'
         verbose_name = 'Ставка'
         verbose_name_plural = 'Ставки'
+
+class NHLUpdate(models.Model):
+    updated_at = models.DateTimeField(auto_now=True)  # Автоматически обновляется при изменении записи
+
+    class Meta:
+        db_table = 'nhl_update'
+        verbose_name = "Обновление NHL"
+        verbose_name_plural = "Обновления NHL"
+
+    def __str__(self):
+        return f"Обновлено: {self.updated_at.strftime('%d-%m-%Y %H:%M:%S')}"
 
 class Meta:
     indexes = [

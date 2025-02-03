@@ -15,8 +15,9 @@ class NFLMatch(models.Model):
     team1 = models.ForeignKey(NFLTeam, related_name='home_matches', on_delete=models.CASCADE)
     team2 = models.ForeignKey(NFLTeam, related_name='away_matches', on_delete=models.CASCADE)
     season = models.CharField(max_length=10)
-    stage = models.CharField(max_length=20)
+    stage = models.CharField(max_length=50)
     week = models.IntegerField()
+    season_type = models.IntegerField(null=True, blank=True)
 
     class Meta():
         db_table = 'nfl_match'
@@ -129,6 +130,17 @@ class NFLBet(models.Model):
         db_table = 'nfl_bet'
         verbose_name = 'Ставка'
         verbose_name_plural = 'Ставки'
+
+class NFLUpdate(models.Model):
+    updated_at = models.DateTimeField(auto_now=True)  # Автоматически обновляется при изменении записи
+
+    class Meta:
+        db_table = 'nfl_update'
+        verbose_name = "Обновление NFL"
+        verbose_name_plural = "Обновления NFL"
+
+    def __str__(self):
+        return f"Обновлено: {self.updated_at.strftime('%d-%m-%Y %H:%M:%S')}"
 
 class Meta:
     indexes = [

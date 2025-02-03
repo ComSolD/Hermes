@@ -131,6 +131,18 @@ class NBABet(models.Model):
         verbose_name = 'Ставка'
         verbose_name_plural = 'Ставки'
 
+class NBAUpdate(models.Model):
+    updated_at = models.DateTimeField(auto_now=True)  # Автоматически обновляется при изменении записи
+
+    class Meta:
+        db_table = 'nba_update'
+        verbose_name = "Обновление NBA"
+        verbose_name_plural = "Обновления NBA"
+
+    def __str__(self):
+        return f"Обновлено: {self.updated_at.strftime('%d-%m-%Y %H:%M:%S')}"
+
+
 # Добавление индексов для ускорения поиска
 class Meta:
     indexes = [
