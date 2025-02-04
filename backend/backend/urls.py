@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
+from debug_toolbar.toolbar import debug_toolbar_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -7,4 +8,4 @@ urlpatterns = [
     path('nba/', include('nba.urls', namespace='nba')),
     path('nfl/', include('nfl.urls', namespace='nfl')),
     path('nhl/', include('nhl.urls', namespace='nhl')),
-]
+] + debug_toolbar_urls()
