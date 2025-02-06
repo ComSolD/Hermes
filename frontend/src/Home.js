@@ -27,7 +27,7 @@ function Home() {
             {tournament.upcoming_matches.length > 0 ? (
               tournament.upcoming_matches.map((match) => (
                 <div key={match.match_id} className="match">
-                  <Link to={`/match/${match.match_id}`}>
+                  <Link to={`/${tournament.name.toLowerCase()}/match/${match.match_id}`}>
                     <h3>{match.home_team} vs {match.away_team}</h3>
                   </Link>
 
@@ -97,7 +97,7 @@ function Home() {
             {tournament.past_matches.length > 0 ? (
               tournament.past_matches.map((match) => (
                 <div key={match.match_id} className="match">
-                  <Link to={`/match/${match.match_id}`}>
+                  <Link to={`/${tournament.name.toLowerCase()}/match/${match.match_id}`}>
                     <h3>{match.home_team} vs {match.away_team}</h3>
                   </Link>
                   <table>

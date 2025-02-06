@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from django.core.cache import cache
 
 from .models import NBAMatch
-from .serializers import MatchSerializer  # Импортируем сериализатор матча
+from .serializers import NBAMatchSerializer  # Импортируем сериализатор матча
 
 
 class HomePage(APIView):
@@ -26,11 +26,9 @@ def match(request, match_id):
 
     match = get_object_or_404(NBAMatch, match_id=match_id)
 
-    print(match)
-
     # Сериализуем данные
-    serializer = MatchSerializer(match)
-   
+    serializer = NBAMatchSerializer(match)
+
     
     return Response(serializer.data)
 

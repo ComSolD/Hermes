@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./Home";
-import MatchDetail from "./MatchDetail"; // ✅ Импортируем страницу матча
+import MatchDetailNBA from "./MatchDetailNBA"; // ✅ Импортируем страницу матча
+import MatchDetailNFL from "./MatchDetailNFL"; // ✅ Импортируем страницу матча
 
 function App() {
   console.log("Router работает");
@@ -8,7 +9,8 @@ function App() {
   return (
     <Routes> 
         <Route path="/" element={<Home />} />  {/* Главная страница */}
-        <Route path="/match/:id" element={<MatchDetail />} /> {/* ✅ Новый маршрут */}
+        <Route path="/nba/match/:id" element={<MatchDetailNBA />} /> {/* ✅ Новый маршрут */}
+        <Route path="/nfl/match/:id" element={<MatchDetailNFL />} /> {/* ✅ Новый маршрут */}
     </Routes>
   );
 }

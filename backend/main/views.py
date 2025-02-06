@@ -10,6 +10,7 @@ def home(request):
     cache_key = "active_tournaments"  # Уникальный ключ кеша
     cached_data = cache.get(cache_key)  # Проверяем кеш
 
+
     if cached_data:  # Если кеш есть, отдаем его
         return Response(cached_data)
 

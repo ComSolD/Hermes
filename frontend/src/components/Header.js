@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Header.css";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -8,12 +9,15 @@ const Header = () => {
     <header className="header">
       {/* Логотип */}
       <div className="logo">
+        
+      <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "inherit" }}>
         <img
           src="/image.png"
           alt="React Logo"
           style={{ width: "40px", marginRight: "10px" }}
         />
         InsightFlow
+      </Link>
       </div>
 
       {/* Кнопка гамбургер-меню */}

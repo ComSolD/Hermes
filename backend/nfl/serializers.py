@@ -1,19 +1,19 @@
 from datetime import datetime
 from rest_framework import serializers
 from django.utils import timezone
-from nba.models import NBATeamPtsStat, NBAUpdate, NBAMatch, NBABet, NBATeam
+from nfl.models import NFLTeamPtsStat, NFLUpdate, NFLMatch, NFLBet, NFLTeam
 
-class NBAMatchSerializer(serializers.ModelSerializer):
+class NFLMatchSerializer(serializers.ModelSerializer):
     updated_at = serializers.SerializerMethodField()
     match_info = serializers.SerializerMethodField()
 
     class Meta:
-        model = NBAMatch
+        model = NFLMatch
         fields = '__all__'
 
     def get_updated_at(self, obj):
-        """Возвращает последнее обновление NBA турнира."""
-        last_update = NBAUpdate.objects.last()
+        """Возвращает последнее обновление NFL турнира."""
+        last_update = NFLUpdate.objects.last()
         if last_update:
             moscow_time = last_update.updated_at.astimezone(timezone.get_current_timezone())
             return moscow_time.strftime("%d-%m-%Y %H:%M:%S")
@@ -23,14 +23,14 @@ class NBAMatchSerializer(serializers.ModelSerializer):
         """Форматирует информацию о конкретном матче."""
         match = obj  # Здесь уже передан нужный матч через сериализатор
 
-        bet = NBABet.objects.filter(match_id=match.match_id).first()
-        pts = NBATeamPtsStat.objects.filter(match_id=match.match_id).first()
+        bet = NFLBet.objects.filter(match_id=match.match_id).first()
+        pts = NFLTeamPtsStat.objects.filter(match_id=match.match_id).first()
 
-        home_team = NBATeam.objects.filter(team_id=match.team2_id).first()
-        away_team = NBATeam.objects.filter(team_id=match.team1_id).first()
+        home_team = NFLTeam.objects.filter(team_id=match.team2_id).first()
+        away_team = NFLTeam.objects.filter(team_id=match.team1_id).first()
 
-        ml_result_team = NBATeam.objects.filter(team_id=bet.ml_result).first() if bet and bet.ml_result else None
-        spread_result_team = NBATeam.objects.filter(team_id=bet.spread_result).first() if bet and bet.spread_result else None
+        ml_result_team = NFLTeam.objects.filter(team_id=bet.ml_result).first() if bet and bet.ml_result else None
+        spread_result_team = NFLTeam.objects.filter(team_id=bet.spread_result).first() if bet and bet.spread_result else None
 
 
         return {
@@ -55,5 +55,4 @@ class NBAMatchSerializer(serializers.ModelSerializer):
             "spread_home_parlay": bet.spread_team2_parlay if bet else "N/A",
             "spread_away_parlay": bet.spread_team1_parlay if bet else "N/A",
             "spread_parlay": bet.spread_team1_parlay if bet and bet.spread_result == str(bet.team1_id) else bet.spread_team2_parlay if bet else "N/A",
-            "date": match.date.strftime("%d-%m-%Y"),
         }
