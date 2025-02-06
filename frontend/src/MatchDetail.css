@@ -4,6 +4,8 @@
     align-items: center;
     gap: 30px;
     padding: 20px;
+    width: 100%; /* Гарантируем, что контейнер занимает всю ширину */
+    box-sizing: border-box; /* Учитываем padding в ширине */
 }
 
 .team-info-container {
@@ -13,10 +15,11 @@
     width: 100%;
     max-width: 1500px; /* Совпадает с шириной match-title */
     flex-wrap: wrap; /* Позволяем блокам переходить на новую строку */
+    box-sizing: border-box; /* Учитываем padding */
 }
 
 .team-info {
-    width: calc(50% - 10px); /* Половина от ширины контейнера с учетом gap */
+    width: calc(50% - 10px); /* Половина ширины контейнера с учетом gap */
     background-color: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
@@ -28,7 +31,8 @@
 }
 
 .match-title {
-    width: 1500px;
+    width: 100%;
+    max-width: 1500px;
     background-color: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
@@ -42,6 +46,7 @@
     text-transform: uppercase;
     padding: 20px;
     text-align: center;
+    box-sizing: border-box; /* Учитываем padding */
 }
 
 /* Адаптивность */
@@ -53,11 +58,31 @@
     .team-info-container {
         flex-direction: column; /* Ставим блоки в колонку */
         gap: 20px; /* Оставляем отступы между блоками */
-          align-items: center;
-
+        align-items: center; /* Центрируем блоки */
     }
 
     .team-info {
         width: 90%; /* На мобильных блоки команды тоже сужаются */
+    }
+}
+
+@media (max-width: 768px) {
+    .match-title {
+        font-size: 20px; /* Уменьшаем шрифт для мобильных */
+        padding: 15px; /* Снижаем отступы */
+    }
+
+    .team-info {
+        padding: 15px; /* Уменьшаем отступы внутри блоков */
+    }
+}
+
+@media (max-width: 480px) {
+    .match-title {
+        font-size: 18px; /* Еще меньше шрифт на очень маленьких экранах */
+    }
+
+    .team-info {
+        padding: 10px; /* Сужаем отступы */
     }
 }
