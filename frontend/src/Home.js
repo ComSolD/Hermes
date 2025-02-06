@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Home.css";
 import Header from "./components/Header";
+import { Link } from "react-router-dom";
 
 function Home() {
   const [tournaments, setTournaments] = useState([]);
@@ -9,7 +10,7 @@ function Home() {
     document.title = "Главная страница";
 
     // Загрузка данных с сервера
-    fetch("http://127.0.0.1:8000/") // Укажите ваш URL
+    fetch("http://127.0.0.1:8000/api/") // Укажите ваш URL
       .then((response) => response.json())
       .then((data) => setTournaments(data))
       .catch((error) => console.error("Ошибка загрузки:", error));
@@ -26,7 +27,9 @@ function Home() {
             {tournament.upcoming_matches.length > 0 ? (
               tournament.upcoming_matches.map((match) => (
                 <div key={match.match_id} className="match">
-                  <a href="/"><h3>{match.home_team} vs {match.away_team}</h3></a>
+                  <Link to={`/match/${match.match_id}`}>
+                    <h3>{match.home_team} vs {match.away_team}</h3>
+                  </Link>
 
                   <table>
                     <thead>
@@ -94,7 +97,9 @@ function Home() {
             {tournament.past_matches.length > 0 ? (
               tournament.past_matches.map((match) => (
                 <div key={match.match_id} className="match">
-                  <a href="/"><h3>{match.home_team} vs {match.away_team}</h3></a>
+                  <Link to={`/match/${match.match_id}`}>
+                    <h3>{match.home_team} vs {match.away_team}</h3>
+                  </Link>
                   <table>
                     <tbody>
                       <tr key={match.match_id}>

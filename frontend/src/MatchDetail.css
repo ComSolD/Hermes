@@ -1,0 +1,63 @@
+.match-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+}
+
+.team-info-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 1500px; /* Совпадает с шириной match-title */
+    flex-wrap: wrap; /* Позволяем блокам переходить на новую строку */
+}
+
+.team-info {
+    width: calc(50% - 10px); /* Половина от ширины контейнера с учетом gap */
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box; /* Учитываем padding в общей ширине */
+}
+
+.match-title {
+    width: 1500px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 12px;
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+    .match-title {
+        width: 90%; /* На мобильных главный блок сужается */
+    }
+
+    .team-info-container {
+        flex-direction: column; /* Ставим блоки в колонку */
+        gap: 20px; /* Оставляем отступы между блоками */
+          align-items: center;
+
+    }
+
+    .team-info {
+        width: 90%; /* На мобильных блоки команды тоже сужаются */
+    }
+}
