@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Header from "./components/Header";
-import "./MatchDetail.css";
+import Header from "../components/Header";
+import "../styles/MatchDetail.css";
 
-function MatchDetailNFL() {
+function MatchDetailNBA() {
   const { id } = useParams(); // Получаем ID матча из URL
   const [match, setMatch] = useState(null);
 
   useEffect(() => {
 
-    fetch(`http://127.0.0.1:8000/api/nfl/match/${id}`) // Загружаем данные о матче
+    fetch(`http://127.0.0.1:8000/api/nba/match/${id}`) // Загружаем данные о матче
       .then((response) => response.json())
       .then((data) => {
         setMatch(data)
@@ -62,4 +62,4 @@ function MatchDetailNFL() {
   );
 }
 
-export default MatchDetailNFL;
+export default MatchDetailNBA;

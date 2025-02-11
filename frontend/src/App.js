@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./Home";
-import MatchDetailNBA from "./MatchDetailNBA"; // ✅ Импортируем страницу матча
-import MatchDetailNFL from "./MatchDetailNFL"; // ✅ Импортируем страницу матча
+import Home from "./pages/Home";
+import MatchDetailNBA from "./pages/MatchDetailNBA"; // ✅ Импортируем страницу матча
+import MatchDetailNFL from "./pages/MatchDetailNFL"; // ✅ Импортируем страницу матча
 
 function App() {
   console.log("Router работает");

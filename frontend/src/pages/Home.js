@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import "./Home.css";
-import Header from "./components/Header";
+import "../styles/Home.css";
+import Header from "../components/Header";
 import { Link } from "react-router-dom";
 
 function Home() {
@@ -44,19 +44,19 @@ function Home() {
                           <td>
                             {match.home_team}
                             <div style={{ textAlign: "center"}}>
-                              {match.ml_home}
+                              {match.match_bet.ml_home}
                             </div>
                           </td>
                           <td>
                             Больше
                             <div style={{ textAlign: "center"}}>
-                              {match.total_over}
+                              {match.match_bet.total_over}
                             </div>
                           </td>
                           <td>
-                            {match.spread_home > 0 ? `+${match.spread_home}` : match.spread_home}
+                            {match.match_bet.spread_home > 0 ? `+${match.match_bet.spread_home}` : match.match_bet.spread_home}
                             <div style={{ textAlign: "center"}}>
-                              {match.spread_home_parlay}
+                              {match.match_bet.spread_home_parlay}
                             </div>
                           </td>
                         </tr>
@@ -64,19 +64,19 @@ function Home() {
                           <td>
                             {match.away_team}
                             <div style={{ textAlign: "center"}}>
-                              {match.ml_away}
+                              {match.match_bet.ml_away}
                             </div>
                           </td>
                           <td>
                             Меньше
                             <div style={{ textAlign: "center"}}>
-                              {match.total_under}
+                              {match.match_bet.total_under}
                             </div>
                           </td>
                           <td>
-                            {match.spread_away > 0 ? `+${match.spread_away}` : match.spread_away}
+                            {match.match_bet.spread_away > 0 ? `+${match.match_bet.spread_away}` : match.match_bet.spread_away}
                             <div style={{ textAlign: "center"}}>
-                              {match.spread_away_parlay}
+                              {match.match_bet.spread_away_parlay}
                             </div>
                           </td>
                         </tr>
@@ -104,7 +104,7 @@ function Home() {
                     <tbody>
                       <tr key={match.match_id}>
                         <td>
-                          {match.ml_result}
+                          {match.match_bet.ml_result}
                         </td>
                         <td>
                           {match.away_pts}:{match.home_pts}
@@ -129,21 +129,21 @@ function Home() {
                     <tbody>
                       <tr key={match.match_id}>
                         <td>
-                          {match.ml_result}
+                          {match.match_bet.ml_result}
                           <div style={{ textAlign: "center"}}>
-                            {match.ml_parlay}
+                            {match.match_bet.ml_parlay}
                           </div>
                         </td>
                         <td>
-                          {match.total_result === "over" ? "Больше" : "Меньше"} {match.total}
+                          {match.match_bet.total_result === "over" ? "Больше" : "Меньше"} {match.match_bet.total}
                           <div style={{ textAlign: "center"}}>
-                            {match.total_parlay}
+                            {match.match_bet.total_parlay}
                           </div>
                         </td>
                         <td>
-                          {match.spread_result}
+                          {match.match_bet.spread_result}
                           <div style={{ textAlign: "center"}}>
-                          {match.spread_parlay} {match.spread > 0 ? `+${match.spread}` : match.spread}
+                          {match.match_bet.spread_parlay} {match.match_bet.spread > 0 ? `+${match.match_bet.spread}` : match.match_bet.spread}
                           </div>
                         </td>
                       </tr>
