@@ -2,7 +2,7 @@ from django.db.models import Q, Case, IntegerField, Max, When
 from django.utils import timezone
 from rest_framework import serializers
 
-from nba.models import NBATeamPtsStat, NBAUpdate, NBAMatch, NBABet, NBATeam
+from nba.models import NBATeamPtsStat, NBAUpdate, NBAMatch, NBAMoneylineBet, NBATeam
 from nfl.models import NFLTeamPtsStat, NFLUpdate, NFLMatch, NFLBet, NFLTeam
 from nhl.models import NHLTeamPtsStat, NHLUpdate, NHLMatch, NHLBet, NHLTeam
 
@@ -15,7 +15,7 @@ UPDATE_MODELS = {
 }
 
 MATCH_MODELS = {
-    "NBA": (NBAMatch, NBABet, NBATeam, NBATeamPtsStat),
+    "NBA": (NBAMatch, NBAMoneylineBet, NBATeam, NBATeamPtsStat),
     "NHL": (NHLMatch, NHLBet, NHLTeam, NHLTeamPtsStat),
     "NFL": (NFLMatch, NFLBet, NFLTeam, NFLTeamPtsStat),
 }

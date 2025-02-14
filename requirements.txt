@@ -4,3 +4,8 @@ psycopg2
 djangorestframework
 django-cors-headers
 django-redis
+selenium
+numpy
+beautifulsoup4
+lxml
+PyQt5

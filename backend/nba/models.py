@@ -12,11 +12,11 @@ class NBATeam(models.Model):
         verbose_name_plural = 'Команды'
 
 class NBAMatch(models.Model):
-    match_id = models.CharField(max_length=20, primary_key=True, editable=False)
-    team1 = models.ForeignKey(NBATeam, related_name='home_matches', on_delete=models.CASCADE)
-    team2 = models.ForeignKey(NBATeam, related_name='away_matches', on_delete=models.CASCADE)
+    match_id = models.CharField(max_length=200, primary_key=True, editable=False)
+    team1 = models.ForeignKey(NBATeam, related_name='away_matches', on_delete=models.CASCADE)
+    team2 = models.ForeignKey(NBATeam, related_name='home_matches', on_delete=models.CASCADE)
     season = models.CharField(max_length=10)
-    stage = models.CharField(max_length=20)
+    stage = models.CharField(null=True, blank=True, max_length=50)
     date = models.DateField()
 
     class Meta():
@@ -108,28 +108,86 @@ class NBAPlayerStat(models.Model):
         verbose_name = 'Статистика грока'
         verbose_name_plural = 'Статистика игроков'
 
-class NBABet(models.Model):
-    bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class NBAMoneylineBet(models.Model):
+    moneyline_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
-    team1 = models.ForeignKey(NBATeam, related_name='bets_as_team1', on_delete=models.CASCADE)
-    team2 = models.ForeignKey(NBATeam, related_name='bets_as_team2', on_delete=models.CASCADE)
-    ml_team1_parlay = models.FloatField(null=True, blank=True)
-    ml_team2_parlay = models.FloatField(null=True, blank=True)
-    ml_result = models.CharField(max_length=36, null=True, blank=True)
+
+    period = models.CharField(
+        max_length=20, 
+        choices=[
+            ('full_time', 'Весь Матч'),
+            ('1st_half', '1-я Половина'),
+            ('2nd_half', '2-я Половина'),
+            ('1st_quarter', '1-я Четверть'),
+            ('2nd_quarter', '2-я Четверть'),
+            ('3rd_quarter', '3-я Четверть'),
+            ('4th_quarter', '4-я Четверть'),
+        ]
+    )
+
+    team1_odds = models.FloatField(null=True, blank=True)
+    team2_odds = models.FloatField(null=True, blank=True)
+    result = models.CharField(max_length=36, null=True, blank=True)
+
+
+    class Meta():
+        db_table = 'nba_moneyline_bet'
+        verbose_name = 'Ставка на победу'
+        verbose_name_plural = 'Ставки на победу'
+
+class NBATotalBet(models.Model):
+    total_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
+
+    period = models.CharField(
+        max_length=20, 
+        choices=[
+            ('full_time', 'Весь Матч'),
+            ('1st_half', '1-я Половина'),
+            ('2nd_half', '2-я Половина'),
+            ('1st_quarter', '1-я Четверть'),
+            ('2nd_quarter', '2-я Четверть'),
+            ('3rd_quarter', '3-я Четверть'),
+            ('4th_quarter', '4-я Четверть'),
+        ]
+    )
+
     total = models.FloatField()
-    over_total_parlay = models.FloatField(null=True, blank=True)
-    under_total_parlay = models.FloatField(null=True, blank=True)
+    over_odds = models.FloatField(null=True, blank=True)
+    under_odds = models.FloatField(null=True, blank=True)
     total_result = models.CharField(max_length=10, null=True, blank=True)
+
+    class Meta():
+        db_table = 'nba_total_bet'
+        verbose_name = 'Ставка на тотал'
+        verbose_name_plural = 'Ставки на тоталы'
+
+class NBASpreadBet(models.Model):
+    spread_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
+
+    period = models.CharField(
+        max_length=20, 
+        choices=[
+            ('full_time', 'Весь Матч'),
+            ('1st_half', '1-я Половина'),
+            ('2nd_half', '2-я Половина'),
+            ('1st_quarter', '1-я Четверть'),
+            ('2nd_quarter', '2-я Четверть'),
+            ('3rd_quarter', '3-я Четверть'),
+            ('4th_quarter', '4-я Четверть'),
+        ]
+    )
     spread_team1 = models.FloatField(null=True, blank=True)
-    spread_team1_parlay = models.FloatField(null=True, blank=True)
+    spread_team1_odds = models.FloatField(null=True, blank=True)
     spread_team2 = models.FloatField(null=True, blank=True)
-    spread_team2_parlay = models.FloatField(null=True, blank=True)
+    spread_team2_odds = models.FloatField(null=True, blank=True)
     spread_result = models.CharField(max_length=36, null=True, blank=True)
 
     class Meta():
-        db_table = 'nba_bet'
-        verbose_name = 'Ставка'
-        verbose_name_plural = 'Ставки'
+        db_table = 'nba_spread_bet'
+        verbose_name = 'Ставка на фору'
+        verbose_name_plural = 'Ставки на форы'
 
 class NBAUpdate(models.Model):
     updated_at = models.DateTimeField(auto_now=True)  # Автоматически обновляется при изменении записи

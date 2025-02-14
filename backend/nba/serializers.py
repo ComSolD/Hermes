@@ -1,7 +1,7 @@
 from datetime import datetime
 from rest_framework import serializers
 from django.utils import timezone
-from nba.models import NBATeamPtsStat, NBAUpdate, NBAMatch, NBABet, NBATeam
+from nba.models import NBATeamPtsStat, NBAUpdate, NBAMatch, NBAMoneylineBet, NBATeam
 
 class NBAMatchSerializer(serializers.ModelSerializer):
     updated_at = serializers.SerializerMethodField()
@@ -23,7 +23,7 @@ class NBAMatchSerializer(serializers.ModelSerializer):
         """Форматирует информацию о конкретном матче."""
         match = obj  # Здесь уже передан нужный матч через сериализатор
 
-        bet = NBABet.objects.filter(match_id=match.match_id).first()
+        bet = NBAMoneylineBet.objects.filter(match_id=match.match_id).first()
         pts = NBATeamPtsStat.objects.filter(match_id=match.match_id).first()
 
         home_team = NBATeam.objects.filter(team_id=match.team2_id).first()
