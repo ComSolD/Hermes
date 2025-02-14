@@ -412,3 +412,49 @@ def moneyline_result_table(match_id, teams_ID, total):
         cur.execute(f'''UPDATE nba_moneyline_bet SET result = '{result}' WHERE match_id = '{match_id}' AND period = '{period[0]}';''')
         conn.commit()
 
+
+def odds_total_table(match_id, odds, period):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    for odd in odds:
+        bet_id = str(uuid.uuid4())
+
+        cur.execute(f"INSERT INTO nba_total_bet(total_bet_id, match_id, total, over_odds, under_odds, period) VALUES('{bet_id}', '{match_id}', {odd[0]}, {odd[1]}, {odd[2]}, '{period}')")
+        conn.commit()
+
+
+def total_result_table(match_id, teams_ID, total):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    cur.execute("SELECT period, total FROM nba_total_bet WHERE match_id = %s", (match_id,))
+    periods = cur.fetchall()
+
+    for period in periods:
+
+        value = getDictionary(period[0], total)
+
+        if period[1] > value[0] + value[1]:
+            result = 'under'
+        elif period[1] < value[0] + value[1]:
+            result = 'over'
+        else:
+            result = 'draw'
+
+        cur.execute(f'''UPDATE nba_total_bet SET total_result = '{result}' WHERE match_id = '{match_id}' AND period = '{period[0]}' AND total = {period[1]};''')
+        conn.commit()

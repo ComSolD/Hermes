@@ -1,7 +1,7 @@
 from parser.utilities.transfer import transfer_bet
 
 from datetime import datetime
-
+import numpy as np
 
 def bet_predict_redact(bets):
     win_firstTeam = transfer_bet(bets[3])
@@ -102,3 +102,27 @@ def time_redact(time: str):
     formatted_time = time_obj.strftime("%H:%M")
 
     return formatted_time
+
+
+def total_odds_redact(total: list):
+
+    split = np.array_split(total, len(total) // 6)
+
+    result = list()
+
+    for array in split:
+        lst = list(map(str, array))
+
+        if lst[-3] != '-' and lst[-2] != '-':
+
+            lst.pop(-1)
+            lst.pop(0)
+            lst.pop(1)
+
+            lst[0] = lst[0].replace('O/U +', '')
+            lst[0] = lst[0].replace(' ', '')
+
+            result.append(lst)
+
+
+    return result
