@@ -30,7 +30,7 @@ class NBAMatchSerializer(serializers.ModelSerializer):
         away_team = NBATeam.objects.filter(team_id=match.team1_id).first()
 
         ml_result_team = NBATeam.objects.filter(team_id=bet.ml_result).first() if bet and bet.ml_result else None
-        spread_result_team = NBATeam.objects.filter(team_id=bet.spread_result).first() if bet and bet.spread_result else None
+        handicap_result_team = NBATeam.objects.filter(team_id=bet.handicap_result).first() if bet and bet.handicap_result else None
 
 
         return {
@@ -48,12 +48,12 @@ class NBAMatchSerializer(serializers.ModelSerializer):
             "total_parlay": bet.over_total_parlay if bet and bet.total_result == "over" else bet.under_total_parlay if bet else "N/A",
             "total_over": bet.over_total_parlay if bet else "N/A",
             "total_under": bet.under_total_parlay if bet else "N/A",
-            "spread_result": spread_result_team.name if spread_result_team else "N/A",
-            "spread": bet.spread_team1 if bet and bet.spread_result == str(bet.team1_id) else bet.spread_team2 if bet else "N/A",
-            "spread_home": bet.spread_team2 if bet else "N/A",
-            "spread_away": bet.spread_team1 if bet else "N/A",
-            "spread_home_parlay": bet.spread_team2_parlay if bet else "N/A",
-            "spread_away_parlay": bet.spread_team1_parlay if bet else "N/A",
-            "spread_parlay": bet.spread_team1_parlay if bet and bet.spread_result == str(bet.team1_id) else bet.spread_team2_parlay if bet else "N/A",
+            "handicap_result": handicap_result_team.name if handicap_result_team else "N/A",
+            "handicap": bet.handicap_team1 if bet and bet.handicap_result == str(bet.team1_id) else bet.handicap_team2 if bet else "N/A",
+            "handicap_home": bet.handicap_team2 if bet else "N/A",
+            "handicap_away": bet.handicap_team1 if bet else "N/A",
+            "handicap_home_parlay": bet.handicap_team2_parlay if bet else "N/A",
+            "handicap_away_parlay": bet.handicap_team1_parlay if bet else "N/A",
+            "handicap_parlay": bet.handicap_team1_parlay if bet and bet.handicap_result == str(bet.team1_id) else bet.handicap_team2_parlay if bet else "N/A",
             "date": match.date.strftime("%d-%m-%Y"),
         }

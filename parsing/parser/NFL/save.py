@@ -54,7 +54,7 @@ def bet_predict_tables(match_id, teams_id, bet_predict):
 
     bet_id = str(uuid.uuid4())
 
-    cur.execute(f"INSERT INTO nfl_bet(bet_id, match_id, team1_id, team2_id, ml_team1_parlay, ml_team2_parlay, total, over_total_parlay, under_total_parlay, spread_team1, spread_team1_parlay, spread_team2, spread_team2_parlay) VALUES('{bet_id}', '{match_id}', '{teams_id[0]}', '{teams_id[1]}', {bet_predict[0]}, {bet_predict[1]}, {bet_predict[2]}, {bet_predict[3]}, {bet_predict[4]}, {bet_predict[5]}, {bet_predict[6]}, {bet_predict[7]}, {bet_predict[8]})")
+    cur.execute(f"INSERT INTO nfl_bet(bet_id, match_id, team1_id, team2_id, ml_team1_parlay, ml_team2_parlay, total, over_total_parlay, under_total_parlay, handicap_team1, handicap_team1_parlay, handicap_team2, handicap_team2_parlay) VALUES('{bet_id}', '{match_id}', '{teams_id[0]}', '{teams_id[1]}', {bet_predict[0]}, {bet_predict[1]}, {bet_predict[2]}, {bet_predict[3]}, {bet_predict[4]}, {bet_predict[5]}, {bet_predict[6]}, {bet_predict[7]}, {bet_predict[8]})")
     conn.commit()
 
 
@@ -77,51 +77,51 @@ def bet_result_tables(match_id, teams, result_team1, match_total, bet):
         cur.execute(f"SELECT total FROM nfl_bet WHERE match_id = '{match_id}';")
         total = cur.fetchall()[0][0]
 
-        cur.execute(f"SELECT spread_team1 FROM nfl_bet WHERE match_id = '{match_id}';")
-        spread = cur.fetchall()[0][0]
+        cur.execute(f"SELECT handicap_team1 FROM nfl_bet WHERE match_id = '{match_id}';")
+        handicap = cur.fetchall()[0][0]
 
-        if spread < 0:
-            spread_result = int(match_total[0]) - int(match_total[1]) + spread
+        if handicap < 0:
+            handicap_result = int(match_total[0]) - int(match_total[1]) + handicap
 
-            if spread_result > 0:
-                spread_team = teams[0]
+            if handicap_result > 0:
+                handicap_team = teams[0]
             else:
-                spread_team = teams[1]
+                handicap_team = teams[1]
         else:
-            spread_result = int(match_total[1]) - int(match_total[0]) - spread
+            handicap_result = int(match_total[1]) - int(match_total[0]) - handicap
 
-            if spread_result > 0:
-                spread_team = teams[1]
+            if handicap_result > 0:
+                handicap_team = teams[1]
             else:
-                spread_team = teams[0]
+                handicap_team = teams[0]
 
 
-        cur.execute(f'''UPDATE nfl_bet SET ml_result = '{teams[0] if result_team1 == "Win" else teams[1]}', total_result = '{"over" if total < (int(match_total[0]) + int(match_total[1])) else "under"}', spread_result = '{spread_team}' WHERE match_id = '{match_id}';''')
+        cur.execute(f'''UPDATE nfl_bet SET ml_result = '{teams[0] if result_team1 == "Win" else teams[1]}', total_result = '{"over" if total < (int(match_total[0]) + int(match_total[1])) else "under"}', handicap_result = '{handicap_team}' WHERE match_id = '{match_id}';''')
         conn.commit()
 
     else:
 
         bet_id = str(uuid.uuid4())
 
-        spread = float(bet[5])
+        handicap = float(bet[5])
 
         if '-' in bet[5]:
-            spread_result = int(match_total[0]) - int(match_total[1]) + spread
+            handicap_result = int(match_total[0]) - int(match_total[1]) + handicap
 
-            if spread_result > 0:
-                spread_team = teams[0]
+            if handicap_result > 0:
+                handicap_team = teams[0]
             else:
-                spread_team = teams[1]
+                handicap_team = teams[1]
         else:
-            spread_result = int(match_total[1]) - int(match_total[0]) - spread
+            handicap_result = int(match_total[1]) - int(match_total[0]) - handicap
 
-            if spread_result > 0:
-                spread_team = teams[1]
+            if handicap_result > 0:
+                handicap_team = teams[1]
             else:
-                spread_team = teams[0]
+                handicap_team = teams[0]
             
 
-        cur.execute(f'''INSERT INTO nfl_bet(bet_id, match_id, team1_id, team2_id, ml_team1_parlay, ml_team2_parlay, ml_result, total, over_total_parlay, under_total_parlay, total_result, spread_team1, spread_team1_parlay, spread_team2, spread_team2_parlay, spread_result) VALUES('{bet_id}', '{match_id}', '{teams[0]}', '{teams[1]}', {bet[0]}, {bet[1]},'{teams[0] if result_team1 == "Win" else teams[1]}', {bet[2]}, {bet[3]}, {bet[4]}, '{'over' if float(bet[2]) < (int(match_total[0]) + int(match_total[1])) else 'under'}', {bet[5]}, {bet[6]}, {bet[7]}, {bet[8]}, '{spread_team}');''')
+        cur.execute(f'''INSERT INTO nfl_bet(bet_id, match_id, team1_id, team2_id, ml_team1_parlay, ml_team2_parlay, ml_result, total, over_total_parlay, under_total_parlay, total_result, handicap_team1, handicap_team1_parlay, handicap_team2, handicap_team2_parlay, handicap_result) VALUES('{bet_id}', '{match_id}', '{teams[0]}', '{teams[1]}', {bet[0]}, {bet[1]},'{teams[0] if result_team1 == "Win" else teams[1]}', {bet[2]}, {bet[3]}, {bet[4]}, '{'over' if float(bet[2]) < (int(match_total[0]) + int(match_total[1])) else 'under'}', {bet[5]}, {bet[6]}, {bet[7]}, {bet[8]}, '{handicap_team}');''')
         conn.commit()
 
 
@@ -144,26 +144,26 @@ def bet_old_result_tables(match_id, teams, result_team1, match_total, bet):
         cur.execute(f"SELECT total FROM nfl_bet WHERE match_id = '{match_id}';")
         total = cur.fetchall()[0][0]
 
-        cur.execute(f"SELECT spread_team1 FROM nfl_bet WHERE match_id = '{match_id}';")
-        spread = cur.fetchall()[0][0]
+        cur.execute(f"SELECT handicap_team1 FROM nfl_bet WHERE match_id = '{match_id}';")
+        handicap = cur.fetchall()[0][0]
 
-        if spread < 0:
-            spread_result = int(match_total[0]) - int(match_total[1]) + spread
+        if handicap < 0:
+            handicap_result = int(match_total[0]) - int(match_total[1]) + handicap
 
-            if spread_result > 0:
-                spread_team = teams[0]
+            if handicap_result > 0:
+                handicap_team = teams[0]
             else:
-                spread_team = teams[1]
+                handicap_team = teams[1]
         else:
-            spread_result = int(match_total[1]) - int(match_total[0]) + spread
+            handicap_result = int(match_total[1]) - int(match_total[0]) + handicap
 
-            if spread_result > 0:
-                spread_team = teams[1]
+            if handicap_result > 0:
+                handicap_team = teams[1]
             else:
-                spread_team = teams[0]
+                handicap_team = teams[0]
 
 
-        cur.execute(f'''UPDATE nfl_bet SET ml_result = '{teams[0] if result_team1 == "Win" else teams[1]}', total_result = '{"over" if total < (int(match_total[0]) + int(match_total[1])) else "under"}', spread_result = '{spread_team}' WHERE match_id = '{match_id}';''')
+        cur.execute(f'''UPDATE nfl_bet SET ml_result = '{teams[0] if result_team1 == "Win" else teams[1]}', total_result = '{"over" if total < (int(match_total[0]) + int(match_total[1])) else "under"}', handicap_result = '{handicap_team}' WHERE match_id = '{match_id}';''')
         conn.commit()
 
     else:
@@ -171,29 +171,29 @@ def bet_old_result_tables(match_id, teams, result_team1, match_total, bet):
         bet_id = str(uuid.uuid4())
 
         if bet[0] == "Team1":
-            spread_result = int(match_total[0]) - int(match_total[1]) + bet[1]
+            handicap_result = int(match_total[0]) - int(match_total[1]) + bet[1]
 
-            team1_spread = bet[1]
-            team2_spread = abs(bet[1])
+            team1_handicap = bet[1]
+            team2_handicap = abs(bet[1])
 
-            if spread_result > 0:
-                spread_team = teams[0]
+            if handicap_result > 0:
+                handicap_team = teams[0]
             else:
-                spread_team = teams[1]
+                handicap_team = teams[1]
 
         else:
-            spread_result = int(match_total[1]) - int(match_total[0]) + bet[1]
+            handicap_result = int(match_total[1]) - int(match_total[0]) + bet[1]
 
-            team2_spread = bet[1]
-            team1_spread = abs(bet[1])
+            team2_handicap = bet[1]
+            team1_handicap = abs(bet[1])
 
-            if spread_result > 0:
-                spread_team = teams[1]
+            if handicap_result > 0:
+                handicap_team = teams[1]
             else:
-                spread_team = teams[0]
+                handicap_team = teams[0]
 
             
-        cur.execute(f'''INSERT INTO nfl_bet(bet_id, match_id, team1_id, team2_id, ml_result, total, total_result, spread_team1, spread_team2, spread_result) VALUES('{bet_id}', '{match_id}', '{teams[0]}', '{teams[1]}', '{teams[0] if result_team1 == "Win" else teams[1]}', {bet[2]}, '{'over' if bet[2] < (int(match_total[0]) + int(match_total[1])) else 'under'}', '{team1_spread}', '{team2_spread}', '{spread_team}');''')
+        cur.execute(f'''INSERT INTO nfl_bet(bet_id, match_id, team1_id, team2_id, ml_result, total, total_result, handicap_team1, handicap_team2, handicap_result) VALUES('{bet_id}', '{match_id}', '{teams[0]}', '{teams[1]}', '{teams[0] if result_team1 == "Win" else teams[1]}', {bet[2]}, '{'over' if bet[2] < (int(match_total[0]) + int(match_total[1])) else 'under'}', '{team1_handicap}', '{team2_handicap}', '{handicap_team}');''')
         conn.commit()
 
 

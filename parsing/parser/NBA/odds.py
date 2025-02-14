@@ -6,8 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 import time
 
-from parser.NBA.redact import date_redact, total_odds_redact
-from parser.NBA.save import match_table, odds_moneyline_table, odds_total_table, team_table
+from parser.NBA.redact import date_redact, handicap_odds_redact, total_odds_redact
+from parser.NBA.save import match_table, odds_handicap_table, odds_moneyline_table, odds_total_table, team_table
 
 
 class OddsNBA(object):
@@ -124,9 +124,60 @@ class OddsNBA(object):
 
         self.total_for_periods(self.driver, self.total)
 
+        div_element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Asian Handicap")]'))
+        )
+        self.driver.execute_script("arguments[0].click();", div_element)
+
+        time.sleep(1)
+
+        self.handicap_for_periods(self.driver, self.handicap)
+
     
 
     # Функции для работы с ставками
+    def handicap_for_periods(self, driver, action_function):
+        periods = {
+            "full_time": "",  # Без клика, сразу вызываем функцию
+            "1st_half": "1st Half",
+            "2nd_half": "2nd Half",
+            "1st_quarter": "1st Quarter",
+            "2nd_quarter": "2nd Quarter",
+            "3rd_quarter": "3rd Quarter",
+            "4th_quarter": "4th Quarter",
+        }
+
+        action_function("full_time")
+
+        for key, period_text in periods.items():
+            if period_text:
+                try:
+                    div_element = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
+                    )
+                    driver.execute_script("arguments[0].click();", div_element)
+                except:
+                    continue
+                
+                action_function(key)
+   
+
+    def handicap(self, period):
+
+        odds_selenium = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="min-md:px-[10px]"] div.relative div.flex div.flex p'))
+        )
+
+        odds = list()
+
+        for odd in odds_selenium:
+            odds.append(odd.get_attribute("textContent"))
+
+        odds = handicap_odds_redact(odds)
+
+        odds_handicap_table(self.match_id, odds, period)
+
+
     def total_for_periods(self, driver, action_function):
         periods = {
             "full_time": "",  # Без клика, сразу вызываем функцию

@@ -68,14 +68,14 @@ def old_bet_redact(bets, short_names):
     else:
         bet_favorite = 'Team2'
     
-    bet_spread = float(favorite_n_sprean[2])
+    bet_handicap = float(favorite_n_sprean[2])
 
     over_n_under_total = bets[1].split(' ')
     
     bet_total = float(over_n_under_total[-1])
 
 
-    return bet_favorite, bet_spread, bet_total
+    return bet_favorite, bet_handicap, bet_total
 
 
 def date_redact(dates: list):
@@ -120,6 +120,30 @@ def total_odds_redact(total: list):
             lst.pop(1)
 
             lst[0] = lst[0].replace('O/U +', '')
+            lst[0] = lst[0].replace(' ', '')
+
+            result.append(lst)
+
+
+    return result
+
+
+def handicap_odds_redact(handicap: list):
+
+    split = np.array_split(handicap, len(handicap) // 6)
+
+    result = list()
+
+    for array in split:
+        lst = list(map(str, array))
+
+        if lst[-3] != '-' and lst[-2] != '-':
+
+            lst.pop(-1)
+            lst.pop(0)
+            lst.pop(1)
+
+            lst[0] = lst[0].replace('AH ', '')
             lst[0] = lst[0].replace(' ', '')
 
             result.append(lst)

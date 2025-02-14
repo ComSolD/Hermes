@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from nba.models import NBATeam, NBAMatch, NBATeamStat, NBATeamPtsStat, NBAPlayer, NBAPlayerStat, NBAMoneylineBet, NBATotalBet, NBASpreadBet, NBAUpdate
+from nba.models import NBATeam, NBAMatch, NBATeamStat, NBATeamPtsStat, NBAPlayer, NBAPlayerStat, NBAMoneylineBet, NBATotalBet, NBAHandicapBet, NBAUpdate
 
 
 admin.site.register(NBATeam)
@@ -19,7 +19,7 @@ admin.site.register(NBAMoneylineBet)
 
 admin.site.register(NBATotalBet)
 
-admin.site.register(NBASpreadBet)
+admin.site.register(NBAHandicapBet)
 
 admin.site.register(NBAUpdate)
 

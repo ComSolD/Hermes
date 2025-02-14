@@ -162,8 +162,8 @@ class NBATotalBet(models.Model):
         verbose_name = 'Ставка на тотал'
         verbose_name_plural = 'Ставки на тоталы'
 
-class NBASpreadBet(models.Model):
-    spread_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class NBAHandicapBet(models.Model):
+    handicap_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
 
     period = models.CharField(
@@ -178,14 +178,13 @@ class NBASpreadBet(models.Model):
             ('4th_quarter', '4-я Четверть'),
         ]
     )
-    spread_team1 = models.FloatField(null=True, blank=True)
-    spread_team1_odds = models.FloatField(null=True, blank=True)
-    spread_team2 = models.FloatField(null=True, blank=True)
-    spread_team2_odds = models.FloatField(null=True, blank=True)
-    spread_result = models.CharField(max_length=36, null=True, blank=True)
+    handicap = models.FloatField(null=True, blank=True)
+    handicap_team1_odds = models.FloatField(null=True, blank=True)
+    handicap_team2_odds = models.FloatField(null=True, blank=True)
+    handicap_result = models.CharField(max_length=36, null=True, blank=True)
 
     class Meta():
-        db_table = 'nba_spread_bet'
+        db_table = 'nba_handicap_bet'
         verbose_name = 'Ставка на фору'
         verbose_name_plural = 'Ставки на форы'
 

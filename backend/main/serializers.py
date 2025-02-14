@@ -91,7 +91,7 @@ class TournamentSerializer(serializers.ModelSerializer):
             away_team = TeamModel.objects.filter(team_id=match.team1_id).first()
 
             ml_result = TeamModel.objects.filter(team_id=bet.ml_result).first() 
-            spread_result = TeamModel.objects.filter(team_id=bet.spread_result).first()
+            handicap_result = TeamModel.objects.filter(team_id=bet.handicap_result).first()
 
             match_info = {
                 "match_id": match.match_id,
@@ -109,13 +109,13 @@ class TournamentSerializer(serializers.ModelSerializer):
                     "ml_home": bet.ml_team2_parlay if bet.ml_team2_parlay else "N/A",
                     "ml_away": bet.ml_team1_parlay if bet.ml_team1_parlay else "N/A",
                     "ml_parlay": bet.ml_team1_parlay if bet.ml_result == str(bet.team1_id) else bet.ml_team2_parlay,
-                    "spread_result": spread_result.name if bet.spread_result else "N/A",
-                    "spread": bet.spread_team1 if bet.spread_result == str(bet.team1_id) else bet.spread_team2,
-                    "spread_home": bet.spread_team2 if bet.spread_team2 else "N/A",
-                    "spread_away": bet.spread_team1 if bet.spread_team1 else "N/A",
-                    "spread_home_parlay": bet.spread_team2_parlay if bet.spread_team2_parlay else "N/A",
-                    "spread_away_parlay": bet.spread_team1_parlay if bet.spread_team1_parlay else "N/A",
-                    "spread_parlay": bet.spread_team1_parlay if bet.spread_result == str(bet.team1_id) else bet.spread_team2_parlay,
+                    "handicap_result": handicap_result.name if bet.handicap_result else "N/A",
+                    "handicap": bet.handicap_team1 if bet.handicap_result == str(bet.team1_id) else bet.handicap_team2,
+                    "handicap_home": bet.handicap_team2 if bet.handicap_team2 else "N/A",
+                    "handicap_away": bet.handicap_team1 if bet.handicap_team1 else "N/A",
+                    "handicap_home_parlay": bet.handicap_team2_parlay if bet.handicap_team2_parlay else "N/A",
+                    "handicap_away_parlay": bet.handicap_team1_parlay if bet.handicap_team1_parlay else "N/A",
+                    "handicap_parlay": bet.handicap_team1_parlay if bet.handicap_result == str(bet.team1_id) else bet.handicap_team2_parlay,
                 }
             }
 

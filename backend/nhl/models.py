@@ -104,11 +104,11 @@ class NHLBet(models.Model):
     over_total_parlay = models.FloatField(null=True, blank=True)
     under_total_parlay = models.FloatField(null=True, blank=True)
     total_result = models.CharField(max_length=10, null=True, blank=True)
-    spread_team1 = models.FloatField(null=True, blank=True)
-    spread_team1_parlay = models.FloatField(null=True, blank=True)
-    spread_team2 = models.FloatField(null=True, blank=True)
-    spread_team2_parlay = models.FloatField(null=True, blank=True)
-    spread_result = models.CharField(max_length=36, null=True, blank=True)
+    handicap_team1 = models.FloatField(null=True, blank=True)
+    handicap_team1_parlay = models.FloatField(null=True, blank=True)
+    handicap_team2 = models.FloatField(null=True, blank=True)
+    handicap_team2_parlay = models.FloatField(null=True, blank=True)
+    handicap_result = models.CharField(max_length=36, null=True, blank=True)
 
     class Meta():
         db_table = 'nhl_bet'

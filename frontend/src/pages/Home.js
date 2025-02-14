@@ -54,9 +54,9 @@ function Home() {
                             </div>
                           </td>
                           <td>
-                            {match.match_bet.spread_home > 0 ? `+${match.match_bet.spread_home}` : match.match_bet.spread_home}
+                            {match.match_bet.handicap_home > 0 ? `+${match.match_bet.handicap_home}` : match.match_bet.handicap_home}
                             <div style={{ textAlign: "center"}}>
-                              {match.match_bet.spread_home_parlay}
+                              {match.match_bet.handicap_home_parlay}
                             </div>
                           </td>
                         </tr>
@@ -74,9 +74,9 @@ function Home() {
                             </div>
                           </td>
                           <td>
-                            {match.match_bet.spread_away > 0 ? `+${match.match_bet.spread_away}` : match.match_bet.spread_away}
+                            {match.match_bet.handicap_away > 0 ? `+${match.match_bet.handicap_away}` : match.match_bet.handicap_away}
                             <div style={{ textAlign: "center"}}>
-                              {match.match_bet.spread_away_parlay}
+                              {match.match_bet.handicap_away_parlay}
                             </div>
                           </td>
                         </tr>
@@ -141,9 +141,9 @@ function Home() {
                           </div>
                         </td>
                         <td>
-                          {match.match_bet.spread_result}
+                          {match.match_bet.handicap_result}
                           <div style={{ textAlign: "center"}}>
-                          {match.match_bet.spread_parlay} {match.match_bet.spread > 0 ? `+${match.match_bet.spread}` : match.match_bet.spread}
+                          {match.match_bet.handicap_parlay} {match.match_bet.handicap > 0 ? `+${match.match_bet.handicap}` : match.match_bet.handicap}
                           </div>
                         </td>
                       </tr>

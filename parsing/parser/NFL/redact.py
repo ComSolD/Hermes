@@ -66,11 +66,11 @@ def old_bet_redact(bets, short_names):
     else:
         bet_favorite = 'Team2'
     
-    bet_spread = float(favorite_n_sprean[2])
+    bet_handicap = float(favorite_n_sprean[2])
 
     over_n_under_total = bets[1].split(' ')
     
     bet_total = float(over_n_under_total[-1])
 
 
-    return bet_favorite, bet_spread, bet_total
+    return bet_favorite, bet_handicap, bet_total

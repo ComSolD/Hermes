@@ -10,7 +10,7 @@ import datetime
 import time
 
 from parser.NBA.check import check_stat, match_bet_check, stage_check, total_check
-from parser.NBA.save import moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, team_table, bet_predict_tables, match_table, total_result_table, update_time
+from parser.NBA.save import handicap_result_table, moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, team_table, bet_predict_tables, match_table, total_result_table, update_time
 from parser.NBA.redact import bet_predict_redact, date_redact_full_month, time_redact
 
 
@@ -207,7 +207,9 @@ class ParsingNBA(object):
 
             moneyline_result_table(self.match_id, self.teams_id, total[0])
 
-            total_result_table(self.match_id, self.teams_id, total[0])
+            total_result_table(self.match_id, total[0])
+
+            handicap_result_table(self.match_id, self.teams_id, total[0])
 
             team_stat_pts_tables(self.match_id, self.teams_id, total)
             team_stat_tables(self.match_id, self.teams_id, resul_team1, resul_team2, self.stats[0], self.stats[1])
