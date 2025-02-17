@@ -27,7 +27,7 @@ class OddsNBA(object):
 
         base_url = "https://www.oddsportal.com/basketball/usa/nba"
     
-        if self.first_year == "now":
+        if self.first_year == "now" or self.first_year == "now forward":
             url = f"{base_url}/results/"
         elif self.first_year == "get":
             url = base_url
@@ -64,7 +64,9 @@ class OddsNBA(object):
 
         max_page_number = max(int(link.get_attribute("data-number")) for link in pagination_links)
 
-        for page in range(max_page_number, 0, -1):
+        start, stop, step = (max_page_number, 0, -1) if self.first_year != "now forward" else (1, max_page_number + 1, 1)
+
+        for page in range(start, stop, step):
             try:
                 page_link = self.driver.find_element(By.CSS_SELECTOR, f'a.pagination-link[data-number="{page}"]')
                 self.driver.execute_script("arguments[0].click();", page_link)
@@ -72,13 +74,14 @@ class OddsNBA(object):
                 time.sleep(5)
 
                 match_urls = [match.get_attribute('href') for match in self.get_match_links()]
-                match_urls.reverse()  # Переворачиваем список, чтобы идти в хронологическом порядке
+
+                if self.first_year != "now forward":
+                    match_urls.reverse()  # Переворачиваем список, чтобы идти в хронологическом порядке
 
                 for url in match_urls:
                     
-                    self.open_matches_link(url)
-                    
-                    break
+                    if self.open_matches_link(url) == 'enough':
+                        break
             except Exception as e:
                 print(f"Ошибка на странице {page}: {e}")
 
@@ -89,7 +92,7 @@ class OddsNBA(object):
         """Возвращает список элементов ссылок на матчи."""
         base_xpath = f'//a[starts-with(@href, "/basketball/usa/nba'
         
-        if self.first_year == "now" or self.first_year == "get":
+        if self.first_year == "now" or self.first_year == "get" or self.first_year == "now forward":
             xpath = base_xpath + '/") and not(@href="/basketball/usa/nba/") and not(contains(@href, "standings")) and not(contains(@href, "outrights")) and not(contains(@href, "results"))]'
         else:
             xpath = base_xpath + f'-{self.first_year}-{self.second_year}/") and not(@href="/basketball/usa/nba/") and not(contains(@href, "standings"))]'
@@ -115,7 +118,7 @@ class OddsNBA(object):
         date = datetime.strptime(match_date, '%d-%m-%Y')
 
 
-        if self.first_year == 'get':
+        if self.first_year == 'get' or self.first_year == 'now forward':
             if date == datetime.strptime(self.second_year, '%d-%m-%Y'):
 
                 return 'enough'

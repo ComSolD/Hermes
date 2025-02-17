@@ -35,7 +35,7 @@ from parser.NBA.parser import ParsingNBA
 
 if __name__ == "__main__":
 
-    OddsNBA("get","21-02-2025").get_matches_link()
+    OddsNBA("now forward","13-02-2025").get_matches_link()
     
     # ParsingNBA("2024-10-04", "2024-10-04").date_cycle()
 
