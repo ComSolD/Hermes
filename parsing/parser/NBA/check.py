@@ -55,74 +55,46 @@ def total_check(totals):
 
 
 def stage_check(stages):
-    if len(stages) == 0:
-        game_stage = "regular"
-    else:
-        stages = [x.lower() for x in stages]
-        stages = stages[0].split()
 
-        if 'all-star' in stages:
-            game_stage = "all-star"
-        elif 'preseason' in stages:
-            game_stage = "preseason"
-        elif 'rising' in stages and 'stars' in stages:
-            return 0
-        elif 'makeup' in stages and not 'east' in stages and not 'west' in stages and not 'finals' in stages:
-            game_stage = "regular"
+    if not stages:
+        return "regular"
+    
+    stages = set(word.lower() for stage in stages for word in stage.split())
 
-        elif 'play-in' in stages and 'east' in stages and '9th' in stages and '10th' in stages:
-            game_stage = "play-in east 9th place vs 10th place"
-        elif 'play-in' in stages and 'west' in stages and '9th' in stages and '10th' in stages:
-            game_stage = "play-in west 9th place vs 10th place"
+    # Обрабатываем особые случаи
+    if {'rising', 'stars'}.issubset(stages):
+        return 0
+    if {'makeup'}.issubset(stages) and not {'east', 'west', 'finals'}.intersection(stages):
+        return "regular"
 
+    # Карта матчей для быстрого поиска
+    stage_mapping = {
+        ('all-star',): "all-star",
+        ('preseason',): "preseason",
+        ('nba', 'finals'): "nba finals",
+        ('east', 'finals'): "east finals",
+        ('west', 'finals'): "west finals",
+        ('east', 'semifinals'): "east semifinals",
+        ('west', 'semifinals'): "west semifinals",
+        ('east', '1st', 'round'): "east 1st round",
+        ('west', '1st', 'round'): "west 1st round",
+        ('play-in', 'east', '9th', '10th'): "play-in east 9th place vs 10th place",
+        ('play-in', 'west', '9th', '10th'): "play-in west 9th place vs 10th place",
+        ('play-in', 'east', '7th', '8th'): "play-in east 7th place vs 8th place",
+        ('play-in', 'west', '7th', '8th'): "play-in west 7th place vs 8th place",
+        ('play-in', 'east', '8th', 'seed'): "play-in east 8th seed",
+        ('play-in', 'west', '8th', 'seed'): "play-in west 8th seed",
+        ('in-season', 'quarterfinals'): "in-season quarterfinals",
+        ('in-season', 'semifinals'): "in-season semifinals",
+        ('in-season', 'championship'): "in-season championship"
+    }
 
-        elif 'play-in' in stages and 'east' in stages and '7th' in stages and '8th' in stages:
-            game_stage = "play-in east 7th place vs 8th place"
-        elif 'play-in' in stages and 'west' in stages and '7th' in stages and '8th' in stages:
-            game_stage = "play-in west 7th place vs 8th place"
+    # Проверяем соответствие шаблонам
+    for keys, value in stage_mapping.items():
+        if set(keys).issubset(stages):
+            return value
 
-        
-        elif 'play-in' in stages and 'east' in stages and '8th' in stages and 'seed' in stages:
-            game_stage = "play-in east 8th seed"
-        elif 'play-in' in stages and 'west' in stages and '8th' in stages and 'seed' in stages:
-            game_stage = "play-in west 8th seed"
-        
-
-        elif 'east' in stages and '1st' in stages and 'round' in stages:
-            game_stage = "east 1st round"
-        elif 'west' in stages and '1st' in stages and 'round' in stages:
-            game_stage = "west 1st round"
-
-        elif 'east' in stages and 'semifinals' in stages:
-            game_stage = "east semifinals"
-        elif 'west' in stages and 'semifinals' in stages:
-            game_stage = "west semifinals"
-
-        elif 'east' in stages and 'finals' in stages:
-            game_stage = "east finals"
-        elif 'west' in stages and 'finals' in stages:
-            game_stage = "west finals"
-
-        elif 'nba' in stages and 'finals' in stages:
-            game_stage = "nba finals"
-
-
-        elif 'in-season' in stages and 'group' in stages:
-            game_stage = "regular"
-
-        elif 'in-season' in stages and 'quarterfinals' in stages:
-            game_stage = "in-season quarterfinals"
-        
-        elif 'in-season' in stages and 'semifinals' in stages:
-            game_stage = "in-season semifinals"
-
-        elif 'in-season' in stages and 'championship' in stages:
-            game_stage = "in-season championship"
-
-        else:
-            game_stage = "regular"
-
-    return game_stage
+    return "regular"
 
 
 def check_stat(player_names, player_stats, player_IDs):

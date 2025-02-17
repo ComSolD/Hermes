@@ -35,9 +35,9 @@ from parser.NBA.parser import ParsingNBA
 
 if __name__ == "__main__":
 
-    OddsNBA("2023","2024").get_matches_link()
+    OddsNBA("get","21-02-2025").get_matches_link()
     
-    ParsingNBA("2023-10-05", "2023-10-05").date_cycle()
+    # ParsingNBA("2024-10-04", "2024-10-04").date_cycle()
 
     # app = QApplication(sys.argv)
 

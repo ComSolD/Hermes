@@ -427,8 +427,11 @@ def odds_total_table(match_id, odds, period):
     for odd in odds:
         bet_id = str(uuid.uuid4())
 
-        cur.execute(f"INSERT INTO nba_total_bet(total_bet_id, match_id, total, over_odds, under_odds, period) VALUES('{bet_id}', '{match_id}', {odd[0]}, {odd[1]}, {odd[2]}, '{period}')")
-        conn.commit()
+        try:
+            cur.execute(f"INSERT INTO nba_total_bet(total_bet_id, match_id, total, over_odds, under_odds, period) VALUES('{bet_id}', '{match_id}', {odd[0]}, {odd[1]}, {odd[2]}, '{period}')")
+            conn.commit()
+        except:
+            pass
 
 
 def total_result_table(match_id, total):

@@ -1,3 +1,4 @@
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -21,44 +22,79 @@ class OddsNBA(object):
         self.second_year = second_year
 
 
-    def get_matches_link(self):
-        self.driver.get(f"https://www.oddsportal.com/basketball/usa/nba-{self.first_year}-{self.second_year}/results/")
 
+    def get_matches_link(self):
+
+        base_url = "https://www.oddsportal.com/basketball/usa/nba"
+    
+        if self.first_year == "now":
+            url = f"{base_url}/results/"
+        elif self.first_year == "get":
+            url = base_url
+        else:
+            url = f"{base_url}-{self.first_year}-{self.second_year}/results/"
+
+        self.driver.get(url)
+        
         time.sleep(5)
 
-        # Переключаемся по страницам
+        if self.first_year == "get":
+            self.process_matches_on_page()
+        else:
+            self.paginate_and_process_matches()
+
+        self.driver.quit()
+
+
+    def process_matches_on_page(self):
+        """Обрабатывает матчи на текущей странице."""
+        matches_selenium = self.get_match_links()
+        match_urls = [match.get_attribute('href') for match in matches_selenium]
+
+        for url in match_urls:
+            if self.open_matches_link(url) == 'enough':
+                break
+
+
+    def paginate_and_process_matches(self):
+        """Перебирает страницы с результатами матчей и обрабатывает их."""
         pagination_links = self.driver.find_elements(By.CSS_SELECTOR, 'a.pagination-link[data-number]')
+        if not pagination_links:
+            return
 
         max_page_number = max(int(link.get_attribute("data-number")) for link in pagination_links)
 
         for page in range(max_page_number, 0, -1):
-            last_page_link = self.driver.find_element(By.CSS_SELECTOR, f'a.pagination-link[data-number="{page}"]')
+            try:
+                page_link = self.driver.find_element(By.CSS_SELECTOR, f'a.pagination-link[data-number="{page}"]')
+                self.driver.execute_script("arguments[0].click();", page_link)
 
-            self.driver.execute_script("arguments[0].click();", last_page_link)
+                time.sleep(5)
 
-            time.sleep(5)
+                match_urls = [match.get_attribute('href') for match in self.get_match_links()]
+                match_urls.reverse()  # Переворачиваем список, чтобы идти в хронологическом порядке
 
-            # Находим все матчи на странице
-            matches_selenium = self.driver.find_elements(By.XPATH, f'//a[starts-with(@href, "/basketball/usa/nba-{self.first_year}-{self.second_year}/") and not(@href="/basketball/usa/nba-{self.first_year}-{self.second_year}/") and not(@href="/basketball/usa/nba-{self.first_year}-{self.second_year}/standings/")]')
-
-            matches = list()
-
-            for match in matches_selenium:
-                matches.append(match.get_attribute('href'))
-
-            matches.reverse()
-
-            # Открываем каждый матч
-            for url in matches:
-                self.open_matches_link(url)
-
-                break
+                for url in match_urls:
+                    
+                    self.open_matches_link(url)
+                    
+                    break
+            except Exception as e:
+                print(f"Ошибка на странице {page}: {e}")
 
             break
 
 
-        # Закрываем браузер
-        self.driver.quit()
+    def get_match_links(self):
+        """Возвращает список элементов ссылок на матчи."""
+        base_xpath = f'//a[starts-with(@href, "/basketball/usa/nba'
+        
+        if self.first_year == "now" or self.first_year == "get":
+            xpath = base_xpath + '/") and not(@href="/basketball/usa/nba/") and not(contains(@href, "standings")) and not(contains(@href, "outrights")) and not(contains(@href, "results"))]'
+        else:
+            xpath = base_xpath + f'-{self.first_year}-{self.second_year}/") and not(@href="/basketball/usa/nba/") and not(contains(@href, "standings"))]'
+
+        return self.driver.find_elements(By.XPATH, xpath)
 
 
     def open_matches_link(self, link):
@@ -75,6 +111,14 @@ class OddsNBA(object):
             dates.append(date.get_attribute("textContent"))
 
         match_date = date_redact(dates)
+
+        date = datetime.strptime(match_date, '%d-%m-%Y')
+
+
+        if self.first_year == 'get':
+            if date == datetime.strptime(self.second_year, '%d-%m-%Y'):
+
+                return 'enough'
 
         teams = list()
 
@@ -104,12 +148,26 @@ class OddsNBA(object):
 
         teams.reverse()
 
+        date = datetime.strptime(match_date, '%d-%m-%Y')
+
+        year = date.year
+
+        if date.month >= 10:  # Сезон начинается осенью
+            season = f"{year}/{int(str(year)) + 1}"
+
+            first = year
+            second = int(str(year)) + 1
+        else:
+            season = f"{year - 1}/{str(year)}"
+
+            second = year
+            first = int(str(year)) + 1
+
         self.match_id = "_".join(teams)
 
-        self.match_id += f"_{self.first_year}_{self.second_year}_{match_date.replace('-', '_')}_{dates[2].replace(':', '_')}"
+        self.match_id += f"_{first}_{second}_{match_date.replace('-', '_')}_{dates[2].replace(':', '_')}"
 
-
-        if match_table(self.match_id, teams_id, f'{self.first_year}/{self.second_year}', match_date, ''):
+        if match_table(self.match_id, teams_id, season, match_date, ''):
 
             return 0
 
@@ -152,7 +210,7 @@ class OddsNBA(object):
         for key, period_text in periods.items():
             if period_text:
                 try:
-                    div_element = WebDriverWait(driver, 10).until(
+                    div_element = WebDriverWait(driver, 2).until(
                         EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
                     )
                     driver.execute_script("arguments[0].click();", div_element)
@@ -194,7 +252,7 @@ class OddsNBA(object):
         for key, period_text in periods.items():
             if period_text:
                 try:
-                    div_element = WebDriverWait(driver, 10).until(
+                    div_element = WebDriverWait(driver, 2).until(
                         EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
                     )
                     driver.execute_script("arguments[0].click();", div_element)
@@ -237,7 +295,7 @@ class OddsNBA(object):
         for key, period_text in periods.items():
             if period_text:
                 try:
-                    div_element = WebDriverWait(driver, 10).until(
+                    div_element = WebDriverWait(driver, 2).until(
                         EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
                     )
                     driver.execute_script("arguments[0].click();", div_element)
