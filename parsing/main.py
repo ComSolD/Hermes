@@ -1,51 +1,51 @@
-from parser.NBA.odds import OddsNBA
+# from parser.NBA.odds import OddsNBA
 
-from parser.NBA.parser import ParsingNBA
+# from parser.NBA.parser import ParsingNBA
 
-# from interface.MainWindow import Ui_MainWindow
+from interface.MainWindow import Ui_MainWindow
 
-# from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout
-# from PyQt5.QtCore import Qt
-# from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 
-# import sys
+import sys
 
-# from function import Starter
+from function import Starter
 
 
-# class Statistic(Starter, QMainWindow):
-#     def __init__(self):
-#         super(Statistic, self).__init__()
+class Statistic(Starter, QMainWindow):
+    def __init__(self):
+        super(Statistic, self).__init__()
 
-#         self.ui = Ui_MainWindow()
-#         self.ui.setupUi(self)
-#         self.setWindowFlags(Qt.FramelessWindowHint)
-#         self.setWindowTitle("Statistic")
-#         self.setWindowIcon(QIcon(':/icon/icon/monitor.png'))
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowTitle("Statistic")
+        self.setWindowIcon(QIcon(':/icon/icon/monitor.png'))
 
-#         self.setAcceptDrops(True)
+        self.setAcceptDrops(True)
         
 
-#         self.MainWidget = QVBoxLayout(self.ui.MainWidget)
+        self.MainWidget = QVBoxLayout(self.ui.MainWidget)
 
-#         self.starter()
+        self.starter()
 
 
 
 
 if __name__ == "__main__":
 
-    OddsNBA("now forward","13-02-2025").get_matches_link()
+    # OddsNBA("now forward","13-02-2025").get_matches_link()
     
     # ParsingNBA("2024-10-04", "2024-10-04").date_cycle()
 
-    # app = QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
-    # window = Statistic()
+    window = Statistic()
     # window.showFullScreen()
-    # window.show()
+    window.show()
 
-    # sys.exit(app.exec())
+    sys.exit(app.exec())
 
 
 

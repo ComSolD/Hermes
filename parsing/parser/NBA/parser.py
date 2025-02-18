@@ -110,9 +110,8 @@ class ParsingNBA(object):
         for match in matches:
             try:
                 self.open_matches_link("https://www.espn.com" + match)
-            except IndexError:
-                self.driver.refresh()
-                self.open_matches_link("https://www.espn.com" + match)
+            except:
+                pass
 
             break
 

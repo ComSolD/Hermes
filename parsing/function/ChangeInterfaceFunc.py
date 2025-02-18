@@ -122,3 +122,58 @@ class ChangeInterface(NFLParserInterface.Interface, ParserInterface.Interface, H
         
         if self.tournament == '':
             self.change_tournaments('NBA')
+
+
+    def change_parsing_for_odds(self):
+        self.ui.FirstDate.setDisplayFormat("yyyy")
+        self.ui.SecondDate.setDisplayFormat("yyyy")
+
+        self.ui.CurrentSeasonCheckBox.setVisible(True)
+        self.ui.GetOddsCheckBox.setVisible(True)
+
+
+    def return_parsing_date(self):
+        self.ui.FirstDate.setVisible(True)
+
+        self.ui.FirstDate.setDisplayFormat("dd.MM.yyyy")
+        self.ui.SecondDate.setDisplayFormat("dd.MM.yyyy")
+
+        self.ui.CurrentSeasonCheckBox.setChecked(False)
+        self.ui.GetOddsCheckBox.setChecked(False)
+        self.ui.DateOddsCheckBox.setChecked(False)
+
+        self.ui.CurrentSeasonCheckBox.setVisible(False)
+        self.ui.GetOddsCheckBox.setVisible(False)
+        self.ui.DateOddsCheckBox.setVisible(False)
+
+
+    def change_parsing_for_get_current_season(self):
+        self.ui.FirstDate.setVisible(False)
+        self.ui.SecondDate.setDisplayFormat("dd.MM.yyyy")
+
+        self.ui.CurrentSeasonCheckBox.setChecked(False)
+        self.ui.DateOddsCheckBox.setChecked(False)
+
+        self.ui.CurrentSeasonCheckBox.setVisible(False)
+        self.ui.DateOddsCheckBox.setVisible(False)
+
+
+    def change_parsing_for_current_season(self):
+        self.ui.FirstDate.setVisible(False)
+        self.ui.SecondDate.setDisplayFormat("dd.MM.yyyy")
+
+        self.ui.GetOddsCheckBox.setChecked(False)
+
+        self.ui.GetOddsCheckBox.setVisible(False)
+
+        self.ui.DateOddsCheckBox.setVisible(True)
+
+
+    def return_parsing_season(self):
+        self.ui.FirstDate.setVisible(True)
+        self.ui.SecondDate.setDisplayFormat("yyyy")
+
+        self.ui.CurrentSeasonCheckBox.setVisible(True)
+
+        self.ui.GetOddsCheckBox.setVisible(True)
+        self.ui.DateOddsCheckBox.setVisible(False)

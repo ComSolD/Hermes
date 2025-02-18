@@ -41,14 +41,16 @@ class Clicked(ParsingFunc.Parsing, ChangeInterfaceFunc.ChangeInterface, QMainWin
         if self.model == 'Сбор данных':
             try:
                 self.ui.GetDataButton.clicked.connect(lambda: self.parsing_data())
+
+                self.ui.OddsCheckBox.clicked.connect(lambda: self.change_parsing_for_odds() if self.ui.OddsCheckBox.isChecked() else self.return_parsing_date())
+
+                self.ui.CurrentSeasonCheckBox.clicked.connect(lambda: self.change_parsing_for_current_season() if self.ui.CurrentSeasonCheckBox.isChecked() else self.return_parsing_season())
+
+                self.ui.GetOddsCheckBox.clicked.connect(lambda: self.change_parsing_for_get_current_season() if self.ui.GetOddsCheckBox.isChecked() else self.return_parsing_season())
+
             except AttributeError:
                 pass
 
-            if self.ui.TournamentLabel.text() != 'NFL':
-                try:
-                    self.ui.DailyDataButton.clicked.connect(lambda: self.daily_parsing_data())
-                except AttributeError:
-                    pass
 
 
 

@@ -16,7 +16,7 @@ class Parsing(QMainWindow):
         self.ui.ParserLabel.setText("")
 
         from dictionary import ParserDictionary
-        from parser.__init___ import ParsingNBA, ParsingNFL, ParsingNHL
+        from parser.__init___ import ParsingNBA, OddsNBA, ParsingNFL, ParsingNHL
 
         if self.tournament == 'NFL':
             stage = self.ui.StageComboBox.currentText()
@@ -33,33 +33,26 @@ class Parsing(QMainWindow):
             year = str(self.ui.YearDate.date().toPyDate()).split('-')
             year = year[0]
 
+        if self.ui.OddsCheckBox.isChecked():
+            parser_func = ParserDictionary.getDictionary('parsers', self.tournament, 'Odds')
 
-        parser_func = ParserDictionary.getDictionary('parsers', self.tournament)
-        exec(parser_func)
-        self.ui.ParserLabel.setText(f'Данные {self.tournament} собраны')
+            if self.ui.CurrentSeasonCheckBox.isChecked():
+                if self.ui.DateOddsCheckBox.isChecked():
+                    way = "now forward"
+                else:
+                    way = "now"
+            elif self.ui.GetOddsCheckBox.isChecked():
+                    way = "get"
+            else:
+                way = self.ui.FirstDate.date().year()
 
+            
+            exec(parser_func)
 
-    def daily_parsing_data(self):
-        self.ui.ParserLabel.setText("")
-
-        from dictionary import ParserDictionary
-        from parser.__init___ import ParsingNBA, ParsingNHL
-        import datetime
-
-
-        today = datetime.date.today()
-        tomorrow = today + datetime.timedelta(days=1)
-        yesterday = today - datetime.timedelta(days=1)
-
-        parser_func = ParserDictionary.getDictionary('daily', self.tournament)
-
-        main_date = yesterday
-        exec(parser_func)
-
-        main_date = today
-        exec(parser_func)
-
-        main_date = tomorrow
-        exec(parser_func)
+        else:
+            parser_func = ParserDictionary.getDictionary('parsers', self.tournament, 'Espn')
+            exec(parser_func)
 
         self.ui.ParserLabel.setText(f'Данные {self.tournament} собраны')
+
+

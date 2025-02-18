@@ -26,22 +26,27 @@ class OddsNBA(object):
     def get_matches_link(self):
 
         base_url = "https://www.oddsportal.com/basketball/usa/nba"
+
     
         if self.first_year == "now" or self.first_year == "now forward":
             url = f"{base_url}/results/"
         elif self.first_year == "get":
             url = base_url
         else:
+            self.second_year = self.second_year.split("-")[0]
             url = f"{base_url}-{self.first_year}-{self.second_year}/results/"
 
         self.driver.get(url)
         
         time.sleep(5)
 
-        if self.first_year == "get":
-            self.process_matches_on_page()
-        else:
-            self.paginate_and_process_matches()
+        try:
+            if self.first_year == "get":
+                self.process_matches_on_page()
+            else:
+                self.paginate_and_process_matches()
+        except:
+            pass
 
         self.driver.quit()
 
@@ -85,8 +90,6 @@ class OddsNBA(object):
             except Exception as e:
                 print(f"Ошибка на странице {page}: {e}")
 
-            break
-
 
     def get_match_links(self):
         """Возвращает список элементов ссылок на матчи."""
@@ -119,6 +122,12 @@ class OddsNBA(object):
 
 
         if self.first_year == 'get' or self.first_year == 'now forward':
+
+            try:
+                self.second_year = datetime.strptime(self.second_year, "%Y-%m-%d").strftime("%d-%m-%Y")
+            except:
+                pass
+
             if date == datetime.strptime(self.second_year, '%d-%m-%Y'):
 
                 return 'enough'
