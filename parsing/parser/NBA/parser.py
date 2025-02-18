@@ -63,16 +63,6 @@ class ParsingNBA(object):
 
         time.sleep(5)
 
-        date = datetime.datetime.strptime(self.date_match, '%Y-%m-%d')
-
-        year = date.year
-
-        if date.month >= 10:  # Сезон начинается осенью
-            self.season = f"{year}/{int(str(year)) + 1}"
-        else:
-            self.season = f"{year - 1}/{str(year)}"
-
-
         soup = BeautifulSoup(self.work_with_HTML(),'lxml')
 
 
@@ -157,7 +147,7 @@ class ParsingNBA(object):
 
         self.match_id = "_".join(teams)
 
-        self.match_id += f"_{self.season.replace('/','_')}_{match_date.replace('-', '_')}_{match_time.replace(':', '_')}"
+        self.match_id += f"_{match_date.replace('-', '_')}_{match_time.replace(':', '_')}"
 
         # Получение данных через HTML и запись в список
         totals_selenium = self.driver.find_elements(By.CSS_SELECTOR, 'div.Gamestrip__Table div.flex div.Table__ScrollerWrapper div.Table__Scroller table.Table tbody.Table__TBODY tr.Table__TR td.Table__TD') # Собирает результаты команд
@@ -202,7 +192,7 @@ class ParsingNBA(object):
             return 0
 
         
-        if not match_table(self.match_id, self.teams_id, self.season, self.date_match, stage):
+        if not match_table(self.match_id, self.teams_id, '', self.date_match, stage):
 
             moneyline_result_table(self.match_id, self.teams_id, total[0])
 
@@ -212,7 +202,7 @@ class ParsingNBA(object):
 
             team_stat_pts_tables(self.match_id, self.teams_id, total)
             team_stat_tables(self.match_id, self.teams_id, resul_team1, resul_team2, self.stats[0], self.stats[1])
-
+            
             player_tables(self.match_id, self.teams_id[0], self.stats[2], self.stats[4])
             player_tables(self.match_id, self.teams_id[1], self.stats[3], self.stats[5])
 

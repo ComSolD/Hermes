@@ -21,6 +21,12 @@ class OddsNBA(object):
         self.first_year = first_year
         self.second_year = second_year
 
+        self.enough_date = datetime.strptime(self.second_year, "%Y-%m-%d").strftime("%d-%m-%Y")
+
+        self.season = self.first_year.split("-")[0] + '/' + self.second_year.split("-")[0]
+
+        print(self.season)
+
 
 
     def get_matches_link(self):
@@ -87,6 +93,7 @@ class OddsNBA(object):
                     
                     if self.open_matches_link(url) == 'enough':
                         break
+
             except Exception as e:
                 print(f"Ошибка на странице {page}: {e}")
 
@@ -123,12 +130,7 @@ class OddsNBA(object):
 
         if self.first_year == 'get' or self.first_year == 'now forward':
 
-            try:
-                self.second_year = datetime.strptime(self.second_year, "%Y-%m-%d").strftime("%d-%m-%Y")
-            except:
-                pass
-
-            if date == datetime.strptime(self.second_year, '%d-%m-%Y'):
+            if date == datetime.strptime(self.enough_date, '%d-%m-%Y'):
 
                 return 'enough'
 
@@ -162,24 +164,11 @@ class OddsNBA(object):
 
         date = datetime.strptime(match_date, '%d-%m-%Y')
 
-        year = date.year
-
-        if date.month >= 10:  # Сезон начинается осенью
-            season = f"{year}/{int(str(year)) + 1}"
-
-            first = year
-            second = int(str(year)) + 1
-        else:
-            season = f"{year - 1}/{str(year)}"
-
-            second = year
-            first = int(str(year)) + 1
-
         self.match_id = "_".join(teams)
 
-        self.match_id += f"_{first}_{second}_{match_date.replace('-', '_')}_{dates[2].replace(':', '_')}"
+        self.match_id += f"_{match_date.replace('-', '_')}_{dates[2].replace(':', '_')}"
 
-        if match_table(self.match_id, teams_id, season, match_date, ''):
+        if match_table(self.match_id, teams_id, self.season, match_date, ''):
 
             return 0
 
