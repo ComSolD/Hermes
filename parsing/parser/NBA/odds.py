@@ -23,10 +23,7 @@ class OddsNBA(object):
 
         self.enough_date = datetime.strptime(self.second_year, "%Y-%m-%d").strftime("%d-%m-%Y")
 
-        self.season = self.first_year.split("-")[0] + '/' + self.second_year.split("-")[0]
-
-        print(self.season)
-
+        self.season = str(int(self.second_year.split("-")[0])-1) + '/' + self.second_year.split("-")[0]
 
 
     def get_matches_link(self):
@@ -93,6 +90,8 @@ class OddsNBA(object):
                     
                     if self.open_matches_link(url) == 'enough':
                         break
+
+                    break
 
             except Exception as e:
                 print(f"Ошибка на странице {page}: {e}")
