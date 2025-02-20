@@ -1,28 +1,4 @@
-import psycopg2
-import configparser
-
 import numpy as np
-
-
-def match_bet_check(match_ID):
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
-    # Получаем параметры подключения
-    db_params = config["postgresql"]
-
-    # Подключение к базе данных
-    conn = psycopg2.connect(**db_params)
-    cur = conn.cursor()
-
-    cur.execute(f"SELECT match_id FROM nba_bet WHERE match_id = '{match_ID}';")
-    inf = cur.fetchall()
-
-    if len(inf) != 0:
-        return False
-    else:
-        return True
-    
 
 def total_check(totals):
     totals.pop(int(len(totals)/2))

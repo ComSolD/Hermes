@@ -6,6 +6,8 @@ __pycache__/
 .idea
 .env
 
+.log
+
 test/
 .coverage
 .pytest_cache

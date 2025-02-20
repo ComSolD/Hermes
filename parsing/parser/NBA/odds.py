@@ -1,11 +1,14 @@
 from datetime import datetime
+import logging
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from pathlib import Path
 import time
+import traceback
 
 from parser.NBA.redact import date_redact, handicap_odds_redact, total_odds_redact
 from parser.NBA.save import match_table, odds_handicap_table, odds_moneyline_table, odds_total_table, team_table
@@ -13,17 +16,21 @@ from parser.NBA.save import match_table, odds_handicap_table, odds_moneyline_tab
 
 class OddsNBA(object):
     def __init__(self, first_year, second_year):
-        self.service  = Service(executable_path="parser/drivers/chromedriver.exe")
+        driver_path = Path("parser/drivers/chromedriver.exe").resolve()
+
+        self.service  = Service(driver_path)
+
         options = webdriver.ChromeOptions()
         # options.add_extension("parser/drivers/adblock.crx")
         self.driver = webdriver.Chrome(service = self.service, options=options)
         self.driver.maximize_window()
+
         self.first_year = first_year
         self.second_year = second_year
 
         self.enough_date = datetime.strptime(self.second_year, "%Y-%m-%d").strftime("%d-%m-%Y")
 
-        self.season = str(int(self.second_year.split("-")[0])-1) + '/' + self.second_year.split("-")[0]
+        self.season = f"{int(self.second_year[:4])-1}/{self.second_year[:4]}"
 
 
     def get_matches_link(self):
@@ -70,11 +77,11 @@ class OddsNBA(object):
         if not pagination_links:
             return
 
-        max_page_number = max(int(link.get_attribute("data-number")) for link in pagination_links)
+        max_page = max(int(link.get_attribute("data-number")) for link in pagination_links)
 
-        start, stop, step = (max_page_number, 0, -1) if self.first_year != "now forward" else (1, max_page_number + 1, 1)
+        pages = range(max_page, 0, -1) if self.first_year != "now forward" else range(1, max_page + 1)
 
-        for page in range(start, stop, step):
+        for page in pages:
             try:
                 page_link = self.driver.find_element(By.CSS_SELECTOR, f'a.pagination-link[data-number="{page}"]')
                 self.driver.execute_script("arguments[0].click();", page_link)
@@ -89,12 +96,12 @@ class OddsNBA(object):
                 for url in match_urls:
                     
                     if self.open_matches_link(url) == 'enough':
-                        break
+                        return
 
                     break
 
             except Exception as e:
-                print(f"Ошибка на странице {page}: {e}")
+                logging.error(f"Ошибка на странице {page}: {e}\n{traceback.format_exc()}")
 
 
     def get_match_links(self):
@@ -112,89 +119,89 @@ class OddsNBA(object):
     def open_matches_link(self, link):
         self.driver.get(link)
 
-        # Дата матча
-        date_selenium = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[data-testid="game-time-item"] p'))
-        )
+        try:
+            # Дата матча
+            date_selenium = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[data-testid="game-time-item"] p'))
+            )
 
-        dates = list()
+            dates = list()
 
-        for date in date_selenium:
-            dates.append(date.get_attribute("textContent"))
+            for date in date_selenium:
+                dates.append(date.get_attribute("textContent"))
 
-        match_date = date_redact(dates)
+            match_date = date_redact(dates)
 
-        date = datetime.strptime(match_date, '%d-%m-%Y')
+            date = datetime.strptime(match_date, '%d-%m-%Y')
 
 
-        if self.first_year == 'get' or self.first_year == 'now forward':
+            if self.first_year in ['get', 'now forward'] and date == datetime.strptime(self.enough_date, '%d-%m-%Y'):
+                    return 'enough'
 
-            if date == datetime.strptime(self.enough_date, '%d-%m-%Y'):
+            teams = list()
 
-                return 'enough'
+            # Первая команда
+            team1_selenium = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[data-testid="game-host"] p'))
+            )
 
-        teams = list()
+            for team in team1_selenium:
+                team1 = team.get_attribute("textContent")
+                teams.append(team.get_attribute("textContent"))
 
-        # Первая команда
-        team1_selenium = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[data-testid="game-host"] p'))
-        )
+            # Вторая команда
+            team2_selenium = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[data-testid="game-guest"] p'))
+            )
 
-        for team in team1_selenium:
-            team1 = team.get_attribute("textContent")
-            teams.append(team.get_attribute("textContent"))
+            for team in team2_selenium:
+                team2 = team.get_attribute("textContent")
+                teams.append(team.get_attribute("textContent"))
 
-        # Вторая команда
-        team2_selenium = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[data-testid="game-guest"] p'))
-        )
+            
+            teams_id = team_table(team2, team1)
 
-        for team in team2_selenium:
-            team2 = team.get_attribute("textContent")
-            teams.append(team.get_attribute("textContent"))
+            # Создаем персональный id для каждой команды
+            teams = [team.lower().replace(" ", "_") for team in teams]
 
-        
-        teams_id = team_table(team2, team1)
+            teams.reverse()
 
-        # Создаем персональный id для каждой команды
-        teams = [team.lower().replace(" ", "_") for team in teams]
+            date = datetime.strptime(match_date, '%d-%m-%Y')
 
-        teams.reverse()
+            self.match_id = "_".join(teams)
 
-        date = datetime.strptime(match_date, '%d-%m-%Y')
+            self.match_id += f"_{match_date.replace('-', '_')}_{dates[2].replace(':', '_')}"
 
-        self.match_id = "_".join(teams)
+            if match_table(self.match_id, teams_id, self.season, match_date, ''):
 
-        self.match_id += f"_{match_date.replace('-', '_')}_{dates[2].replace(':', '_')}"
+                return 0
 
-        if match_table(self.match_id, teams_id, self.season, match_date, ''):
+            self.process_odds_for_periods(self.driver, self.moneyline)
 
-            return 0
+            div_element = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Over/Under")]'))
+            )
+            self.driver.execute_script("arguments[0].click();", div_element)
 
-        self.moneyline_for_periods(self.driver, self.moneyline)
+            time.sleep(1)
 
-        div_element = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Over/Under")]'))
-        )
-        self.driver.execute_script("arguments[0].click();", div_element)
+            self.process_odds_for_periods(self.driver, self.total)
 
-        time.sleep(1)
+            div_element = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Asian Handicap")]'))
+            )
+            self.driver.execute_script("arguments[0].click();", div_element)
 
-        self.total_for_periods(self.driver, self.total)
+            time.sleep(1)
 
-        div_element = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Asian Handicap")]'))
-        )
-        self.driver.execute_script("arguments[0].click();", div_element)
-
-        time.sleep(1)
-
-        self.handicap_for_periods(self.driver, self.handicap)
+            self.process_odds_for_periods(self.driver, self.handicap)
+        except Exception as e:
+            logging.error(f"Ошибка обработки матча {link}: {e}\n{traceback.format_exc()}")
 
     
 
     # Функции для работы с ставками
-    def handicap_for_periods(self, driver, action_function):
+    def process_odds_for_periods(self, driver, action_function):
         periods = {
             "full_time": "",  # Без клика, сразу вызываем функцию
             "1st_half": "1st Half",
@@ -236,32 +243,6 @@ class OddsNBA(object):
         odds_handicap_table(self.match_id, odds, period)
 
 
-    def total_for_periods(self, driver, action_function):
-        periods = {
-            "full_time": "",  # Без клика, сразу вызываем функцию
-            "1st_half": "1st Half",
-            "2nd_half": "2nd Half",
-            "1st_quarter": "1st Quarter",
-            "2nd_quarter": "2nd Quarter",
-            "3rd_quarter": "3rd Quarter",
-            "4th_quarter": "4th Quarter",
-        }
-
-        action_function("full_time")
-
-        for key, period_text in periods.items():
-            if period_text:
-                try:
-                    div_element = WebDriverWait(driver, 2).until(
-                        EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
-                    )
-                    driver.execute_script("arguments[0].click();", div_element)
-                except:
-                    continue
-                
-                action_function(key)
-   
-
     def total(self, period):
 
         odds_selenium = WebDriverWait(self.driver, 10).until(
@@ -277,33 +258,6 @@ class OddsNBA(object):
 
         odds_total_table(self.match_id, odds, period)
 
-
-    def moneyline_for_periods(self, driver, action_function):
-        periods = {
-            "full_time": "",  # Без клика, сразу вызываем функцию
-            "1st_half": "1st Half",
-            "2nd_half": "2nd Half",
-            "1st_quarter": "1st Quarter",
-            "2nd_quarter": "2nd Quarter",
-            "3rd_quarter": "3rd Quarter",
-            "4th_quarter": "4th Quarter",
-        }
-        
-        # Выполняем функцию сразу для полного времени
-        action_function("full_time")
-        
-        for key, period_text in periods.items():
-            if period_text:
-                try:
-                    div_element = WebDriverWait(driver, 2).until(
-                        EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
-                    )
-                    driver.execute_script("arguments[0].click();", div_element)
-                except:
-                    continue
-                
-                action_function(key)
-   
         
     def moneyline(self, period):
 

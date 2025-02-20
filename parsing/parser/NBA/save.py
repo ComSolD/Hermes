@@ -1,5 +1,4 @@
 from datetime import datetime
-from unittest import result
 import psycopg2
 import configparser
 
@@ -44,162 +43,6 @@ def team_table(name_team1, name_team2):
 
     return team1_id, team2_id
 
-
-def bet_predict_tables(match_id, teams_id, bet_predict):
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
-    # Получаем параметры подключения
-    db_params = config["postgresql"]
-
-    # Подключение к базе данных
-    conn = psycopg2.connect(**db_params)
-    cur = conn.cursor()
-
-    bet_id = str(uuid.uuid4())
-
-    cur.execute(f'''INSERT INTO nba_bet(bet_id, match_id, team1_id, team2_id, ml_team1_parlay, ml_team2_parlay, total, over_total_parlay, under_total_parlay, handicap_team1, handicap_team1_parlay, handicap_team2, handicap_team2_parlay) VALUES('{bet_id}', '{match_id}', '{teams_id[0]}', '{teams_id[1]}', {bet_predict[0]}, {bet_predict[1]}, {bet_predict[2]}, {bet_predict[3]}, {bet_predict[4]}, {bet_predict[5]}, {bet_predict[6]}, {bet_predict[7]}, {bet_predict[8]})''')
-    conn.commit()
-
-
-def bet_result_tables(match_id, teams, resul_team1, match_total, bet):
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
-    # Получаем параметры подключения
-    db_params = config["postgresql"]
-
-    # Подключение к базе данных
-    conn = psycopg2.connect(**db_params)
-    cur = conn.cursor()
-
-
-    cur.execute(f"SELECT match_id FROM nba_bet WHERE match_id = '{match_id}';")
-    inf = cur.fetchall()
-
-    if len(inf) != 0:
-        cur.execute(f"SELECT total FROM nba_bet WHERE match_id = '{match_id}';")
-        total = cur.fetchall()[0][0]
-
-        cur.execute(f"SELECT handicap_team1 FROM nba_bet WHERE match_id = '{match_id}';")
-        handicap = cur.fetchall()[0][0]
-
-        if handicap < 0:
-            handicap_result = int(match_total[0]) - int(match_total[1]) + handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[0]
-            else:
-                handicap_team = teams[1]
-        else:
-            handicap_result = int(match_total[1]) - int(match_total[0]) - handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[1]
-            else:
-                handicap_team = teams[0]
-
-
-        cur.execute(f'''UPDATE nba_bet SET ml_result = '{teams[0] if resul_team1 == "Win" else teams[1]}', total_result = '{"over" if total < (int(match_total[0]) + int(match_total[1])) else "under"}', handicap_result = '{handicap_team}' WHERE match_id = '{match_id}';''')
-        conn.commit()
-
-    else:
-
-        bet_id = str(uuid.uuid4())
-
-        handicap = float(bet[5])
-
-        if '-' in bet[5]:
-            handicap_result = int(match_total[0]) - int(match_total[1]) + handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[0]
-            else:
-                handicap_team = teams[1]
-        else:
-            handicap_result = int(match_total[1]) - int(match_total[0]) - handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[1]
-            else:
-                handicap_team = teams[0]
-            
-
-        cur.execute(f'''INSERT INTO nba_bet(bet_id, match_id, team1_id, team2_id, ml_team1_parlay, ml_team2_parlay, ml_result, total, over_total_parlay, under_total_parlay, total_result, handicap_team1, handicap_team1_parlay, handicap_team2, handicap_team2_parlay, handicap_result) VALUES('{bet_id}', '{match_id}', '{teams[0]}', '{teams[1]}', {bet[0]}, {bet[1]},'{teams[0] if resul_team1 == "Win" else teams[1]}', {bet[2]}, {bet[3]}, {bet[4]}, '{'over' if float(bet[2]) < (int(match_total[0]) + int(match_total[1])) else 'under'}', {bet[5]}, {bet[6]}, {bet[7]}, {bet[8]}, '{handicap_team}');''')
-        conn.commit()
-
-
-def bet_old_result_tables(match_id, teams, resul_team1, match_total, bet):
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
-    # Получаем параметры подключения
-    db_params = config["postgresql"]
-
-    # Подключение к базе данных
-    conn = psycopg2.connect(**db_params)
-    cur = conn.cursor()
-
-
-    cur.execute(f"SELECT match_id FROM nba_bet WHERE match_id = '{match_id}';")
-    inf = cur.fetchall()
-
-    if len(inf) != 0:
-        cur.execute(f"SELECT total FROM nba_bet WHERE match_id = '{match_id}';")
-        total = cur.fetchall()[0][0]
-
-        cur.execute(f"SELECT handicap_team1 FROM nba_bet WHERE match_id = '{match_id}';")
-        handicap = cur.fetchall()[0][0]
-
-        if handicap < 0:
-            handicap_result = int(match_total[0]) - int(match_total[1]) + handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[0]
-            else:
-                handicap_team = teams[1]
-        else:
-            handicap_result = int(match_total[1]) - int(match_total[0]) + handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[1]
-            else:
-                handicap_team = teams[0]
-
-
-        cur.execute(f'''UPDATE nba_bet SET ml_result = '{teams[0] if resul_team1 == "Win" else teams[1]}', total_result = '{"over" if total < (int(match_total[0]) + int(match_total[1])) else "under"}', handicap_result = '{handicap_team}' WHERE match_id = '{match_id}';''')
-        conn.commit()
-
-    else:
-
-        bet_id = str(uuid.uuid4())
-
-        if bet[0] == "Team1":
-            handicap_result = int(match_total[0]) - int(match_total[1]) + bet[1]
-
-            team1_handicap = bet[1]
-            team2_handicap = abs(bet[1])
-
-            if handicap_result > 0:
-                handicap_team = teams[0]
-            else:
-                handicap_team = teams[1]
-
-        else:
-            handicap_result = int(match_total[1]) - int(match_total[0]) + bet[1]
-
-            team2_handicap = bet[1]
-            team1_handicap = abs(bet[1])
-
-            if handicap_result > 0:
-                handicap_team = teams[1]
-            else:
-                handicap_team = teams[0]
-
-            
-        cur.execute(f'''INSERT INTO nba_bet(bet_id, match_id, team1_id, team2_id, ml_result, total, total_result, handicap_team1, handicap_team2, handicap_result) VALUES('{bet_id}', '{match_id}', '{teams[0]}', '{teams[1]}', '{teams[0] if resul_team1 == "Win" else teams[1]}', {bet[2]}, '{'over' if bet[2] < (int(match_total[0]) + int(match_total[1])) else 'under'}', '{team1_handicap}', '{team2_handicap}', '{handicap_team}');''')
-        conn.commit()
- 
 
 def team_stat_tables(match_id, teams_id, resul_team1, resul_team2, stat_team1, stat_team2):
     config = configparser.ConfigParser()
@@ -365,7 +208,7 @@ def match_table(match_id, teams, season, date_match, stage):
     stage_check = cur.fetchone()
         
 
-    if not exists:
+    if not exists and stage == '':
 
         cur.execute(f"INSERT INTO nba_match(match_id, team1_id, team2_id, season, date) VALUES('{match_id}', '{teams[0]}', '{teams[1]}', '{season}', '{date_match}')")
         conn.commit()
