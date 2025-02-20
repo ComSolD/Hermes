@@ -10,11 +10,11 @@ from pathlib import Path
 import time
 import traceback
 
-from parser.NBA.redact import date_redact, handicap_odds_redact, total_odds_redact
-from parser.NBA.save import match_table, odds_handicap_table, odds_moneyline_table, odds_total_table, team_table
+from parser.NHL.redact import date_redact, handicap_odds_redact, total_odds_redact
+from parser.NHL.save import match_table, odds_handicap_table, odds_moneyline_table, odds_total_table, odds_x_table, team_table
 
 
-class OddsNBA(object):
+class OddsNHL(object):
     def __init__(self, first_year, second_year):
         driver_path = Path("parser/drivers/chromedriver.exe").resolve()
 
@@ -35,7 +35,7 @@ class OddsNBA(object):
 
     def get_matches_link(self):
 
-        base_url = "https://www.oddsportal.com/basketball/usa/nba"
+        base_url = "https://www.oddsportal.com/hockey/usa/nhl"
 
     
         if self.first_year == "now" or self.first_year == "now forward":
@@ -55,8 +55,9 @@ class OddsNBA(object):
                 self.process_matches_on_page()
             else:
                 self.paginate_and_process_matches(url)
-        except:
-            pass
+        except Exception as e:
+            logging.error(f"Ошибка: {e}\n{traceback.format_exc()}")
+
 
         self.driver.quit()
 
@@ -68,7 +69,7 @@ class OddsNBA(object):
 
         for url in match_urls:
             if self.open_matches_link(url) == 'enough':
-                break
+                return
 
 
     def paginate_and_process_matches(self, main_url):
@@ -102,18 +103,18 @@ class OddsNBA(object):
 
             except Exception as e:
                 logging.error(f"Ошибка на странице {page}: {e}\n{traceback.format_exc()}")
-
+            
             break
 
 
     def get_match_links(self):
         """Возвращает список элементов ссылок на матчи."""
-        base_xpath = f'//a[starts-with(@href, "/basketball/usa/nba'
+        base_xpath = f'//a[starts-with(@href, "/hockey/usa/nhl'
         
         if self.first_year == "now" or self.first_year == "get" or self.first_year == "now forward":
-            xpath = base_xpath + '/") and not(@href="/basketball/usa/nba/") and not(contains(@href, "standings")) and not(contains(@href, "outrights")) and not(contains(@href, "results"))]'
+            xpath = base_xpath + '/") and not(@href="/hockey/usa/nhl/") and not(contains(@href, "standings")) and not(contains(@href, "outrights")) and not(contains(@href, "results"))]'
         else:
-            xpath = base_xpath + f'-{self.first_year}-{self.second_year}/") and not(@href="/basketball/usa/nba/") and not(contains(@href, "standings"))]'
+            xpath = base_xpath + f'-{self.first_year}-{self.second_year}/") and not(@href="/hockey/usa/nhl/") and not(contains(@href, "standings"))]'
 
         return self.driver.find_elements(By.XPATH, xpath)
 
@@ -174,9 +175,16 @@ class OddsNBA(object):
 
             self.match_id += f"_{match_date.replace('-', '_')}_{dates[2].replace(':', '_')}"
 
-            if match_table(self.match_id, teams_id, self.season, match_date, ''):
+            if match_table(self.match_id, teams_id, self.season, match_date, '', ''):
 
                 return 0
+
+            self.process_odds_for_periods(self.driver, self.onextwo)
+
+            div_element = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Home/Away")]'))
+            )
+            self.driver.execute_script("arguments[0].click();", div_element)
 
             self.process_odds_for_periods(self.driver, self.moneyline)
 
@@ -187,10 +195,24 @@ class OddsNBA(object):
 
             time.sleep(1)
 
+            div_element = WebDriverWait(self.driver, 2).until(
+                EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Full Time")]'))
+            )
+            self.driver.execute_script("arguments[0].click();", div_element)
+
+            time.sleep(1)
+
             self.process_odds_for_periods(self.driver, self.total)
 
             div_element = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Asian Handicap")]'))
+            )
+            self.driver.execute_script("arguments[0].click();", div_element)
+
+            time.sleep(1)
+
+            div_element = WebDriverWait(self.driver, 2).until(
+                EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Full Time")]'))
             )
             self.driver.execute_script("arguments[0].click();", div_element)
 
@@ -206,12 +228,9 @@ class OddsNBA(object):
     def process_odds_for_periods(self, driver, action_function):
         periods = {
             "full_time": "",  # Без клика, сразу вызываем функцию
-            "1st_half": "1st Half",
-            "2nd_half": "2nd Half",
-            "1st_quarter": "1st Quarter",
-            "2nd_quarter": "2nd Quarter",
-            "3rd_quarter": "3rd Quarter",
-            "4th_quarter": "4th Quarter",
+            "1st_period": "1st Period",
+            "2nd_period": "2nd Period",
+            "3rd_period": "3rd Period",
         }
 
         action_function("full_time")
@@ -281,3 +300,24 @@ class OddsNBA(object):
         
             odds_moneyline_table(self.match_id, team1_moneyline, team2_moneyline, period)
 
+
+    def onextwo(self, period):
+        odds_selenium = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located((By.XPATH, '//*[@double-parameter]//p[@class="height-content"]'))
+        )
+
+        odds = list()
+
+        for odd in odds_selenium:
+            odds.append(odd.get_attribute("textContent"))
+
+
+        team1_moneyline = odds[2]
+            
+        draw = odds[1]
+
+        team2_moneyline = odds[0]
+
+        if team1_moneyline and team2_moneyline and draw:
+        
+            odds_x_table(self.match_id, team1_moneyline, draw, team2_moneyline, period)

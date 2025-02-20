@@ -1,27 +1,4 @@
-import psycopg2
-import configparser
-
 import numpy as np
-
-
-def match_bet_check(match_ID):
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
-    # Получаем параметры подключения
-    db_params = config["postgresql"]
-
-    # Подключение к базе данных
-    conn = psycopg2.connect(**db_params)
-    cur = conn.cursor()
-
-    cur.execute(f"SELECT match_id FROM nhl_bet WHERE match_id = '{match_ID}';")
-    inf = cur.fetchall()
-
-    if len(inf) != 0:
-        return False
-    else:
-        return True
 
 
 def total_check(totals):
@@ -51,41 +28,38 @@ def total_check(totals):
 
 
 def stage_check(stages):
-    if len(stages) == 0:
-        game_stage = "regular"
-    else:
-        stages = [x.lower() for x in stages]
-        stages = stages[0].split()
+    if not stages:
+        return "regular"
+    
+    stages = set(word.lower() for stage in stages for word in stage.split())
 
-        if 'all-star' in stages:
-            return 0
-        elif 'rising' in stages and 'stars' in stages:
-            return 0
-        elif 'makeup' in stages and not 'east' in stages and not 'west' in stages and not 'final' in stages:
-            game_stage = "regular"
-        
-        elif 'east' in stages and '1st' in stages and 'round' in stages:
-            game_stage = "east 1st round"
-        elif 'west' in stages and '1st' in stages and 'round' in stages:
-            game_stage = "west 1st round"
+    # Обрабатываем особые случаи
+    if {'rising', 'stars'}.issubset(stages):
+        return 0
+    if {'makeup'}.issubset(stages) and not {'east', 'west', 'finals'}.intersection(stages):
+        return "regular"
 
-        elif 'east' in stages and '2st' in stages and 'round' in stages:
-            game_stage = "east 2st round"
-        elif 'west' in stages and '2st' in stages and 'round' in stages:
-            game_stage = "west 2st round"
+    # Карта матчей для быстрого поиска
+    stage_mapping = {
+        ('all-star',): "all-star",
+        ('preseason',): "preseason",
+        ('east', 'finals'): "east finals",
+        ('west', 'finals'): "west finals",
+        ('east', 'semifinals'): "east semifinals",
+        ('west', 'semifinals'): "west semifinals",
+        ('east', '1st', 'round'): "east 1st round",
+        ('west', '1st', 'round'): "west 1st round",
+        ('east', '2nd', 'round'): "east 2nd round",
+        ('west', '2nd', 'round'): "west 2nd round",
+        ('stanley', 'cup', 'final'): "stanley cup final",
+    }
 
-        elif 'east' in stages and 'final' in stages:
-            game_stage = "east final"
-        elif 'west' in stages and 'final' in stages:
-            game_stage = "west final"
+    # Проверяем соответствие шаблонам
+    for keys, value in stage_mapping.items():
+        if set(keys).issubset(stages):
+            return value
 
-        elif 'stanley' in stages and 'cup' in stages and 'final' in stages:
-            game_stage = "stanley cup final"
-
-        else:
-            game_stage = "regular"
-
-    return game_stage
+    return "regular"
 
 
 def check_stat(player_names, player_stats, player_IDs):

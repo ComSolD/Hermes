@@ -1,79 +1,75 @@
-from parser.utilities.transfer import transfer_bet
+from datetime import datetime
+import numpy as np
+
+def date_redact(dates: list):
+
+    date = dates[1]
+
+    date_obj = datetime.strptime(date, "%d %b %Y,")
+    formatted_date = date_obj.strftime("%d-%m-%Y")
+
+    return formatted_date
 
 
-def bet_predict_redact(bets):
+def date_redact_full_month(date: str):
 
-    win_firstTeam = transfer_bet(bets[1])
+    date_obj = datetime.strptime(date, "%B %d %Y")
+    formatted_date = date_obj.strftime("%d-%m-%Y")
 
-    win_secondTeam = transfer_bet(bets[5])
-
-    bet_predict = list()
-
-    bet_predict.append(win_firstTeam)
-    bet_predict.append(win_secondTeam)
-
-    bet_predict.append(bets[2][1:-4])
-    bet_predict.append(transfer_bet(bets[2][-4] + bets[2][-3] + bets[2][-2] + bets[2][-1]))
-    bet_predict.append(transfer_bet(bets[6][-4] + bets[6][-3] + bets[6][-2] + bets[6][-1]))
-
-    bet_predict.append(bets[3][0:-4])
-    bet_predict.append(transfer_bet(bets[3][-4] + bets[3][-3] + bets[3][-2] + bets[3][-1]))
-    bet_predict.append(bets[7][0:-4])
-    bet_predict.append(transfer_bet(bets[7][-4] + bets[7][-3] + bets[7][-2] + bets[7][-1]))
-
-    return bet_predict
+    return formatted_date
 
 
-def bet_redact(bets):
-    bet = list(filter(None, bets))
+def time_redact(time: str):
 
-    for i in range(8):
-        bet.pop(0)
+    time_obj = datetime.strptime(time, "%I:%M %p")
+    formatted_time = time_obj.strftime("%H:%M")
 
-    for i in range(8):
-        bet.pop(7)
-
-    bet.pop(1)
-    bet.pop(3)
-    bet.pop(6)
-    bet.pop(-3)
-
-    win_firstTeam = transfer_bet(bet[0])
-
-    win_secondTeam = transfer_bet(bet[5])
-
-    bet_predict = list()
-
-    bet_predict.append(win_firstTeam)
-    bet_predict.append(win_secondTeam)
-
-    bet_predict.append(bet[1][1:])
-    bet_predict.append(transfer_bet(bet[2]))
-    bet_predict.append(transfer_bet(bet[-3]))
-
-    bet_predict.append(bet[3])
-    bet_predict.append(transfer_bet(bet[4]))
-    bet_predict.append(bet[-2])
-    bet_predict.append(transfer_bet(bet[-1]))
-
-    return bet_predict
+    return formatted_time
 
 
-def old_bet_redact(bets, short_names):
+def total_odds_redact(total: list):
 
-    favorite_n_parlay = bets[0].split(' ')
+    split = np.array_split(total, len(total) // 6)
 
-    if favorite_n_parlay[1] == short_names[0]:
-        bet_favorite = 'Team1'
-    else:
-        bet_favorite = 'Team2'
+    result = list()
 
-    bet_favorite_parlay = transfer_bet(favorite_n_parlay[2])
+    for array in split:
+        lst = list(map(str, array))
 
-    over_n_under_total = bets[1].split(' ')
-    
-    bet_total = float(over_n_under_total[-1])
+        if lst[-3] != '-' and lst[-2] != '-':
+
+            lst.pop(-1)
+            lst.pop(0)
+            lst.pop(1)
+
+            lst[0] = lst[0].replace('O/U +', '')
+            lst[0] = lst[0].replace(' ', '')
+
+            result.append(lst)
 
 
+    return result
 
-    return bet_favorite, bet_favorite_parlay, bet_total
+
+def handicap_odds_redact(handicap: list):
+
+    split = np.array_split(handicap, len(handicap) // 6)
+
+    result = list()
+
+    for array in split:
+        lst = list(map(str, array))
+
+        if lst[-3] != '-' and lst[-2] != '-':
+
+            lst.pop(-1)
+            lst.pop(0)
+            lst.pop(1)
+
+            lst[0] = lst[0].replace('AH ', '')
+            lst[0] = lst[0].replace(' ', '')
+
+            result.append(lst)
+
+
+    return result

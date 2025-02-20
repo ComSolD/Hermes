@@ -1,7 +1,10 @@
 from datetime import datetime
 import psycopg2
 import configparser
+
 import uuid
+
+from dictionary.NHL import getDictionary
 
 
 def team_table(name_team1, name_team2):
@@ -41,7 +44,7 @@ def team_table(name_team1, name_team2):
     return team1_id, team2_id
 
 
-def bet_predict_tables(match_id, teams_id, bet_predict):
+def match_table(match_id, teams, season, date_match, stage, status):
     config = configparser.ConfigParser()
     config.read("config.ini")
 
@@ -52,173 +55,28 @@ def bet_predict_tables(match_id, teams_id, bet_predict):
     conn = psycopg2.connect(**db_params)
     cur = conn.cursor()
 
-    bet_id = str(uuid.uuid4())
+    cur.execute("SELECT 1 FROM nhl_match WHERE match_id = %s", (match_id,))
+    exists = cur.fetchone()
 
-    cur.execute(f"INSERT INTO nhl_bet(bet_id, match_id, team1_id, team2_id, ml_team1_parlay, ml_team2_parlay, total, over_total_parlay, under_total_parlay, handicap_team1, handicap_team1_parlay, handicap_team2, handicap_team2_parlay) VALUES('{bet_id}', '{match_id}', '{teams_id[0]}', '{teams_id[1]}', {bet_predict[0]}, {bet_predict[1]}, {bet_predict[2]}, {bet_predict[3]}, {bet_predict[4]}, {bet_predict[5]}, {bet_predict[6]}, {bet_predict[7]}, {bet_predict[8]})")
-    conn.commit()
-
-
-def bet_result_tables(match_id, teams, result_team1, match_total, bet):
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
-    # Получаем параметры подключения
-    db_params = config["postgresql"]
-
-    # Подключение к базе данных
-    conn = psycopg2.connect(**db_params)
-    cur = conn.cursor()
-
-
-    cur.execute(f"SELECT match_id FROM nhl_bet WHERE match_id = '{match_id}';")
-    inf = cur.fetchall()
-
-    if len(inf) != 0:
-        cur.execute(f"SELECT total FROM nhl_bet WHERE match_id = '{match_id}';")
-        total = cur.fetchall()[0][0]
-
-        cur.execute(f"SELECT handicap_team1 FROM nhl_bet WHERE match_id = '{match_id}';")
-        handicap = cur.fetchall()[0][0]
-
-        if handicap < 0:
-            handicap_result = int(match_total[0]) - int(match_total[1]) + handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[0]
-            else:
-                handicap_team = teams[1]
-        else:
-            handicap_result = int(match_total[1]) - int(match_total[0]) - handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[1]
-            else:
-                handicap_team = teams[0]
-
-
-        cur.execute(f'''UPDATE nhl_bet SET ml_result = '{teams[0] if result_team1 == "Win" else teams[1]}', total_result = '{"over" if total < (int(match_total[0]) + int(match_total[1])) else "under"}', handicap_result = '{handicap_team}' WHERE match_id = '{match_id}';''')
-        conn.commit()
-
-    else:
-
-        bet_id = str(uuid.uuid4())
-
-        handicap = float(bet[5])
-
-        if '-' in bet[5]:
-            handicap_result = int(match_total[0]) - int(match_total[1]) + handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[0]
-            else:
-                handicap_team = teams[1]
-        else:
-            handicap_result = int(match_total[1]) - int(match_total[0]) - handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[1]
-            else:
-                handicap_team = teams[0]
-            
-
-        cur.execute(f'''INSERT INTO nhl_bet(bet_id, match_id, team1_id, team2_id, ml_team1_parlay, ml_team2_parlay, ml_result, total, over_total_parlay, under_total_parlay, total_result, handicap_team1, handicap_team1_parlay, handicap_team2, handicap_team2_parlay, handicap_result) VALUES('{bet_id}', '{match_id}', '{teams[0]}', '{teams[1]}', {bet[0]}, {bet[1]},'{teams[0] if result_team1 == "Win" else teams[1]}', {bet[2]}, {bet[3]}, {bet[4]}, '{'over' if float(bet[2]) < (int(match_total[0]) + int(match_total[1])) else 'under'}', {bet[5]}, {bet[6]}, {bet[7]}, {bet[8]}, '{handicap_team}');''')
-        conn.commit()
-
-
-def bet_old_result_tables(match_id, teams, result_team1, match_total, bet):
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
-    # Получаем параметры подключения
-    db_params = config["postgresql"]
-
-    # Подключение к базе данных
-    conn = psycopg2.connect(**db_params)
-    cur = conn.cursor()
-
-
-    cur.execute(f"SELECT match_id FROM nhl_bet WHERE match_id = '{match_id}';")
-    inf = cur.fetchall()
-
-    if len(inf) != 0:
-        cur.execute(f"SELECT total FROM nhl_bet WHERE match_id = '{match_id}';")
-        total = cur.fetchall()[0][0]
-
-        cur.execute(f"SELECT handicap_team1 FROM nhl_bet WHERE match_id = '{match_id}';")
-        handicap = cur.fetchall()[0][0]
-
-        if handicap < 0:
-            handicap_result = int(match_total[0]) - int(match_total[1]) + handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[0]
-            else:
-                handicap_team = teams[1]
-        else:
-            handicap_result = int(match_total[1]) - int(match_total[0]) + handicap
-
-            if handicap_result > 0:
-                handicap_team = teams[1]
-            else:
-                handicap_team = teams[0]
-
-
-        cur.execute(f'''UPDATE nhl_bet SET ml_result = '{teams[0] if result_team1 == "Win" else teams[1]}', total_result = '{"over" if total < (int(match_total[0]) + int(match_total[1])) else "under"}', handicap_result = '{handicap_team}' WHERE match_id = '{match_id}';''')
-        conn.commit()
-
-    else:
-
-        bet_id = str(uuid.uuid4())
-
-        bet_id = str(uuid.uuid4())
-
-        cur.execute(f'''INSERT INTO nhl_bet(bet_id, match_id, team1_id, team2_id, {"ml_team1_parlay" if bet[0] == 'Team1' else "ml_team2_parlay"}, ml_result, total, total_result) VALUES('{bet_id}', '{match_id}', '{teams[0]}', '{teams[1]}', {bet[1]}, '{teams[0] if result_team1 == "Win" else teams[1]}', {bet[2]}, '{'over' if bet[2] < (int(match_total[0]) + int(match_total[1])) else 'under'}');''')
-        conn.commit()
-
-
-def match_table(match_id, teams, status, season, stage, date_match):
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
-    # Получаем параметры подключения
-    db_params = config["postgresql"]
-
-    # Подключение к базе данных
-    conn = psycopg2.connect(**db_params)
-    cur = conn.cursor()
-
-    if status == 'None':
-
-        cur.execute("SELECT 1 FROM nhl_match WHERE match_id = %s AND status = 'null';", (match_id,))
-        exists = cur.fetchone()
-
-
-        if not exists:
-            cur.execute(f"INSERT INTO nhl_match(match_id, team1_id, team2_id, season, stage, date) VALUES('{match_id}', '{teams[0]}', '{teams[1]}', '{season}', '{stage}', '{date_match}')")
-            conn.commit()
-
-            return True
-
-    else:
+    cur.execute("SELECT stage FROM nhl_match WHERE match_id = %s", (match_id,))
+    stage_check = cur.fetchone()
         
-        cur.execute("SELECT 1 FROM nhl_match WHERE match_id = %s AND status = 'null';", (match_id,))
-        exists = cur.fetchone()
 
-        cur.execute("SELECT 1 FROM nhl_match WHERE match_id = %s;", (match_id,))
-        just_match = cur.fetchone()
+    if not exists and stage == '':
 
+        cur.execute(f"INSERT INTO nhl_match(match_id, team1_id, team2_id, season, date) VALUES('{match_id}', '{teams[0]}', '{teams[1]}', '{season}', '{date_match}')")
+        conn.commit()
 
-        if exists:
-            cur.execute(f'''UPDATE nhl_match SET status = '{status}' WHERE match_id = '{match_id}';''')
-            conn.commit()
+        return False
+    
+    elif exists and stage_check[0] is None:
+        cur.execute(f'''UPDATE nhl_match SET stage = '{stage}', status = '{status}' WHERE match_id = '{match_id}';''')
+        conn.commit()
 
-            return True
+        return False
+    
 
-        elif not just_match:
-            cur.execute(f"INSERT INTO nhl_match(match_id, team1_id, team2_id, status, season, stage, date) VALUES('{match_id}', '{teams[0]}', '{teams[1]}', '{status}', '{season}', '{stage}', '{date_match}')")
-            conn.commit()
-
-            return True
+    return True
 
 
 def team_stat_tables(match_id, teams_id, result_team1, result_team2):
@@ -368,4 +226,193 @@ def update_time():
 
     cur.close()
     conn.close()
+
+
+def odds_moneyline_table(match_id, team1_moneyline, team2_moneyline, period):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    bet_id = str(uuid.uuid4())
+
+    cur.execute(f"INSERT INTO nhl_moneyline_bet(moneyline_bet_id, match_id, team1_odds, team2_odds, period) VALUES('{bet_id}', '{match_id}', '{team1_moneyline}', '{team2_moneyline}', '{period}')")
+    conn.commit()
+
+
+def moneyline_result_table(match_id, teams_ID, total):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    cur.execute("SELECT period FROM nhl_moneyline_bet WHERE match_id = %s", (match_id,))
+    periods = cur.fetchall()
+
+    for period in periods:
+
+        value = getDictionary(period[0], total)
+
+        if value[0] > value[1]:
+            result = teams_ID[0]
+        elif value[0] < value[1]:
+            result = teams_ID[1]
+        else:
+            result = 'draw'
+
+        cur.execute(f'''UPDATE nhl_moneyline_bet SET result = '{result}' WHERE match_id = '{match_id}' AND period = '{period[0]}';''')
+        conn.commit()
+
+
+def odds_total_table(match_id, odds, period):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    for odd in odds:
+        bet_id = str(uuid.uuid4())
+
+        try:
+            cur.execute(f"INSERT INTO nhl_total_bet(total_bet_id, match_id, total, over_odds, under_odds, period) VALUES('{bet_id}', '{match_id}', {odd[0]}, {odd[1]}, {odd[2]}, '{period}')")
+            conn.commit()
+        except:
+            pass
+
+
+def total_result_table(match_id, total):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    cur.execute("SELECT period, total FROM nhl_total_bet WHERE match_id = %s", (match_id,))
+    periods = cur.fetchall()
+
+    for period in periods:
+
+        value = getDictionary(period[0], total)
+
+        if period[1] > value[0] + value[1]:
+            result = 'under'
+        elif period[1] < value[0] + value[1]:
+            result = 'over'
+        else:
+            result = 'draw'
+
+        cur.execute(f'''UPDATE nhl_total_bet SET total_result = '{result}' WHERE match_id = '{match_id}' AND period = '{period[0]}' AND total = {period[1]};''')
+        conn.commit()
+
+
+def odds_handicap_table(match_id, odds, period):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    for odd in odds:
+        bet_id = str(uuid.uuid4())
+
+        cur.execute(f"INSERT INTO nhl_handicap_bet(handicap_bet_id, match_id, handicap, handicap_team1_odds, handicap_team2_odds, period) VALUES('{bet_id}', '{match_id}', {odd[0]}, {odd[2]}, {odd[1]}, '{period}')")
+        conn.commit()
+
+
+def handicap_result_table(match_id, teams_ID, handicap):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    cur.execute("SELECT period, handicap FROM nhl_handicap_bet WHERE match_id = %s", (match_id,))
+    periods = cur.fetchall()
+
+    for period in periods:
+
+        value = getDictionary(period[0], handicap)
+
+        if 0 < value[0] - value[1] + period[1]:
+            result = teams_ID[0]
+        elif 0 < value[1] - value[0] + period[1]:
+            result = teams_ID[1]
+        else:
+            result = 'draw'
+
+        cur.execute(f'''UPDATE nhl_handicap_bet SET handicap_result = '{result}' WHERE match_id = '{match_id}' AND period = '{period[0]}' AND handicap = {period[1]};''')
+        conn.commit()
+
+
+def odds_x_table(match_id, team1_moneyline, draw, team2_moneyline, period):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    bet_id = str(uuid.uuid4())
+
+    cur.execute(f"INSERT INTO nhl_x_bet(x_bet_id, match_id, team1_odds, draw, team2_odds, period) VALUES('{bet_id}', '{match_id}', {team1_moneyline}, {draw}, {team2_moneyline}, '{period}')")
+    conn.commit()
+
+
+def x_result_table(match_id, teams_ID, total):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    cur.execute("SELECT period FROM nhl_x_bet WHERE match_id = %s", (match_id,))
+    periods = cur.fetchall()
+
+    for period in periods:
+
+        value = getDictionary(period[0], total)
+
+        if value[0] > value[1]:
+            result = teams_ID[0]
+        elif value[0] < value[1]:
+            result = teams_ID[1]
+        else:
+            result = 'draw'
+
+        cur.execute(f'''UPDATE nhl_x_bet SET result = '{result}' WHERE match_id = '{match_id}' AND period = '{period[0]}';''')
+        conn.commit()
 
