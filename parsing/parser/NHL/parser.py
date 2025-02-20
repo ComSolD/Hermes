@@ -165,11 +165,11 @@ class ParsingNHL(object):
             status = 'Maintime'
 
         if int(totals[int(len(totals)/2)-1]) > int(totals[-1]):
-            result_team1 = 'Win'
-            result_team2 = 'Lose'
+            result_team1 = 'win'
+            result_team2 = 'lose'
         else:
-            result_team2 = 'Win'
-            result_team1 = 'Lose'
+            result_team2 = 'win'
+            result_team1 = 'lose'
 
 
         stage = stage_check(stages)

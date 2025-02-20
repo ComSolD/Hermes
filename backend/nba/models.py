@@ -25,11 +25,23 @@ class NBAMatch(models.Model):
         verbose_name_plural = 'Матчи'
 
 class NBATeamStat(models.Model):
+
+    RESULT_CHOICES = [
+        ('win', 'Победа'),
+        ('lose', 'Проигрышь'),
+        ('draw', 'Ничья')
+    ]
+
+    STATUS_CHOICES = [
+        ('home', 'Дом'),
+        ('away', 'Выезд')
+    ]
+
     team_stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NBATeam, on_delete=models.CASCADE)
-    result = models.CharField(max_length=10)
-    status = models.CharField(max_length=10)
+    result = models.CharField(max_length=10, choices=RESULT_CHOICES)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     fg = models.IntegerField(null = True)
     trying_fg = models.IntegerField(null = True)
     three_pt = models.IntegerField(null = True)
@@ -80,11 +92,17 @@ class NBAPlayer(models.Model):
         verbose_name_plural = 'Игроки'
 
 class NBAPlayerStat(models.Model):
+
+    POSITION_CHOICES = [
+        ('starter', 'Стартер'),
+        ('bench', 'Скамейка')
+    ]
+
     stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     player = models.ForeignKey(NBAPlayer, on_delete=models.CASCADE)
     match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
     team = models.ForeignKey(NBATeam, on_delete=models.CASCADE)
-    position = models.CharField(max_length=10)
+    position = models.CharField(max_length=10, choices=POSITION_CHOICES)
     pts = models.IntegerField(null = True)
     fg = models.IntegerField(null = True)
     trying_fg = models.IntegerField(null = True)

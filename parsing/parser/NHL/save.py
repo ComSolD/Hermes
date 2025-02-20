@@ -150,7 +150,7 @@ def player_tables(match_id, team_id, forwards_team, defensemen_team, goalies_tea
         if player_name[0] == '-':
             player_name[0] = 0
 
-        cur.execute(f'''INSERT INTO nhl_player_stat(stat_id, player_id, match_id , team_id, position, g, a, plus_minus, s, sm, bs, pn, pim, ht, tk, gv) VALUES('{stat_id}', '{player_id}', '{match_id}', '{team_id}', 'Forward', {player_name[0]}, {player_name[1]}, {player_name[2]}, {player_name[3]}, {player_name[4]}, {player_name[5]}, {player_name[6]}, {player_name[7]}, {player_name[8]}, {player_name[9]}, {player_name[10]})''')
+        cur.execute(f'''INSERT INTO nhl_player_stat(stat_id, player_id, match_id , team_id, position, g, a, plus_minus, s, sm, bs, pn, pim, ht, tk, gv) VALUES('{stat_id}', '{player_id}', '{match_id}', '{team_id}', 'forward', {player_name[0]}, {player_name[1]}, {player_name[2]}, {player_name[3]}, {player_name[4]}, {player_name[5]}, {player_name[6]}, {player_name[7]}, {player_name[8]}, {player_name[9]}, {player_name[10]})''')
         conn.commit()
 
     
@@ -172,7 +172,7 @@ def player_tables(match_id, team_id, forwards_team, defensemen_team, goalies_tea
         if player_name[0] == '-':
             player_name[0] = 0
 
-        cur.execute(f'''INSERT INTO nhl_player_stat(stat_id, player_id, match_id, team_id, position, g, a, plus_minus, s, sm, bs, pn, pim, ht, tk, gv) VALUES('{stat_id}', '{player_id}', '{match_id}', '{team_id}', 'Defense', {player_name[0]}, {player_name[1]}, {player_name[2]}, {player_name[3]}, {player_name[4]}, {player_name[5]}, {player_name[6]}, {player_name[7]}, {player_name[8]}, {player_name[9]}, {player_name[10]})''')
+        cur.execute(f'''INSERT INTO nhl_player_stat(stat_id, player_id, match_id, team_id, position, g, a, plus_minus, s, sm, bs, pn, pim, ht, tk, gv) VALUES('{stat_id}', '{player_id}', '{match_id}', '{team_id}', 'defenseman', {player_name[0]}, {player_name[1]}, {player_name[2]}, {player_name[3]}, {player_name[4]}, {player_name[5]}, {player_name[6]}, {player_name[7]}, {player_name[8]}, {player_name[9]}, {player_name[10]})''')
         conn.commit()
 
 
@@ -192,7 +192,7 @@ def player_tables(match_id, team_id, forwards_team, defensemen_team, goalies_tea
         if player_name[0] == '-':
             player_name[0] = 0
 
-        cur.execute(f'''INSERT INTO nhl_player_stat(stat_id, player_id, match_id, team_id, position, sa, ga, sv, sv_procent, essv, ppsv, pim) VALUES('{stat_id}', '{player_id}', '{match_id}', '{team_id}', 'Goaltender', {player_name[0]}, {player_name[1]}, {player_name[2]}, {player_name[3]}, {player_name[4]}, {player_name[5]}, {player_name[6]})''')
+        cur.execute(f'''INSERT INTO nhl_player_stat(stat_id, player_id, match_id, team_id, position, sa, ga, sv, sv_procent, essv, ppsv, pim) VALUES('{stat_id}', '{player_id}', '{match_id}', '{team_id}', 'goalie', {player_name[0]}, {player_name[1]}, {player_name[2]}, {player_name[3]}, {player_name[4]}, {player_name[5]}, {player_name[6]})''')
         conn.commit()
 
 

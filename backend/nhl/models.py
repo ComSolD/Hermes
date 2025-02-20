@@ -64,10 +64,17 @@ class NHLPlayer(models.Model):
         verbose_name_plural = 'Игроки'
 
 class NHLPlayerStat(models.Model):
+
+    POSITION_CHOICES = [
+        ('forward', 'Нападающий'),
+        ('defenseman', 'Защитник'),
+        ('goalie', 'Вратарь'),
+    ]
+
     stat_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     player = models.ForeignKey(NHLPlayer, on_delete=models.CASCADE)
     match = models.ForeignKey(NHLMatch, on_delete=models.CASCADE)
-    team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE)
+    team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE, choices=POSITION_CHOICES)
     position = models.CharField(max_length=20)
     g = models.IntegerField(null = True)
     a = models.IntegerField(null = True)

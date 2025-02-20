@@ -129,14 +129,14 @@ def check_stat(player_names, player_stats, player_IDs):
     goalies_team2 = list()
 
     for array in goalies:
-        goaltender = list(array)
+        goalie = list(array)
 
-        goaltender.pop(6)
-        goaltender.pop(6)
-        goaltender.pop(6)
-        goaltender.pop(6)
+        goalie.pop(6)
+        goalie.pop(6)
+        goalie.pop(6)
+        goalie.pop(6)
     
-        goalies_team2.append(goaltender)
+        goalies_team2.append(goalie)
 
     goalies_team2.reverse()
 
@@ -236,14 +236,14 @@ def check_stat(player_names, player_stats, player_IDs):
     goalies_team1 = list()
 
     for array in goalies:
-        goaltender = list(array)
+        goalie = list(array)
 
-        goaltender.pop(6)
-        goaltender.pop(6)
-        goaltender.pop(6)
-        goaltender.pop(6)
+        goalie.pop(6)
+        goalie.pop(6)
+        goalie.pop(6)
+        goalie.pop(6)
     
-        goalies_team1.append(goaltender)
+        goalies_team1.append(goalie)
 
     goalies_team1.reverse()
 

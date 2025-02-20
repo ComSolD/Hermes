@@ -185,11 +185,11 @@ class ParsingNFL(object):
 
 
         if int(totals[int(len(totals)/2)-1]) > int(totals[-1]):
-            result_team1 = 'Win'
-            result_team2 = 'Lose'
+            result_team1 = 'win'
+            result_team2 = 'lose'
         else:
-            result_team2 = 'Win'
-            result_team1 = 'Lose'
+            result_team2 = 'win'
+            result_team1 = 'lose'
 
 
         short_names_selenium = self.driver.find_elements(By.CSS_SELECTOR, 'div.Kiog a.mLASH') # Собирает название команд

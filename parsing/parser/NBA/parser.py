@@ -158,11 +158,11 @@ class ParsingNBA(object):
 
 
         if int(totals[int(len(totals)/2)-1]) > int(totals[-1]):
-            resul_team1 = 'Win'
-            resul_team2 = 'Lose'
+            resul_team1 = 'win'
+            resul_team2 = 'lose'
         else:
-            resul_team2 = 'Win'
-            resul_team1 = 'Lose'
+            resul_team2 = 'win'
+            resul_team1 = 'lose'
         
 
         stage = stage_check(stages)

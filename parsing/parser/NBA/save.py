@@ -115,7 +115,7 @@ def player_tables(match_id, team_id, starter_team, bench_team):
         if player_name[0] == '-':
             player_name[0] = 0
 
-        cur.execute(f'''INSERT INTO nba_player_stat(stat_id, player_id, match_id ,team_id , position, pts, fg, trying_fg, three_pt, attempted_three_pt, ft, trying_ft, oreb, dreb, reb, ast, stl, blk, turnovers, pf, plus_minus, min) VALUES('{stat_id}', '{player_id}', '{match_id}', '{team_id}', 'Starter', {player_name[13]}, {player_name[1][0]}, {player_name[1][1]}, {player_name[2][0]}, {player_name[2][1]}, {player_name[3][0]}, {player_name[3][1]}, {player_name[4]}, {player_name[5]}, {player_name[6]}, {player_name[7]}, {player_name[8]}, {player_name[9]}, {player_name[10]}, {player_name[11]}, {player_name[12]}, {player_name[0]})''')
+        cur.execute(f'''INSERT INTO nba_player_stat(stat_id, player_id, match_id ,team_id , position, pts, fg, trying_fg, three_pt, attempted_three_pt, ft, trying_ft, oreb, dreb, reb, ast, stl, blk, turnovers, pf, plus_minus, min) VALUES('{stat_id}', '{player_id}', '{match_id}', '{team_id}', 'starter', {player_name[13]}, {player_name[1][0]}, {player_name[1][1]}, {player_name[2][0]}, {player_name[2][1]}, {player_name[3][0]}, {player_name[3][1]}, {player_name[4]}, {player_name[5]}, {player_name[6]}, {player_name[7]}, {player_name[8]}, {player_name[9]}, {player_name[10]}, {player_name[11]}, {player_name[12]}, {player_name[0]})''')
         conn.commit()
 
     
@@ -137,7 +137,7 @@ def player_tables(match_id, team_id, starter_team, bench_team):
         if player_name[0] == '-':
             player_name[0] = 0
 
-        cur.execute(f'''INSERT INTO nba_player_stat(stat_id, player_id, match_id ,team_id , position, pts, fg, trying_fg, three_pt, attempted_three_pt, ft, trying_ft, oreb, dreb, reb, ast, stl, blk, turnovers, pf, plus_minus, min) VALUES('{stat_id}', '{player_id}', '{match_id}', '{team_id}', 'Bench', {player_name[13]}, {player_name[1][0]}, {player_name[1][1]}, {player_name[2][0]}, {player_name[2][1]}, {player_name[3][0]}, {player_name[3][1]}, {player_name[4]}, {player_name[5]}, {player_name[6]}, {player_name[7]}, {player_name[8]}, {player_name[9]}, {player_name[10]}, {player_name[11]}, {player_name[12]}, {player_name[0]})''')
+        cur.execute(f'''INSERT INTO nba_player_stat(stat_id, player_id, match_id ,team_id , position, pts, fg, trying_fg, three_pt, attempted_three_pt, ft, trying_ft, oreb, dreb, reb, ast, stl, blk, turnovers, pf, plus_minus, min) VALUES('{stat_id}', '{player_id}', '{match_id}', '{team_id}', 'bench', {player_name[13]}, {player_name[1][0]}, {player_name[1][1]}, {player_name[2][0]}, {player_name[2][1]}, {player_name[3][0]}, {player_name[3][1]}, {player_name[4]}, {player_name[5]}, {player_name[6]}, {player_name[7]}, {player_name[8]}, {player_name[9]}, {player_name[10]}, {player_name[11]}, {player_name[12]}, {player_name[0]})''')
         conn.commit()
 
 

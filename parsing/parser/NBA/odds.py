@@ -68,7 +68,7 @@ class OddsNBA(object):
 
         for url in match_urls:
             if self.open_matches_link(url) == 'enough':
-                break
+                return
 
 
     def paginate_and_process_matches(self, main_url):
@@ -98,12 +98,8 @@ class OddsNBA(object):
                     if self.open_matches_link(url) == 'enough':
                         return
 
-                    break
-
             except Exception as e:
                 logging.error(f"Ошибка на странице {page}: {e}\n{traceback.format_exc()}")
-
-            break
 
 
     def get_match_links(self):
@@ -136,9 +132,8 @@ class OddsNBA(object):
 
             date = datetime.strptime(match_date, '%d-%m-%Y')
 
-
-            if self.first_year in ['get', 'now forward'] and date == datetime.strptime(self.enough_date, '%d-%m-%Y'):
-                    return 'enough'
+            if (self.first_year == 'get' and date >= datetime.strptime(self.enough_date, '%d-%m-%Y')) or (self.first_year == 'now forward' and date <= datetime.strptime(self.enough_date, '%d-%m-%Y')):
+                return 'enough'
 
             teams = list()
 
