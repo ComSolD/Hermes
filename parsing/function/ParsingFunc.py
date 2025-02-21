@@ -16,7 +16,7 @@ class Parsing(QMainWindow):
         self.ui.ParserLabel.setText("")
 
         from dictionary import ParserDictionary
-        from parser.__init___ import ParsingNBA, OddsNBA, ParsingNFL, ParsingNHL, OddsNHL
+        from parser.__init___ import ParsingNBA, OddsNBA, ParsingNFL, ParsingNHL, OddsNHL, ParsingMLB, OddsMLB
 
         if self.tournament == 'NFL':
             stage = self.ui.StageComboBox.currentText()

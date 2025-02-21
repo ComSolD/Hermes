@@ -6,5 +6,7 @@ from .NFL.parser import ParsingNFL
 from .NHL.parser import ParsingNHL
 from .NHL.odds import OddsNHL
 
+from .MLB.parser import ParsingMLB
+from .MLB.odds import OddsMLB
 
-__all__ = ["ParsingNBA", "OddsNBA", "ParsingNFL", "ParsingNHL", "OddsNHL"]
+__all__ = ["ParsingNBA", "OddsNBA", "ParsingNFL", "ParsingNHL", "OddsNHL", "ParsingMLB", "OddsMLB"]

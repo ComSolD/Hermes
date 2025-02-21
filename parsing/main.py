@@ -1,6 +1,6 @@
-# from parser.NBA.odds import OddsNBA
+# from parser.MLB.odds import OddsMLB
 
-# from parser.NBA.parser import ParsingNBA
+from parser.MLB.parser import ParsingMLB
 
 import logging
 from interface.MainWindow import Ui_MainWindow
@@ -36,10 +36,6 @@ class Statistic(Starter, QMainWindow):
 
 if __name__ == "__main__":
 
-    # OddsNBA("now forward","13-02-2025").get_matches_link()
-    
-    # ParsingNBA("2024-10-04", "2024-10-04").date_cycle()
-
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
@@ -49,15 +45,18 @@ if __name__ == "__main__":
 
     logging.info("Программа запускается")
 
-    app = QApplication(sys.argv)
+    # OddsMLB("2024-02-13","2024-02-13").get_matches_link()
 
-    window = Statistic()
-    window.show()
+    ParsingMLB("2024-03-20", "2024-03-20").date_cycle()
+
+    # app = QApplication(sys.argv)
+
+    # window = Statistic()
+    # window.show()
+
+    # sys.exit(app.exec())
 
     logging.info("Программа завершила работу")
-
-    sys.exit(app.exec())
-
 
 
     
