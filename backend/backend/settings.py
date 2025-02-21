@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'nba',
     'nfl',
     'nhl',
+    'mlb',
 ]
 
 MIDDLEWARE = [

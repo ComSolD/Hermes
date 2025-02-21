@@ -8,5 +8,6 @@ urlpatterns = [
     path('api/nba/', include('nba.urls', namespace='nba')),
     path('api/nfl/', include('nfl.urls', namespace='nfl')),
     path('api/nhl/', include('nhl.urls', namespace='nhl')),
+    path('api/mlb/', include('mlb.urls', namespace='mlb')),
     
 ] + debug_toolbar_urls()
