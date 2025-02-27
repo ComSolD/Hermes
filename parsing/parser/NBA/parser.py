@@ -10,8 +10,8 @@ from pathlib import Path
 import datetime
 import time
 
-from parser.NBA.check import check_stat, stage_check, total_check
-from parser.NBA.save import handicap_result_table, moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, team_table, match_table, total_result_table, update_time
+from parser.NBA.check import check_stat, id_check, stage_check, total_check
+from parser.NBA.save import handicap_result_table, moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, team_table_espn, match_table, total_result_table, update_time
 from parser.NBA.redact import date_redact_full_month, time_redact
 
 
@@ -140,14 +140,21 @@ class ParsingNBA(object):
 
         teams = [team.get_attribute('textContent') for team in teams_selenium]
 
-        self.teams_id = team_table(teams[0], teams[1])
+        data_teams = team_table_espn(teams[0], teams[1])
+
+        self.teams_id = [data_teams[0], data_teams[1]]
+
+        teams = [data_teams[2], data_teams[3]]
 
         # Создаем уникальный ID
         teams = [team.lower().replace(" ", "_") for team in teams]
 
         self.match_id = "_".join(teams)
 
-        self.match_id += f"_{match_date.replace('-', '_')}_{match_time.replace(':', '_')}"
+
+        self.match_id += f"_{match_date.replace('-', '_')}_%"
+
+        self.match_id = id_check(self.match_id, match_time)
 
         # Получение данных через HTML и запись в список
         totals_selenium = self.driver.find_elements(By.CSS_SELECTOR, 'div.Gamestrip__Table div.flex div.Table__ScrollerWrapper div.Table__Scroller table.Table tbody.Table__TBODY tr.Table__TR td.Table__TD') # Собирает результаты команд

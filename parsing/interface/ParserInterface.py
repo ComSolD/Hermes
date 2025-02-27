@@ -205,8 +205,8 @@ border: 2px solid #888888;
         self.ui.DateOddsCheckBox.setText(_translate("MainWindow", "По дате"))
 
         
-        self.ui.FirstDate.setMinimumDate(QDate(2020, 1, 1))
-        self.ui.SecondDate.setMinimumDate(QDate(2020, 1, 1))
+        self.ui.FirstDate.setMinimumDate(QDate(2014, 1, 1))
+        self.ui.SecondDate.setMinimumDate(QDate(2014, 1, 1))
 
         self.ui.FirstDate.setDate(datetime.date.today())
         self.ui.SecondDate.setDate(datetime.date.today())

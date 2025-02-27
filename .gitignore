@@ -8,6 +8,7 @@ __pycache__/
 
 .log
 
+fixtures/
 test/
 .coverage
 .pytest_cache

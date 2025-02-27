@@ -86,7 +86,15 @@ class OddsNBA(object):
                 self.driver.get(main_url + f"#/page/{page}/")
                 self.driver.refresh()
 
-                time.sleep(5)
+                time.sleep(2)
+
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+                time.sleep(2)
+
+                self.driver.execute_script("window.scrollTo(0, 0);")
+
+                time.sleep(1)
 
                 match_urls = [match.get_attribute('href') for match in self.get_match_links()]
 
@@ -109,7 +117,7 @@ class OddsNBA(object):
         if self.first_year == "now" or self.first_year == "get" or self.first_year == "now forward":
             xpath = base_xpath + '/") and not(@href="/basketball/usa/nba/") and not(contains(@href, "standings")) and not(contains(@href, "outrights")) and not(contains(@href, "results"))]'
         else:
-            xpath = base_xpath + f'-{self.first_year}-{self.second_year}/") and not(@href="/basketball/usa/nba/") and not(contains(@href, "standings"))]'
+            xpath = base_xpath + f'-{self.first_year}-{self.second_year}/") and not(@href="/basketball/usa/nba/") and not(@href="/basketball/usa/nba-{self.first_year}-{self.second_year}/") and not(contains(@href, "standings"))]'
 
         return self.driver.find_elements(By.XPATH, xpath)
 
@@ -214,7 +222,7 @@ class OddsNBA(object):
         for key, period_text in periods.items():
             if period_text:
                 try:
-                    div_element = WebDriverWait(driver, 2).until(
+                    div_element = WebDriverWait(driver, 1).until(
                         EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
                     )
                     driver.execute_script("arguments[0].click();", div_element)

@@ -44,6 +44,37 @@ def team_table(name_team1, name_team2):
     return team1_id, team2_id
 
 
+def team_table_espn(name_team1, name_team2):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    cur.execute(f"SELECT team_id, name FROM nba_team WHERE name = '{name_team1}' OR second_name = '{name_team1}';")
+
+    team1_id = cur.fetchall()
+
+    team1_name = team1_id[0][1]
+
+    team1_id = team1_id[0][0]
+
+    cur.execute(f"SELECT team_id, name FROM nba_team WHERE name = '{name_team2}' OR second_name = '{name_team2}';")
+
+    team2_id = cur.fetchall()
+
+    team2_name = team2_id[0][1]
+
+    team2_id = team2_id[0][0]
+    
+
+    return team1_id, team2_id, team1_name, team2_name
+
+
 def team_stat_tables(match_id, teams_id, resul_team1, resul_team2, stat_team1, stat_team2):
     config = configparser.ConfigParser()
     config.read("config.ini")
@@ -208,15 +239,14 @@ def match_table(match_id, teams, season, date_match, stage):
     stage_check = cur.fetchone()
         
 
-    if not exists and stage == '':
+    if not exists and season != '':
 
         cur.execute(f"INSERT INTO nba_match(match_id, team1_id, team2_id, season, date) VALUES('{match_id}', '{teams[0]}', '{teams[1]}', '{season}', '{date_match}')")
         conn.commit()
 
         return False
     
-    elif exists and stage_check[0] is None:
-
+    elif exists and stage_check[0] is None and stage != '':
 
         cur.execute(f'''UPDATE nba_match SET stage = '{stage}' WHERE match_id = '{match_id}';''')
         conn.commit()

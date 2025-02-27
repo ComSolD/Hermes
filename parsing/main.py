@@ -1,6 +1,6 @@
 # from parser.MLB.odds import OddsMLB
 
-from parser.MLB.parser import ParsingMLB
+# from parser.MLB.parser import ParsingMLB
 
 import logging
 from interface.MainWindow import Ui_MainWindow
@@ -47,14 +47,14 @@ if __name__ == "__main__":
 
     # OddsMLB("2024-02-13","2024-02-13").get_matches_link()
 
-    ParsingMLB("2024-03-20", "2024-03-20").date_cycle()
+    # ParsingMLB("2024-03-20", "2024-03-20").date_cycle()
 
-    # app = QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
-    # window = Statistic()
-    # window.show()
+    window = Statistic()
+    window.show()
 
-    # sys.exit(app.exec())
+    sys.exit(app.exec())
 
     logging.info("Программа завершила работу")
 
