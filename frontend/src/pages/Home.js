@@ -23,8 +23,6 @@ function Home() {
         {tournaments.map((tournament, index) => (
           <div className="league-block" key={index}>
             <div className="league-title">{tournament.name}</div>
-
-            <h2 className="past-match">Прошедшие матчи:</h2>
             {tournament.past_matches.length > 0 ? (
               tournament.past_matches.map((match) => (
                 <div key={match.match_id} className="match">

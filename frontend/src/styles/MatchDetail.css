@@ -8,18 +8,12 @@
     box-sizing: border-box; /* Учитываем padding в ширине */
 }
 
-.team-info-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
-    max-width: 1500px; /* Совпадает с шириной match-title */
-    flex-wrap: wrap; /* Позволяем блокам переходить на новую строку */
-    box-sizing: border-box; /* Учитываем padding */
-}
+
 
 .team-info {
-    width: calc(50% - 10px); /* Половина ширины контейнера с учетом gap */
+    width: 100%; /* Половина ширины контейнера с учетом gap */
+    max-width: 1500px; /* Совпадает с шириной match-title */
+    flex-wrap: wrap; /* Позволяем блокам переходить на новую строку */
     background-color: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
@@ -29,6 +23,20 @@
     box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.2);
     box-sizing: border-box; /* Учитываем padding в общей ширине */
 }
+
+.team-info table {
+    font-size: 12px;
+}
+
+.team-info table .player-cell{
+    font-size: 14px;
+    min-width: 500px;
+}
+
+.player-column {
+    min-width: 200px; /* Укажите нужную ширину */
+    white-space: nowrap; /* Запрет на перенос текста */
+  }
 
 .match-title {
     width: 100%;

@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import MatchDetailNBA from "./pages/MatchDetailNBA"; // ✅ Импортируем страницу матча
+import MatchDetailNBA from "./pages/NBA/MatchDetailNBA"; // ✅ Импортируем страницу матча
 import MatchDetailNFL from "./pages/MatchDetailNFL"; // ✅ Импортируем страницу матча
 
 function App() {
