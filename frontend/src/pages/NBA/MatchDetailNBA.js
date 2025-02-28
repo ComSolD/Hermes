@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../../components/Header";
+import MatchHeader from "./MatchHeaderNBA";
 import "../../styles/MatchDetail.css";
 
 function MatchDetailNBA() {
@@ -34,49 +35,11 @@ function MatchDetailNBA() {
     <div>
       <Header />
       <main className="match-main">
-        {/* Верхний блок с инфой о матче */}
-        <div className="match-title">
-          <h1>{match.match_info.home_team} vs {match.match_info.away_team}</h1>
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th>1</th>
-                <th>2</th>
-                <th>3</th>
-                <th>4</th>
-                <th>T</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{match.match_info.home_team}</td>
-                <td>{match.match_info.total.home_q1}</td>
-                <td>{match.match_info.total.home_q2}</td>
-                <td>{match.match_info.total.home_q3}</td>
-                <td>{match.match_info.total.home_q4}</td>
-                <td>{match.match_info.total.home_total}</td>
-                <td>Стадия: {match.stage}</td>
-              </tr>
-            </tbody>
-            <tbody>
-              <tr>
-                <td>{match.match_info.away_team}</td>
-                <td>{match.match_info.total.away_q1}</td>
-                <td>{match.match_info.total.away_q2}</td>
-                <td>{match.match_info.total.away_q3}</td>
-                <td>{match.match_info.total.away_q4}</td>
-                <td>{match.match_info.total.away_total}</td>
-                <td>Дата: {match.match_info.date}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <MatchHeader match={match} id={id} />
 
         {/* Нижние два блока */}
           {/* Блок 1 - Инфа о первой команде */}
-          <div className="team-info">
+          <div className="block-info">
             <h1>{match.match_info.home_team}</h1>
             <table>
               <colgroup>
@@ -181,7 +144,7 @@ function MatchDetailNBA() {
           </div>
 
           {/* Блок 2 - Инфа о второй команде */}
-          <div className="team-info">
+          <div className="block-info">
             <h1>{match.match_info.away_team}</h1>
             <table>
               <colgroup>

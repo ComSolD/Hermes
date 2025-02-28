@@ -1,23 +1,14 @@
 from datetime import datetime
 from rest_framework import serializers
 from django.utils import timezone
-from nba.models import NBAPlayer, NBAPlayerStat, NBATeamPtsStat, NBATeamStat, NBAUpdate, NBAMatch, NBAMoneylineBet, NBATeam
+from nba.models import NBAPlayer, NBAPlayerStat, NBATeamPtsStat, NBATeamStat, NBAMatch, NBAMoneylineBet, NBATeam
 
 class NBAMatchSerializer(serializers.ModelSerializer):
-    updated_at = serializers.SerializerMethodField()
     match_info = serializers.SerializerMethodField()
 
     class Meta:
         model = NBAMatch
         fields = '__all__'
-
-    def get_updated_at(self, obj):
-        """Возвращает последнее обновление NBA турнира."""
-        last_update = NBAUpdate.objects.last()
-        if last_update:
-            moscow_time = last_update.updated_at.astimezone(timezone.get_current_timezone())
-            return moscow_time.strftime("%d-%m-%Y %H:%M:%S")
-        return "Нет обновлений"
 
     def get_match_info(self, obj):
         """Форматирует информацию о конкретном матче."""
@@ -189,5 +180,46 @@ class NBAMatchSerializer(serializers.ModelSerializer):
 
 
             "ml_result": ml_result_team.name if ml_result_team else "N/A",
+            "date": match.date.strftime("%d-%m-%Y"),
+        }
+    
+
+class NBATotalSerializer(serializers.ModelSerializer):
+    match_info = serializers.SerializerMethodField()
+
+    class Meta:
+        model = NBAMatch
+        fields = '__all__'
+
+    def get_match_info(self, obj):
+        """Форматирует информацию о конкретном матче."""
+        match = obj  # Здесь уже передан нужный матч через сериализатор
+
+        bet = NBAMoneylineBet.objects.filter(match_id=match.match_id).first()
+        pts = NBATeamPtsStat.objects.filter(match_id=match.match_id, team_id=match.team1_id).first()
+
+        # Домашняя команда
+        home_team = NBATeam.objects.filter(team_id=match.team2_id).first()
+
+        # Выездная команда
+        away_team = NBATeam.objects.filter(team_id=match.team1_id).first()
+
+        return {
+            "match_id": match.match_id,
+            "home_team": home_team.name if home_team else "Unknown",
+            "away_team": away_team.name if away_team else "Unknown",
+            "total": {
+                "away_total": pts.total if pts else "N/A",
+                "away_q1": pts.total_q1 if pts else "N/A",
+                "away_q2": pts.total_q2 if pts else "N/A",
+                "away_q3": pts.total_q3 if pts else "N/A",
+                "away_q4": pts.total_q4 if pts else "N/A",
+                "home_total": pts.total_missed if pts else "N/A",
+                "home_q1": pts.total_q1_missed if pts else "N/A",
+                "home_q2": pts.total_q2_missed if pts else "N/A",
+                "home_q3": pts.total_q3_missed if pts else "N/A",
+                "home_q4": pts.total_q4_missed if pts else "N/A",
+            },
+
             "date": match.date.strftime("%d-%m-%Y"),
         }

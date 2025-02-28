@@ -4,22 +4,32 @@ from rest_framework.decorators import api_view
 from django.core.cache import cache
 
 from .models import NBAMatch
-from .serializers import NBAMatchSerializer  # Импортируем сериализатор матча
+from .serializers import NBAMatchSerializer, NBATotalSerializer  # Импортируем сериализатор матча
 
 
 
 @api_view(['GET'])
-def match(request, match_id):
-
-    # print(match_id)
-
-    # match = NBAMatch.objects.filter(match_id=match_id).first()
+def match_statistic(request, match_id):
 
 
     match = get_object_or_404(NBAMatch, match_id=match_id)
 
     # Сериализуем данные
     serializer = NBAMatchSerializer(match)
+
+    
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def match_total(request, match_id):
+
+
+
+    match = get_object_or_404(NBAMatch, match_id=match_id)
+
+    # Сериализуем данные
+    serializer = NBATotalSerializer(match)
 
     
     return Response(serializer.data)

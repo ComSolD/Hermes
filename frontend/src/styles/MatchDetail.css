@@ -8,9 +8,59 @@
     box-sizing: border-box; /* Учитываем padding в ширине */
 }
 
+.match-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    width: 100%; /* Гарантируем, что контейнер занимает всю ширину */
+    box-sizing: border-box; /* Учитываем padding в ширине */
+}
 
 
-.team-info {
+
+.tabs {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+    background-color: #1f2a30;
+    border-radius: 10px;
+}
+
+.tab-content {
+    display: flex; /* Добавляем flex-контейнер */
+    width: 100%; /* Растягиваем на всю ширину */
+}
+
+.tab {
+    flex: 1; /* Равномерное распределение */
+    padding: 12px 0;
+    text-align: center;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 24px;
+    border-radius: 8px;
+    transition: color 0.3s, text-shadow 0.3s;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 5px;
+}
+
+.tab:hover {
+    color: #ffcc00;
+    text-shadow: 0px 0px 10px rgba(255, 204, 0, 0.8);
+}
+
+.tab.active {
+    background: #007bff;
+}
+
+
+
+
+.block-info {
     width: 100%; /* Половина ширины контейнера с учетом gap */
     max-width: 1500px; /* Совпадает с шириной match-title */
     flex-wrap: wrap; /* Позволяем блокам переходить на новую строку */
@@ -24,11 +74,11 @@
     box-sizing: border-box; /* Учитываем padding в общей ширине */
 }
 
-.team-info table {
+.block-info table {
     font-size: 12px;
 }
 
-.team-info table .player-cell{
+.block-info table .player-cell{
     font-size: 14px;
     min-width: 500px;
 }
@@ -63,13 +113,13 @@
         width: 90%; /* На мобильных главный блок сужается */
     }
 
-    .team-info-container {
+    .block-info-container {
         flex-direction: column; /* Ставим блоки в колонку */
         gap: 20px; /* Оставляем отступы между блоками */
         align-items: center; /* Центрируем блоки */
     }
 
-    .team-info {
+    .block-info {
         width: 90%; /* На мобильных блоки команды тоже сужаются */
     }
 }
@@ -80,7 +130,7 @@
         padding: 15px; /* Снижаем отступы */
     }
 
-    .team-info {
+    .block-info {
         padding: 15px; /* Уменьшаем отступы внутри блоков */
     }
 }
@@ -90,7 +140,7 @@
         font-size: 18px; /* Еще меньше шрифт на очень маленьких экранах */
     }
 
-    .team-info {
+    .block-info {
         padding: 10px; /* Сужаем отступы */
     }
 }
