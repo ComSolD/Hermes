@@ -203,6 +203,7 @@ class ParsingNBA(object):
         
         self.driver.get(f'https://www.espn.com/nba/boxscore/_/gameId/{self.game_num}')
 
+
         playerStat_selenium = self.driver.find_elements(By.CSS_SELECTOR, 'div[class="Boxscore Boxscore__ResponsiveWrapper"] div.Wrapper div.Boxscore div.ResponsiveTable div.flex div.Table__ScrollerWrapper div.Table__Scroller table.Table tbody.Table__TBODY tr.Table__TR td.Table__TD') # Собираем стартер команд
 
         player_stats = [playerStat.get_attribute('textContent') for playerStat in playerStat_selenium]
