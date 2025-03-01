@@ -77,8 +77,8 @@ class TournamentSerializer(serializers.ModelSerializer):
             home_team = TeamModel.objects.filter(team_id=match.team2_id).first()
             away_team = TeamModel.objects.filter(team_id=match.team1_id).first()
 
-            ml_result = TeamModel.objects.filter(team_id=bet.result).first() 
-        
+            ml_result = TeamModel.objects.filter(team_id=bet.result).first()
+
             match_info = {
                 "match_id": match.match_id,
                 "home_team": home_team.name if home_team else "Unknown",
@@ -91,7 +91,7 @@ class TournamentSerializer(serializers.ModelSerializer):
                 }
             }
 
-
+           
             if obj.name == "NFL":
                 match_info["stage"] = match.stage  # Используем stage для NFL
             else:

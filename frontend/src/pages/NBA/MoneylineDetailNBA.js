@@ -48,14 +48,62 @@ function MoneylineDetailNBA() {
               </tr>
             </thead>
             <tbody>
-              {match.match_info.moneyline_info.map((ml, index) => (
-              <tr>
-                <td>{ml.period}</td>
-                <td>{ml.home_odds}</td>
-                <td>{ml.away_odds}</td>
-              </tr>
-                
-              ))}
+            {match.match_info.moneyline_info.map((ml, index) => {
+                // Определяем, какие данные использовать для текущего периода
+                let homeScore, awayScore;
+
+                switch (ml.period) {
+                  case "1-я Четверть":
+                    homeScore = match.match_info.total.home_q1;
+                    awayScore = match.match_info.total.away_q1;
+                    break;
+                  case "2-я Четверть":
+                    homeScore = match.match_info.total.home_q2;
+                    awayScore = match.match_info.total.away_q2;
+                    break;
+                  case "3-я Четверть":
+                    homeScore = match.match_info.total.home_q3;
+                    awayScore = match.match_info.total.away_q3;
+                    break;
+                  case "4-я Четверть":
+                    homeScore = match.match_info.total.home_q4;
+                    awayScore = match.match_info.total.away_q4;
+                    break;
+                  case "1-я Половина":
+                    homeScore =
+                      match.match_info.total.home_q1 + match.match_info.total.home_q2;
+                    awayScore =
+                      match.match_info.total.away_q1 + match.match_info.total.away_q2;
+                    break;
+                  case "2-я Половина":
+                    homeScore =
+                      match.match_info.total.home_q3 + match.match_info.total.home_q4;
+                    awayScore =
+                      match.match_info.total.away_q3 + match.match_info.total.away_q4;
+                    break;
+                  default:
+                    homeScore = match.match_info.total.home_total;
+                    awayScore = match.match_info.total.away_total;
+                }
+
+                // Определяем стиль
+                const homeStyle =
+                  homeScore > awayScore
+                    ? { fontWeight: "bold", color: "#4CAF50"}
+                    : {};
+                const awayStyle =
+                  awayScore > homeScore
+                    ? { fontWeight: "bold", color: "#4CAF50"}
+                    : {};
+
+                return (
+                  <tr key={index}>
+                    <td>{ml.period}</td>
+                    <td style={homeStyle}>{ml.home_odds}</td>
+                    <td style={awayStyle}>{ml.away_odds}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

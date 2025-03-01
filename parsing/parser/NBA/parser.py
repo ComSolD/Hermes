@@ -179,6 +179,14 @@ class ParsingNBA(object):
         
         total = total_check(totals)
 
+        redact_total = []
+        
+        for i in total[0]:
+            redact_total.append(i)
+        
+        redact_total[-2] = int(total[2][0])
+        redact_total[-1] = int(total[2][1])
+
 
         if not self.open_box_score():
             return 0
@@ -186,11 +194,11 @@ class ParsingNBA(object):
         
         if not match_table(self.match_id, self.teams_id, '', self.date_match, stage):
 
-            moneyline_result_table(self.match_id, self.teams_id, total[0])
+            moneyline_result_table(self.match_id, self.teams_id, redact_total)
 
-            total_result_table(self.match_id, total[0])
+            total_result_table(self.match_id, redact_total)
 
-            handicap_result_table(self.match_id, self.teams_id, total[0])
+            handicap_result_table(self.match_id, self.teams_id, redact_total)
 
             team_stat_pts_tables(self.match_id, self.teams_id, total)
             team_stat_tables(self.match_id, self.teams_id, resul_team1, resul_team2, self.stats[0], self.stats[1])
