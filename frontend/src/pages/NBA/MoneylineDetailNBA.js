@@ -4,13 +4,13 @@ import Header from "../../components/Header";
 import MatchHeader from "./MatchHeaderNBA";
 import "../../styles/MatchDetail.css";
 
-function TotalDetailNBA() {
+function MoneylineDetailNBA() {
   const { id } = useParams(); // Получаем ID матча из URL
   const [match, setMatch] = useState(null);
 
   useEffect(() => {
 
-    fetch(`http://127.0.0.1:8000/api/nba/match/${id}/total`) // Загружаем данные о матче
+    fetch(`http://127.0.0.1:8000/api/nba/match/${id}/moneyline`) // Загружаем данные о матче
       .then((response) => response.json())
       .then((data) => {
         setMatch(data)
@@ -39,7 +39,7 @@ function TotalDetailNBA() {
         <MatchHeader match={match} id={id} />
 
         <div className="block-info">
-            <h1>Тотал</h1>
+            <h1>Исход</h1>
         </div>
 
       </main>
@@ -47,4 +47,4 @@ function TotalDetailNBA() {
   );
 }
 
-export default TotalDetailNBA;
+export default MoneylineDetailNBA;

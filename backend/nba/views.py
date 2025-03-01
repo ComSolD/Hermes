@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from django.core.cache import cache
 
 from .models import NBAMatch
-from .serializers import NBAMatchSerializer, NBATotalSerializer  # Импортируем сериализатор матча
+from .serializers import NBAHandicapSerializer, NBAMatchSerializer, NBATotalSerializer, NBAMoneylineSerializer  # Импортируем сериализатор матча
 
 
 
@@ -25,7 +25,6 @@ def match_statistic(request, match_id):
 def match_total(request, match_id):
 
 
-
     match = get_object_or_404(NBAMatch, match_id=match_id)
 
     # Сериализуем данные
@@ -34,4 +33,29 @@ def match_total(request, match_id):
     
     return Response(serializer.data)
 
+
+@api_view(['GET'])
+def match_moneyline(request, match_id):
+
+
+    match = get_object_or_404(NBAMatch, match_id=match_id)
+
+    # Сериализуем данные
+    serializer = NBAMoneylineSerializer(match)
+
+    
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def match_handicap(request, match_id):
+
+
+    match = get_object_or_404(NBAMatch, match_id=match_id)
+
+    # Сериализуем данные
+    serializer = NBAHandicapSerializer(match)
+
+    
+    return Response(serializer.data)
     

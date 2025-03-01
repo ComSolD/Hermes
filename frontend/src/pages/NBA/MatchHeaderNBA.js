@@ -50,9 +50,16 @@ const MatchHeader = ({ match, id }) => {
           <Link to={`/nba/match/${id}`} className="tab">
             Статистика
           </Link>
+          <Link to={`/nba/match/${id}/moneyline`} className="tab">
+            Исход
+          </Link>
           <Link to={`/nba/match/${id}/total`} className="tab">
             Тотал
           </Link>
+          <Link to={`/nba/match/${id}/handicap`} className="tab">
+            Фора
+          </Link>
+          
         </div>
       </div>
     </div>

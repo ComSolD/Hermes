@@ -223,3 +223,84 @@ class NBATotalSerializer(serializers.ModelSerializer):
 
             "date": match.date.strftime("%d-%m-%Y"),
         }
+    
+
+class NBAMoneylineSerializer(serializers.ModelSerializer):
+    match_info = serializers.SerializerMethodField()
+
+    class Meta:
+        model = NBAMatch
+        fields = '__all__'
+
+    def get_match_info(self, obj):
+        """Форматирует информацию о конкретном матче."""
+        match = obj  # Здесь уже передан нужный матч через сериализатор
+
+        bet = NBAMoneylineBet.objects.filter(match_id=match.match_id).first()
+        pts = NBATeamPtsStat.objects.filter(match_id=match.match_id, team_id=match.team1_id).first()
+
+        # Домашняя команда
+        home_team = NBATeam.objects.filter(team_id=match.team2_id).first()
+
+        # Выездная команда
+        away_team = NBATeam.objects.filter(team_id=match.team1_id).first()
+
+        return {
+            "match_id": match.match_id,
+            "home_team": home_team.name if home_team else "Unknown",
+            "away_team": away_team.name if away_team else "Unknown",
+            "total": {
+                "away_total": pts.total if pts else "N/A",
+                "away_q1": pts.total_q1 if pts else "N/A",
+                "away_q2": pts.total_q2 if pts else "N/A",
+                "away_q3": pts.total_q3 if pts else "N/A",
+                "away_q4": pts.total_q4 if pts else "N/A",
+                "home_total": pts.total_missed if pts else "N/A",
+                "home_q1": pts.total_q1_missed if pts else "N/A",
+                "home_q2": pts.total_q2_missed if pts else "N/A",
+                "home_q3": pts.total_q3_missed if pts else "N/A",
+                "home_q4": pts.total_q4_missed if pts else "N/A",
+            },
+
+            "date": match.date.strftime("%d-%m-%Y"),
+        }
+
+class NBAHandicapSerializer(serializers.ModelSerializer):
+    match_info = serializers.SerializerMethodField()
+
+    class Meta:
+        model = NBAMatch
+        fields = '__all__'
+
+    def get_match_info(self, obj):
+        """Форматирует информацию о конкретном матче."""
+        match = obj  # Здесь уже передан нужный матч через сериализатор
+
+        bet = NBAMoneylineBet.objects.filter(match_id=match.match_id).first()
+        pts = NBATeamPtsStat.objects.filter(match_id=match.match_id, team_id=match.team1_id).first()
+
+        # Домашняя команда
+        home_team = NBATeam.objects.filter(team_id=match.team2_id).first()
+
+        # Выездная команда
+        away_team = NBATeam.objects.filter(team_id=match.team1_id).first()
+
+        return {
+            "match_id": match.match_id,
+            "home_team": home_team.name if home_team else "Unknown",
+            "away_team": away_team.name if away_team else "Unknown",
+            "total": {
+                "away_total": pts.total if pts else "N/A",
+                "away_q1": pts.total_q1 if pts else "N/A",
+                "away_q2": pts.total_q2 if pts else "N/A",
+                "away_q3": pts.total_q3 if pts else "N/A",
+                "away_q4": pts.total_q4 if pts else "N/A",
+                "home_total": pts.total_missed if pts else "N/A",
+                "home_q1": pts.total_q1_missed if pts else "N/A",
+                "home_q2": pts.total_q2_missed if pts else "N/A",
+                "home_q3": pts.total_q3_missed if pts else "N/A",
+                "home_q4": pts.total_q4_missed if pts else "N/A",
+            },
+
+            "date": match.date.strftime("%d-%m-%Y"),
+        }

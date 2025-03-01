@@ -10,7 +10,7 @@ function TotalDetailNBA() {
 
   useEffect(() => {
 
-    fetch(`http://127.0.0.1:8000/api/nba/match/${id}/total`) // Загружаем данные о матче
+    fetch(`http://127.0.0.1:8000/api/nba/match/${id}/handicap`) // Загружаем данные о матче
       .then((response) => response.json())
       .then((data) => {
         setMatch(data)
@@ -39,7 +39,7 @@ function TotalDetailNBA() {
         <MatchHeader match={match} id={id} />
 
         <div className="block-info">
-            <h1>Тотал</h1>
+            <h1>Фора</h1>
         </div>
 
       </main>
