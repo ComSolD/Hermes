@@ -14,10 +14,7 @@ class NBAMatchSerializer(serializers.ModelSerializer):
         """Форматирует информацию о конкретном матче."""
         match = obj  # Здесь уже передан нужный матч через сериализатор
 
-        bet = NBAMoneylineBet.objects.filter(match_id=match.match_id).first()
         pts = NBATeamPtsStat.objects.filter(match_id=match.match_id, team_id=match.team1_id).first()
-
-        ml_result_team = NBATeam.objects.filter(team_id=bet.result).first() if bet and bet.result else None
 
         # Домашняя команда
         home_team = NBATeam.objects.filter(team_id=match.team2_id).first()
@@ -178,8 +175,6 @@ class NBAMatchSerializer(serializers.ModelSerializer):
                 "pf": away_stat.pf,
             },
 
-
-            "ml_result": ml_result_team.name if ml_result_team else "N/A",
             "date": match.date.strftime("%d-%m-%Y"),
         }
     
@@ -236,7 +231,24 @@ class NBAMoneylineSerializer(serializers.ModelSerializer):
         """Форматирует информацию о конкретном матче."""
         match = obj  # Здесь уже передан нужный матч через сериализатор
 
-        bet = NBAMoneylineBet.objects.filter(match_id=match.match_id).first()
+        order_map = {
+            'Весь Матч': 0,
+            '1-я Половина': 1,
+            '1-я Четверть': 2,
+            '2-я Четверть': 3,
+            '2-я Половина': 4,
+            '3-я Четверть': 5,
+            '4-я Четверть': 6,
+        }
+
+        moneyline = NBAMoneylineBet.objects.filter(match_id=match.match_id)
+        moneyline_info = [{ "period": ml.get_period_display(),
+            "home_odds": ml.team2_odds,
+            "away_odds": ml.team1_odds,
+        } for ml in moneyline]
+
+        moneyline_info = sorted(moneyline_info, key=lambda x: order_map[x['period']])
+
         pts = NBATeamPtsStat.objects.filter(match_id=match.match_id, team_id=match.team1_id).first()
 
         # Домашняя команда
@@ -261,6 +273,8 @@ class NBAMoneylineSerializer(serializers.ModelSerializer):
                 "home_q3": pts.total_q3_missed if pts else "N/A",
                 "home_q4": pts.total_q4_missed if pts else "N/A",
             },
+
+            "moneyline_info": moneyline_info,
 
             "date": match.date.strftime("%d-%m-%Y"),
         }

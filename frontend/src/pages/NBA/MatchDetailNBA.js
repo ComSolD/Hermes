@@ -41,7 +41,7 @@ function MatchDetailNBA() {
           {/* Блок 1 - Инфа о первой команде */}
           <div className="block-info">
             <h1>{match.match_info.home_team}</h1>
-            <table>
+            <table className="stat-info">
               <colgroup>
                 <col style={{ width: '150px' }} />
               </colgroup>
@@ -146,7 +146,7 @@ function MatchDetailNBA() {
           {/* Блок 2 - Инфа о второй команде */}
           <div className="block-info">
             <h1>{match.match_info.away_team}</h1>
-            <table>
+            <table className="stat-info">
               <colgroup>
                 <col style={{ width: '150px' }} />
               </colgroup>

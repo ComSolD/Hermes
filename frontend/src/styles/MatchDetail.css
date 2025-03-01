@@ -18,6 +18,13 @@
 }
 
 
+.bet-info {
+    font-size: 24px;
+    line-height: 1.8; /* Увеличивает расстояние между строками */
+    padding-top: 10px; /* Отступ сверху */
+    padding-bottom: 10px; /* Отступ снизу */
+}
+
 
 .tabs {
     display: flex;
@@ -74,11 +81,11 @@
     box-sizing: border-box; /* Учитываем padding в общей ширине */
 }
 
-.block-info table {
+.stat-info {
     font-size: 12px;
 }
 
-.block-info table .player-cell{
+.player-cell{
     font-size: 14px;
     min-width: 500px;
 }

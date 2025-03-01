@@ -39,7 +39,25 @@ function MoneylineDetailNBA() {
         <MatchHeader match={match} id={id} />
 
         <div className="block-info">
-            <h1>Исход</h1>
+          <table className="bet-info">
+            <thead>
+              <tr>
+                <th>Период</th>
+                <th>{match.match_info.home_team}</th>
+                <th>{match.match_info.away_team}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {match.match_info.moneyline_info.map((ml, index) => (
+              <tr>
+                <td>{ml.period}</td>
+                <td>{ml.home_odds}</td>
+                <td>{ml.away_odds}</td>
+              </tr>
+                
+              ))}
+            </tbody>
+          </table>
         </div>
 
       </main>
