@@ -22,13 +22,13 @@ def match_statistic(request, match_id):
 
 
 @api_view(['GET'])
-def match_total(request, match_id):
+def match_total(request, match_id, period):
 
 
     match = get_object_or_404(NBAMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = NBATotalSerializer(match)
+    serializer = NBATotalSerializer(match, context={"period": period})
 
     
     return Response(serializer.data)

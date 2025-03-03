@@ -162,9 +162,9 @@ class NBATotalBet(models.Model):
         choices=[
             ('full_time', 'Весь Матч'),
             ('1st_half', '1-я Половина'),
-            ('2nd_half', '2-я Половина'),
             ('1st_quarter', '1-я Четверть'),
             ('2nd_quarter', '2-я Четверть'),
+            ('2nd_half', '2-я Половина'),
             ('3rd_quarter', '3-я Четверть'),
             ('4th_quarter', '4-я Четверть'),
         ]

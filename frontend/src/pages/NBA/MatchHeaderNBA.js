@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const MatchHeader = ({ match, id }) => {
+  const location = useLocation();
+  
   return (
     <div className="match-header">
       {/* Заголовок матча */}
@@ -47,19 +49,37 @@ const MatchHeader = ({ match, id }) => {
       {/* Навигационные вкладки */}
       <div className="block-info">
         <div className="tab-content">
-          <Link to={`/nba/match/${id}`} className="tab">
+          <Link 
+            to={location.pathname === `/nba/match/${id}` ? "#" : `/nba/match/${id}`} 
+            className={`tab ${location.pathname === `/nba/match/${id}` ? "active" : ""}`}
+            onClick={(e) => location.pathname === `/nba/match/${id}` && e.preventDefault()}
+          >
             Статистика
           </Link>
-          <Link to={`/nba/match/${id}/moneyline`} className="tab">
+
+          <Link 
+            to={location.pathname.includes("/moneyline") ? "#" : `/nba/match/${id}/moneyline`} 
+            className={`tab ${location.pathname.includes("/moneyline") ? "active" : ""}`}
+            onClick={(e) => location.pathname.includes("/moneyline") && e.preventDefault()}
+          >
             Исход
           </Link>
-          <Link to={`/nba/match/${id}/total`} className="tab">
+
+          <Link 
+            to={location.pathname.includes("/total") ? "#" : `/nba/match/${id}/total/0`} 
+            className={`tab ${location.pathname.includes("/total") ? "active" : ""}`}
+            onClick={(e) => location.pathname.includes("/total") && e.preventDefault()}
+          >
             Тотал
           </Link>
-          <Link to={`/nba/match/${id}/handicap`} className="tab">
+
+          <Link 
+            to={location.pathname.includes("/handicap") ? "#" : `/nba/match/${id}/handicap`} 
+            className={`tab ${location.pathname.includes("/handicap") ? "active" : ""}`}
+            onClick={(e) => location.pathname.includes("/handicap") && e.preventDefault()}
+          >
             Фора
           </Link>
-          
         </div>
       </div>
     </div>

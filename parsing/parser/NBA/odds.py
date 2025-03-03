@@ -140,7 +140,7 @@ class OddsNBA(object):
 
             date = datetime.strptime(match_date, '%d-%m-%Y')
 
-            if (self.first_year == 'get' and date >= datetime.strptime(self.enough_date, '%d-%m-%Y')) or (self.first_year == 'now forward' and date <= datetime.strptime(self.enough_date, '%d-%m-%Y')):
+            if (self.first_year == 'get' and date >= datetime.strptime(self.enough_date, '%d-%m-%Y')) or (self.first_year == 'now forward' and date < datetime.strptime(self.enough_date, '%d-%m-%Y')):
                 return 'enough'
 
             teams = list()

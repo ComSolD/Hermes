@@ -55,6 +55,31 @@
 }
 
 
+
+.odds-list {
+    margin-top: 10px;
+    font-size: 28px;
+}
+
+.odds-list tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.odds-list tbody tr:last-child {
+    border-bottom: none;
+}
+
+.odds-list tbody tr td {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.odds-list tbody tr td:last-child {
+    border-right: none;
+}
+
+
+
+
 .tabs {
     display: flex;
     width: 100%;
@@ -90,7 +115,8 @@
 }
 
 .tab.active {
-    background: #007bff;
+    color: #ffcc00;
+    text-shadow: 0px 0px 10px rgba(255, 204, 0, 0.8);
 }
 
 

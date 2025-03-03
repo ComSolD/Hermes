@@ -1,7 +1,7 @@
 from datetime import datetime
 from rest_framework import serializers
 from django.utils import timezone
-from nba.models import NBAPlayer, NBAPlayerStat, NBATeamPtsStat, NBATeamStat, NBAMatch, NBAMoneylineBet, NBATeam
+from nba.models import NBAPlayer, NBAPlayerStat, NBATeamPtsStat, NBATeamStat, NBAMatch, NBAMoneylineBet, NBATeam, NBATotalBet
 
 class NBAMatchSerializer(serializers.ModelSerializer):
     match_info = serializers.SerializerMethodField()
@@ -188,9 +188,47 @@ class NBATotalSerializer(serializers.ModelSerializer):
 
     def get_match_info(self, obj):
         """Форматирует информацию о конкретном матче."""
+        
         match = obj  # Здесь уже передан нужный матч через сериализатор
 
-        bet = NBAMoneylineBet.objects.filter(match_id=match.match_id).first()
+        period = self.context.get("period")
+
+        period = NBATotalBet._meta.get_field('period').choices
+
+        period_value = NBATotalBet._meta.get_field('period').choices[self.context.get("period")][0]
+
+
+        order_map = {
+            'Весь Матч': 0,
+            '1-я Половина': 1,
+            '1-я Четверть': 2,
+            '2-я Четверть': 3,
+            '2-я Половина': 4,
+            '3-я Четверть': 5,
+            '4-я Четверть': 6,
+        }
+
+        period = NBATotalBet.objects.filter(match_id=match.match_id).values_list('period', flat=True).distinct()
+
+        periods = [{"period": dict(NBATotalBet._meta.get_field('period').choices)[p],
+            "number": order_map[dict(NBATotalBet._meta.get_field('period').choices)[p]]
+        } for p in period]
+
+        periods = sorted(periods, key=lambda x: order_map[x['period']])
+
+
+        total_odds = NBATotalBet.objects.filter(match_id=match.match_id, period=period_value)
+
+        total_odds_info = [{ "total": to.total,
+            "over_odds": to.over_odds,
+            "under_odds": to.under_odds,
+            "total_result": to.total_result,
+            "period": self.context.get("period"),
+        } for to in total_odds]
+
+        total_odds_info = sorted(total_odds_info, key=lambda x: x["total"])
+
+
         pts = NBATeamPtsStat.objects.filter(match_id=match.match_id, team_id=match.team1_id).first()
 
         # Домашняя команда
@@ -215,6 +253,9 @@ class NBATotalSerializer(serializers.ModelSerializer):
                 "home_q3": pts.total_q3_missed if pts else "N/A",
                 "home_q4": pts.total_q4_missed if pts else "N/A",
             },
+
+            "periods": periods,
+            "total_odds": total_odds_info,
 
             "date": match.date.strftime("%d-%m-%Y"),
         }
@@ -278,6 +319,7 @@ class NBAMoneylineSerializer(serializers.ModelSerializer):
 
             "date": match.date.strftime("%d-%m-%Y"),
         }
+
 
 class NBAHandicapSerializer(serializers.ModelSerializer):
     match_info = serializers.SerializerMethodField()

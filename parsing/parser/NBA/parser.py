@@ -66,9 +66,8 @@ class ParsingNBA(object):
             return 0
 
         soup = BeautifulSoup(self.driver.page_source,'lxml')
-
+        
         no_games = soup.find_all("section", class_="EmptyTable")
-
 
         if len(no_games) != 0:
             no_games_date = no_games[0].find("div").get_text()
@@ -90,6 +89,11 @@ class ParsingNBA(object):
 
 
         items_td = items_tbody.find_all("td", class_="teams__col Table__TD")
+
+        if len(items_td) == 0:
+                items_tbody = items_tbody.find_next("tbody", class_="Table__TBODY")
+
+                items_td = items_tbody.find_all("td", class_="teams__col Table__TD")
 
         matches = list()
 
