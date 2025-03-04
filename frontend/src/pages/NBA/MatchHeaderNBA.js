@@ -74,7 +74,7 @@ const MatchHeader = ({ match, id }) => {
           </Link>
 
           <Link 
-            to={location.pathname.includes("/handicap") ? "#" : `/nba/match/${id}/handicap`} 
+            to={location.pathname.includes("/handicap") ? "#" : `/nba/match/${id}/handicap/0`} 
             className={`tab ${location.pathname.includes("/handicap") ? "active" : ""}`}
             onClick={(e) => location.pathname.includes("/handicap") && e.preventDefault()}
           >

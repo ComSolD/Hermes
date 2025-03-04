@@ -354,7 +354,7 @@ def odds_handicap_table(match_id, odds, period):
         conn.commit()
 
 
-def handicap_result_table(match_id, teams_ID, handicap):
+def handicap_result_table(match_id, handicap):
     config = configparser.ConfigParser()
     config.read("config.ini")
 
@@ -373,12 +373,19 @@ def handicap_result_table(match_id, teams_ID, handicap):
         value = getDictionary(period[0], handicap)
 
         if 0 < value[0] - value[1] + period[1]:
-            result = teams_ID[0]
-        elif 0 < value[1] - value[0] + period[1]:
-            result = teams_ID[1]
+            team1_result = 'win'
+        elif 0 == value[0] - value[1] + period[1]:
+            team1_result = 'lose'
         else:
-            result = 'draw'
+            team1_result = 'draw'
 
-        cur.execute(f'''UPDATE nba_handicap_bet SET handicap_result = '{result}' WHERE match_id = '{match_id}' AND period = '{period[0]}' AND handicap = {period[1]};''')
+        if 0 < value[1] - value[0] + period[1]:
+            team2_result = 'win'
+        elif 0 == value[1] - value[0] + period[1]:
+            team2_result = 'lose'
+        else:
+            team2_result = 'draw'
+
+        cur.execute(f'''UPDATE nba_handicap_bet SET handicap_team1_result = '{team1_result}', handicap_team2_result = '{team2_result}' WHERE match_id = '{match_id}' AND period = '{period[0]}' AND handicap = {period[1]};''')
         conn.commit()
 

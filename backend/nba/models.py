@@ -189,9 +189,9 @@ class NBAHandicapBet(models.Model):
         choices=[
             ('full_time', 'Весь Матч'),
             ('1st_half', '1-я Половина'),
-            ('2nd_half', '2-я Половина'),
             ('1st_quarter', '1-я Четверть'),
             ('2nd_quarter', '2-я Четверть'),
+            ('2nd_half', '2-я Половина'),
             ('3rd_quarter', '3-я Четверть'),
             ('4th_quarter', '4-я Четверть'),
         ]
@@ -199,7 +199,8 @@ class NBAHandicapBet(models.Model):
     handicap = models.FloatField(null=True, blank=True)
     handicap_team1_odds = models.FloatField(null=True, blank=True)
     handicap_team2_odds = models.FloatField(null=True, blank=True)
-    handicap_result = models.CharField(max_length=36, null=True, blank=True)
+    handicap_team1_result = models.CharField(max_length=5, null=True, blank=True)
+    handicap_team2_result = models.CharField(max_length=5, null=True, blank=True)
 
     class Meta():
         db_table = 'nba_handicap_bet'

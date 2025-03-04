@@ -10,7 +10,7 @@ const RoutesNBA = () => {
       <Route path="match/:id" element={<MatchDetailNBA />} />
       <Route path="match/:id/total/:period" element={<TotalDetailNBA />} />
       <Route path="match/:id/moneyline" element={<MoneylineDetailNBA />} />
-      <Route path="match/:id/handicap" element={<HandicapDetailNBA />} />
+      <Route path="match/:id/handicap/:period" element={<HandicapDetailNBA />} />
     </Routes>
   );
 };

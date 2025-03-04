@@ -202,7 +202,7 @@ class ParsingNBA(object):
 
             total_result_table(self.match_id, redact_total)
 
-            handicap_result_table(self.match_id, self.teams_id, redact_total)
+            handicap_result_table(self.match_id, redact_total)
 
             team_stat_pts_tables(self.match_id, self.teams_id, total)
             team_stat_tables(self.match_id, self.teams_id, resul_team1, resul_team2, self.stats[0], self.stats[1])

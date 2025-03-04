@@ -100,10 +100,14 @@ function TotalDetailNBA() {
                   const underStyle =
                     firstScore + secondScore < t.total
                       ? { fontWeight: "bold", color: "#4CAF50"}
+                      : firstScore + secondScore === t.total
+                      ? { fontWeight: "bold", color: "#FFC107"}
                       : {};
                   const overStyle =
                     firstScore + secondScore > t.total
                       ? { fontWeight: "bold", color: "#4CAF50"}
+                      : firstScore + secondScore === t.total
+                      ? { fontWeight: "bold", color: "#FFC107"}
                       : {};
                   
                   return (<tr key={index}>

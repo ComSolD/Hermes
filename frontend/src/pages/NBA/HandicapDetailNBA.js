@@ -3,14 +3,16 @@ import { useParams } from "react-router-dom";
 import Header from "../../components/Header";
 import MatchHeader from "./MatchHeaderNBA";
 import "../../styles/MatchDetail.css";
+import { Link } from "react-router-dom";
+
 
 function TotalDetailNBA() {
-  const { id } = useParams(); // Получаем ID матча из URL
+  const { id, period } = useParams(); // Получаем ID матча из URL
   const [match, setMatch] = useState(null);
 
   useEffect(() => {
 
-    fetch(`http://127.0.0.1:8000/api/nba/match/${id}/handicap`) // Загружаем данные о матче
+    fetch(`http://127.0.0.1:8000/api/nba/match/${id}/handicap/${period || 0}`) // Загружаем данные о матче
       .then((response) => response.json())
       .then((data) => {
         setMatch(data)
@@ -19,7 +21,7 @@ function TotalDetailNBA() {
       .catch((error) => console.error("Ошибка загрузки:", error));
 
 
-  }, [id]);
+  }, [id, period]);
 
   if (!match) {
     return (
@@ -39,7 +41,55 @@ function TotalDetailNBA() {
         <MatchHeader match={match} id={id} />
 
         <div className="block-info">
-            <h1>Фора</h1>
+          <div className="tab-content">
+            {match.match_info.periods.map((p) => (
+              <Link
+                key={p.number}
+                to={`/nba/match/${id}/handicap/${p.number}`} // Динамический URL
+                className={`tab ${Number(period) === p.number ? "active" : ""}`} // Подсветка активного периода
+                onClick={(e) => Number(period) === p.number && e.preventDefault()}
+              >
+                {p.period}
+              </Link>
+            ))}
+          </div>
+          <table className="odds-list">
+            <thead>
+              <th>Фора</th>
+              <th>{match.match_info.home_team}</th>
+              <th>{match.match_info.away_team}</th>
+            </thead>
+            <tbody>
+              {match.match_info.handicap_odds.map((h, index) => {
+                  
+
+                  // Определяем стиль
+                  const homeStyle =
+                    match.match_info.home_team === h.handicap_result
+                      ? { fontWeight: "bold", color: "#4CAF50"}
+                      : "noone" === h.handicap_result
+                      ? { fontWeight: "bold", color: "#FF0000"}
+                      : "draw" === h.handicap_result
+                      ? { fontWeight: "bold", color: "#FFC107"}
+                      : {};
+                  const awayStyle =
+                    match.match_info.away_team === h.handicap_result
+                      ? { fontWeight: "bold", color: "#4CAF50"}
+                      : "noone" === h.handicap_result
+                      ? { fontWeight: "bold", color: "#FF0000"}
+                      : "draw" === h.handicap_result
+                      ? { fontWeight: "bold", color: "#FFC107"}
+                      : {};
+                  
+                  return (<tr key={index}>
+                    <td>{h.handicap > 0 ? "+" : ''}{h.handicap}</td>
+                    <td style={homeStyle}>{h.handicap_team2_odds}</td>
+                    <td style={awayStyle}>{h.handicap_team1_odds}</td>
+                  </tr>)
+              })}
+              </tbody>
+          </table>
+          
         </div>
 
       </main>

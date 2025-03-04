@@ -48,13 +48,13 @@ def match_moneyline(request, match_id):
 
 
 @api_view(['GET'])
-def match_handicap(request, match_id):
+def match_handicap(request, match_id, period):
 
 
     match = get_object_or_404(NBAMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = NBAHandicapSerializer(match)
+    serializer = NBAHandicapSerializer(match, context={"period": period})
 
     
     return Response(serializer.data)
