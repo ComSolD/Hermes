@@ -363,12 +363,13 @@ class NBAHandicapSerializer(serializers.ModelSerializer):
         handicap_odds_info = [{ "handicap": h.handicap,
             "handicap_team1_odds": h.handicap_team1_odds,
             "handicap_team2_odds": h.handicap_team2_odds,
-            "handicap_result": (
-                h.handicap_result if h.handicap_result in ["draw", "noone"] 
-                else NBATeam.objects.filter(team_id=h.handicap_result).first().name
-            ),
+            "handicap_team1_result": h.handicap_team1_result,
+            "handicap_team2_result": h.handicap_team2_result,
             "period": self.context.get("period"),
         } for h in handicap_odds]
+
+        for h in handicap_odds:
+            print(h.handicap, h.handicap_team1_result, h.handicap_team2_result)
 
         handicap_odds_info = sorted(handicap_odds_info, key=lambda x: x["handicap"])
 

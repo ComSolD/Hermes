@@ -65,19 +65,19 @@ function TotalDetailNBA() {
 
                   // Определяем стиль
                   const homeStyle =
-                    match.match_info.home_team === h.handicap_result
+                    "win" === h.handicap_team2_result
                       ? { fontWeight: "bold", color: "#4CAF50"}
-                      : "noone" === h.handicap_result
+                      : "lose" === h.handicap_team2_result
                       ? { fontWeight: "bold", color: "#FF0000"}
-                      : "draw" === h.handicap_result
+                      : "draw" === h.handicap_team2_result
                       ? { fontWeight: "bold", color: "#FFC107"}
                       : {};
                   const awayStyle =
-                    match.match_info.away_team === h.handicap_result
+                    "win" === h.handicap_team1_result
                       ? { fontWeight: "bold", color: "#4CAF50"}
-                      : "noone" === h.handicap_result
+                      : "lose" === h.handicap_team1_result
                       ? { fontWeight: "bold", color: "#FF0000"}
-                      : "draw" === h.handicap_result
+                      : "draw" === h.handicap_team1_result
                       ? { fontWeight: "bold", color: "#FFC107"}
                       : {};
                   

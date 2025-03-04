@@ -375,16 +375,16 @@ def handicap_result_table(match_id, handicap):
         if 0 < value[0] - value[1] + period[1]:
             team1_result = 'win'
         elif 0 == value[0] - value[1] + period[1]:
-            team1_result = 'lose'
-        else:
             team1_result = 'draw'
+        else:
+            team1_result = 'lose'
 
         if 0 < value[1] - value[0] + period[1]:
             team2_result = 'win'
         elif 0 == value[1] - value[0] + period[1]:
-            team2_result = 'lose'
-        else:
             team2_result = 'draw'
+        else:
+            team2_result = 'lose'
 
         cur.execute(f'''UPDATE nba_handicap_bet SET handicap_team1_result = '{team1_result}', handicap_team2_result = '{team2_result}' WHERE match_id = '{match_id}' AND period = '{period[0]}' AND handicap = {period[1]};''')
         conn.commit()
