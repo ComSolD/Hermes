@@ -3,6 +3,8 @@ import MatchDetailNBA from "../pages/NBA/MatchDetailNBA";
 import TotalDetailNBA from "../pages/NBA/TotalDetailNBA";
 import MoneylineDetailNBA from "../pages/NBA/MoneylineDetailNBA";
 import HandicapDetailNBA from "../pages/NBA/HandicapDetailNBA";
+import ScheduleNBA from "../pages/NBA/ScheduleNBA";
+import TeamsNBA from "../pages/NBA/TeamsNBA";
 
 const RoutesNBA = () => {
   return (
@@ -11,6 +13,8 @@ const RoutesNBA = () => {
       <Route path="match/:id/total/:period" element={<TotalDetailNBA />} />
       <Route path="match/:id/moneyline" element={<MoneylineDetailNBA />} />
       <Route path="match/:id/handicap/:period" element={<HandicapDetailNBA />} />
+      <Route path="schedule" element={<ScheduleNBA />} />
+      <Route path="teams" element={<TeamsNBA />} />
     </Routes>
   );
 };

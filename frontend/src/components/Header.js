@@ -27,13 +27,36 @@ const Header = () => {
 
       {/* Навигация */}
       <nav className={menuOpen ? "nav open" : "nav"}>
-        <a href="#nba">NBA</a>
-        <a href="#nfl">NFL</a>
-        <a href="#nhl">NHL</a>
-        <a href="#mlb">MLB</a>
+        <MenuItem 
+          title="NBA" 
+          links={["Расписание", "Команды"]} 
+          paths={["/nba/schedule", "/nba/teams"]} 
+        />
+        <MenuItem 
+          title="NHL" 
+          links={["Расписание", "Команды"]} 
+          paths={["/nhl/schedule", "/nhl/teams"]} 
+        />
       </nav>
     </header>
   );
 };
+
+
+const MenuItem = ({ title, links, paths }) => {
+  return (
+    <div className="dropdown">
+      <Link to="#" className="menu-title">{title}</Link>
+      <div className="dropdown-menu">
+        {links.map((link, index) => (
+          <Link key={index} to={paths[index]}>
+            {link}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 
 export default Header;

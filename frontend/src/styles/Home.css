@@ -22,8 +22,13 @@ h3 {
 }
 
 a {
-  color: #cccccc;
+  color: #ccb6b6;
   text-align: center;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #64ffda;
 }
 
 .main-content {
