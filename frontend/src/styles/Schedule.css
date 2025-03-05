@@ -22,6 +22,26 @@
     box-sizing: border-box; /* Учитываем padding в общей ширине */
 }
 
+.date-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+button {
+    background-color: transparent;
+    border: none;
+    color: #cccccc; /* Укажите цвет текста */
+    font-size: 24px; /* Размер шрифта */
+    cursor: pointer; /* Курсор в виде указателя */
+}
+
+p {
+    font-weight: bold;
+    font-size: 18px; /* Размер шрифта */
+}
+
 
 .schedule-info h1 {
     font-size: 24px;

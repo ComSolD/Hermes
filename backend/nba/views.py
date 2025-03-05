@@ -74,7 +74,7 @@ def schedule(request):
         except ValueError:
             return Response({"message": "Неправильный формат даты, используйте YYYY-MM-DD"}, status=400)
 
-    matches = NBAMatch.objects.filter(date=match_date)
+    matches = NBAMatch.objects.filter(date=match_date,stage__isnull=False)
 
     serializer = NBAMatchesSchedule(matches, many=True)
 

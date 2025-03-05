@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom"; // ✅ Получаем параметры URL
-import { Link } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom"; // ✅ Получаем параметры URL
 
 import dayjs from "dayjs";
+import "dayjs/locale/ru";
 import Header from "../../components/Header";
 import "../../styles/Schedule.css";
 
 function ScheduleNBA() {
   const [matches, setMatches] = useState([]); // ✅ Изменил `null` на `[]`
-  const [searchParams] = useSearchParams(); // ✅ Хук для работы с query-параметрами
+  const [searchParams, setSearchParams] = useSearchParams(); // ✅ Хук для работы с query-параметрами
+
+  const today = dayjs().format("YYYY-MM-DD");
+
+  const dateParam = searchParams.get("date") || today;
 
   useEffect(() => {
-    const today = dayjs().format("YYYY-MM-DD");
 
     // ✅ Получаем параметр "date" из URL (например, ?date=2025-03-04)
-    const dateParam = searchParams.get("date") || today;
 
     document.title = `Расписание ${dayjs(dateParam).format("DD.MM.YYYY")}`;
 
@@ -31,15 +33,28 @@ function ScheduleNBA() {
         console.error("Ошибка загрузки:", error);
         setMatches([]);
       });
-  }, [searchParams]); // ✅ Запрос обновляется при изменении `date` в URL
+  }, [dateParam]); // ✅ Запрос обновляется при изменении `date` в URL
 
+  const goToPreviousDay = () => {
+    const prevDay = dayjs(dateParam).subtract(1, "day").format("YYYY-MM-DD");
+    setSearchParams({ date: prevDay });
+  };
+
+  const goToNextDay = () => {
+    const nextDay = dayjs(dateParam).add(1, "day").format("YYYY-MM-DD");
+    setSearchParams({ date: nextDay });
+  };
   return (
     <div>
       <Header />
       <main className="schedule-main">
         <div className="schedule-info">
-          <h1>Расписание</h1>
-          <p>Выбранная дата: {dayjs(searchParams).format("DD.MM.YYYY")}</p>
+
+          <div className="date-block">
+            <button onClick={goToPreviousDay}>Назад</button>
+            <p>{dayjs(dateParam).locale("ru").format("DD MMMM YYYY")}</p>
+            <button onClick={goToNextDay}>Вперед</button>
+          </div>
 
           {matches.length > 0 ? (
             matches.map((match) => {
