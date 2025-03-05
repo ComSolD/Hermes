@@ -1,0 +1,110 @@
+.schedule-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+    width: 100%; /* Гарантируем, что контейнер занимает всю ширину */
+    box-sizing: border-box; /* Учитываем padding в ширине */
+}
+
+.schedule-info {
+    width: 100%; /* Половина ширины контейнера с учетом gap */
+    max-width: 1200px; /* Совпадает с шириной match-title */
+    flex-wrap: wrap; /* Позволяем блокам переходить на новую строку */
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box; /* Учитываем padding в общей ширине */
+}
+
+
+.schedule-info h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+  
+.schedule-info p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+  
+.match-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    font-size: 20px;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+  
+.match-item:hover {
+    background: rgba(0, 0, 0, 0.4);
+    transform: scale(1.02);
+}
+
+/* Сделаем команды и счет равными по ширине */
+.winner, .loser, .match-score {
+    flex: 1; /* Делаем все три элемента равными */
+    text-align: center;
+}
+
+.winner {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.loser {
+    color: #FF0000;
+}
+  
+.match-item a {
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+  
+.match-score {
+    font-weight: bold;
+    font-size: 22px;
+    text-align: center; /* Центрируем счет */
+}
+
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+
+    .schedule-info-container {
+        flex-direction: column; /* Ставим блоки в колонку */
+        gap: 20px; /* Оставляем отступы между блоками */
+        align-items: center; /* Центрируем блоки */
+    }
+
+    .schedule-info {
+        width: 90%; /* На мобильных блоки команды тоже сужаются */
+    }
+}
+
+@media (max-width: 768px) {
+
+    .schedule-info {
+        padding: 15px; /* Уменьшаем отступы внутри блоков */
+    }
+}
+
+@media (max-width: 480px) {
+
+    .schedule-info {
+        padding: 10px; /* Сужаем отступы */
+    }
+}

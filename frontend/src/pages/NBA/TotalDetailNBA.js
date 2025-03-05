@@ -102,13 +102,13 @@ function TotalDetailNBA() {
                       ? { fontWeight: "bold", color: "#4CAF50"}
                       : firstScore + secondScore === t.total
                       ? { fontWeight: "bold", color: "#FFC107"}
-                      : {};
+                      : { fontWeight: "bold", color: "#FF0000"};
                   const overStyle =
                     firstScore + secondScore > t.total
                       ? { fontWeight: "bold", color: "#4CAF50"}
                       : firstScore + secondScore === t.total
                       ? { fontWeight: "bold", color: "#FFC107"}
-                      : {};
+                      : { fontWeight: "bold", color: "#FF0000"};
                   
                   return (<tr key={index}>
                     <td>{t.total}</td>

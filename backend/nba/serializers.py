@@ -368,9 +368,6 @@ class NBAHandicapSerializer(serializers.ModelSerializer):
             "period": self.context.get("period"),
         } for h in handicap_odds]
 
-        for h in handicap_odds:
-            print(h.handicap, h.handicap_team1_result, h.handicap_team2_result)
-
         handicap_odds_info = sorted(handicap_odds_info, key=lambda x: x["handicap"])
 
 
@@ -404,3 +401,36 @@ class NBAHandicapSerializer(serializers.ModelSerializer):
 
             "date": match.date.strftime("%d-%m-%Y"),
         }
+
+
+class NBAMatchesSchedule(serializers.ModelSerializer):
+    match_info = serializers.SerializerMethodField()
+
+    class Meta:
+        model = NBAMatch
+        fields = '__all__'
+
+    def get_match_info(self, obj):
+        """Форматирует информацию о конкретном матче."""
+        
+        match = obj  # Здесь уже передан нужный матч через сериализатор
+
+
+        pts = NBATeamPtsStat.objects.filter(match_id=match.match_id, team_id=match.team1_id).first()
+
+        # Домашняя команда
+        home_team = NBATeam.objects.filter(team_id=match.team2_id).first()
+
+        # Выездная команда
+        away_team = NBATeam.objects.filter(team_id=match.team1_id).first()
+
+        return {
+            "match_id": match.match_id,
+            "home_team": home_team.name if home_team else "Unknown",
+            "away_team": away_team.name if away_team else "Unknown",
+            "total": {
+                "away_total": pts.total if pts else "N/A",
+                "home_total": pts.total_missed if pts else "N/A",
+            },
+        }
+    

@@ -90,11 +90,11 @@ function MoneylineDetailNBA() {
                 const homeStyle =
                   homeScore > awayScore
                     ? { fontWeight: "bold", color: "#4CAF50"}
-                    : {};
+                    : { fontWeight: "bold", color: "#FF0000"};
                 const awayStyle =
                   awayScore > homeScore
                     ? { fontWeight: "bold", color: "#4CAF50"}
-                    : {};
+                    : { fontWeight: "bold", color: "#FF0000"};
 
                 return (
                   <tr key={index}>
