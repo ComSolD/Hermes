@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view
 from django.core.cache import cache
 from datetime import datetime, date
 
-from .models import NBAMatch
-from .serializers import NBAHandicapSerializer, NBAMatchSerializer, NBAMatchesSchedule, NBATotalSerializer, NBAMoneylineSerializer  # Импортируем сериализатор матча
+from .models import NBAMatch, NBATeam
+from .serializers import NBAHandicapSerializer, NBAMatchSerializer, NBAMatchesSchedule, NBATotalSerializer, NBAMoneylineSerializer, NBAStatistic  # Импортируем сериализатор матча
 
 
 
@@ -83,5 +83,19 @@ def schedule(request):
 
 @api_view(['GET'])
 def statistic(request):
-    print("Im here")
+    # print(NBAMatch.objects.exists())  # Вернет True, если есть хотя бы одна запись
+
+
+    seasons = NBAMatch.objects.filter(stage__isnull=False).values_list('season', flat=True).distinct()
+
+    teams = NBATeam.objects.all()
+    team_serializer = NBAStatistic(teams, many=True)
+
+    stages = NBAMatch.objects.filter(stage__isnull=False).values_list('stage', flat=True).distinct()
+
+    return Response({
+        "seasons": list(seasons),
+        "teams": team_serializer.data,
+        "stages": list(stages)
+    })
 

@@ -1,0 +1,49 @@
+.statistic-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+    width: 100%; /* Гарантируем, что контейнер занимает всю ширину */
+    box-sizing: border-box; /* Учитываем padding в ширине */
+}
+
+.statistic-info {
+    width: 100%; /* Половина ширины контейнера с учетом gap */
+    max-width: 1200px; /* Совпадает с шириной match-title */
+    flex-wrap: wrap; /* Позволяем блокам переходить на новую строку */
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box; /* Учитываем padding в общей ширине */
+}
+
+
+.selectors {
+    display: flex;
+    justify-content: center; /* Центрируем */
+    gap: 20px; /* Отступ между элементами */
+    margin-top: 20px;
+  }
+  
+.selector {
+    display: flex;
+    flex-direction: column; /* Чтобы текст был сверху, а селектор снизу */
+    align-items: center;
+}
+
+.selector label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.selector select {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}

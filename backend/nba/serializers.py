@@ -197,7 +197,6 @@ class NBATotalSerializer(serializers.ModelSerializer):
 
         period_value = NBATotalBet._meta.get_field('period').choices[self.context.get("period")][0]
 
-
         order_map = {
             'Весь Матч': 0,
             '1-я Половина': 1,
@@ -433,4 +432,10 @@ class NBAMatchesSchedule(serializers.ModelSerializer):
                 "home_total": pts.total_missed if pts else "N/A",
             },
         }
-    
+
+
+class NBAStatistic(serializers.ModelSerializer):
+
+    class Meta:
+        model = NBATeam
+        fields = ['team_id', 'name']
