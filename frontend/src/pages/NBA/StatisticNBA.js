@@ -1,4 +1,5 @@
 import React, { useEffect, useState  } from "react";
+import Select from "react-select";
 
 import Header from "../../components/Header";
 import "../../styles/Statistic.css";
@@ -53,6 +54,24 @@ function StatisticNBA() {
       .catch((error) => console.error("Ошибка при отправке:", error));
   };
 
+  const TeamSelector = ({ teams, selectedTeam, setSelectedTeam }) => {
+    const options = teams.map((team) => ({
+      value: team.team_id,
+      label: team.name,
+    }));
+  
+    return (
+      <Select
+        options={[{ value: "", label: "Все команды" }, ...options]}
+        value={options.find((opt) => opt.value === selectedTeam)}
+        onChange={(selectedOption) => setSelectedTeam(selectedOption?.value || "")}
+        placeholder="Выберите команду..."
+        isSearchable
+      />
+    );
+  };
+
+
   return (
     <div>
       <Header />
@@ -96,18 +115,11 @@ function StatisticNBA() {
             {/* Команда */}
             <div className="selector">
               <label htmlFor="team-select">Команда</label>
-              <select
-                id="team-select"
-                value={selectedTeam}
-                onChange={(e) => setSelectedTeam(e.target.value)}
-              >
-                <option value="">Все команды</option>
-                {teams.map((team) => (
-                  <option key={team.team_id} value={team.team_id}>
-                    {team.name}
-                  </option>
-                ))}
-              </select>
+              <TeamSelector
+                teams={teams}
+                selectedTeam={selectedTeam}
+                setSelectedTeam={setSelectedTeam}
+              />
             </div>
           </div>
           <button className="submit-button" onClick={handleSubmit}>
