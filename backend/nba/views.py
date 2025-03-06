@@ -99,3 +99,13 @@ def statistic(request):
         "stages": list(stages)
     })
 
+
+@api_view(['POST'])
+def filter_stat(request):
+
+    answer = request.data.get("season") + " " + request.data.get("stage") + " " + request.data.get("team_id")
+
+    return Response({
+        "answer": answer,
+    })
+    

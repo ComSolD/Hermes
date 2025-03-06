@@ -12,4 +12,6 @@ urlpatterns = [
 
     path('schedule/', views.schedule, name='schedule'),
     path('statistic/', views.statistic, name='statistic'),
+    path('filterstat/', views.filter_stat, name='filter_stat'),
+
 ]
