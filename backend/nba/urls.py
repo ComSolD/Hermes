@@ -11,4 +11,5 @@ urlpatterns = [
     path('match/<str:match_id>/handicap/<int:period>', views.match_handicap, name='match_handicap'),
 
     path('schedule/', views.schedule, name='schedule'),
+    path('statistic/', views.statistic, name='statistic'),
 ]

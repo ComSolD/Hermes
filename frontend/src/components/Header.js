@@ -29,8 +29,8 @@ const Header = () => {
       <nav className={menuOpen ? "nav open" : "nav"}>
         <MenuItem 
           title="NBA" 
-          links={["Расписание", "Команды"]} 
-          paths={["/nba/schedule", "/nba/teams"]} 
+          links={["Расписание", "Команды", "Статистика"]} 
+          paths={["/nba/schedule", "/nba/teams", "/nba/statistic"]} 
         />
         <MenuItem 
           title="NHL" 

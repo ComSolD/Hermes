@@ -79,3 +79,9 @@ def schedule(request):
     serializer = NBAMatchesSchedule(matches, many=True)
 
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def statistic(request):
+    print("Im here")
+
