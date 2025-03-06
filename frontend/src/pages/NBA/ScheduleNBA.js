@@ -1,14 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom"; // ✅ Получаем параметры URL
 
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
+
+import ReactDatePicker, { registerLocale } from "react-datepicker";
+import ru from "date-fns/locale/ru"; // Локализация
+
 import Header from "../../components/Header";
 import "../../styles/Schedule.css";
+
+const ruLocale = {
+  ...ru,
+  options: {
+    ...ru.options,
+    weekStartsOn: 1, // ✅ Неделя начинается с понедельника
+  },
+};
+registerLocale("ru", ruLocale);
 
 function ScheduleNBA() {
   const [matches, setMatches] = useState([]); // ✅ Изменил `null` на `[]`
   const [searchParams, setSearchParams] = useSearchParams(); // ✅ Хук для работы с query-параметрами
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const calendarRef = useRef(null);
 
   const today = dayjs().format("YYYY-MM-DD");
 
@@ -44,6 +59,23 @@ function ScheduleNBA() {
     const nextDay = dayjs(dateParam).add(1, "day").format("YYYY-MM-DD");
     setSearchParams({ date: nextDay });
   };
+
+  const handleDateChange = (date) => {
+    const formattedDate = dayjs(date).format("YYYY-MM-DD");
+    setSearchParams({ date: formattedDate });
+    setIsCalendarOpen(false); // Закрываем календарь после выбора даты
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setIsCalendarOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <div>
       <Header />
@@ -52,7 +84,49 @@ function ScheduleNBA() {
 
           <div className="date-block">
             <button onClick={goToPreviousDay}>Назад</button>
-            <p>{dayjs(dateParam).locale("ru").format("DD MMMM YYYY")}</p>
+
+            <div className="date-picker-wrapper" ref={calendarRef}>
+              <p onClick={() => setIsCalendarOpen(!isCalendarOpen)} className="date-text">
+                {dayjs(dateParam).locale("ru").format("DD MMMM YYYY")}
+              </p>
+              {isCalendarOpen && (
+                <div className="calendar-container">
+                  <ReactDatePicker
+                    selected={dayjs(dateParam).toDate()}
+                    onChange={handleDateChange}
+                    dateFormat="dd MMMM yyyy"
+                    locale="ru"
+                    inline
+                    fixedWeeks
+                    showWeekNumbers={false}
+                    className="custom-calendar"
+                    dayClassName={(date) => {
+                      const day = dayjs(date).day();
+                      return day === 0 || day === 6 ? "weekend" : "";
+                    }}
+                    renderCustomHeader={({
+                      date,
+                      decreaseMonth,
+                      increaseMonth,
+                      prevMonthButtonDisabled,
+                      nextMonthButtonDisabled,
+                    }) => (
+                      <div className="custom-header">
+                        <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
+                          Назад
+                        </button>
+                        <button onClick={increaseMonth} disabled={nextMonthButtonDisabled}>
+                          Вперед
+                        </button>
+                      </div>
+                    )}
+                    showMonthYearDropdown={false}
+                  />
+
+                </div>
+              )}
+            </div>
+            
             <button onClick={goToNextDay}>Вперед</button>
           </div>
 

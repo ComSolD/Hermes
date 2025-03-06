@@ -42,6 +42,149 @@ p {
     font-size: 18px; /* Размер шрифта */
 }
 
+/* Контейнер для календаря */
+.calendar-container {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: #0f292f;
+
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 320px; /* ✅ Достаточная ширина */
+}
+
+/* Календарь */
+.react-datepicker {
+    font-family: Arial, sans-serif;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    padding: 10px;
+    min-width: 280px;
+}
+
+/* Верхняя панель календаря */
+.react-datepicker__header {
+    color: #cccccc;
+    font-size: 16px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+
+/* Сетка для дат */
+.react-datepicker__month {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    justify-content: center;
+    gap: 5px; /* ✅ Добавляем пространство между числами */
+}
+
+.react-datepicker__month-container {
+    min-height: 250px; /* ✅ Достаточная высота для всех недель */
+}
+
+/* Дни календаря */
+.react-datepicker__day {
+    font-size: 14px;
+    padding: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, color 0.2s;
+    color: #cccccc;
+}
+
+/* Подсветка при наведении */
+.react-datepicker__day:hover {
+    border-radius: 0;
+    background: none;
+    color: #64ffda;
+    font-weight: bold;
+    transform: scale(1.5);
+}
+
+/* Выбранная дата */
+.react-datepicker__day--selected {
+    border-radius: 0;
+    background: none;
+    color: #64ffda;
+    font-weight: bold;
+    transform: scale(1.5);
+}
+
+/* Текущая дата */
+.react-datepicker__day--today {
+    transform: scale(1.5);
+    font-weight: bold;
+    background: none;
+    color: #665eff;
+}
+
+/* Кнопки навигации */
+.react-datepicker__navigation {
+    top: 12px;
+}
+
+/* Выравнивание текста месяца */
+.react-datepicker__current-month {
+    display: none !important;
+}
+
+
+.react-datepicker__day-names {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    justify-content: center;
+}
+
+/* Убираем неправильный порядок рендеринга */
+.react-datepicker__week {
+    display: contents; /* ✅ Гарантирует, что недели не сливаются */
+}
+
+/* Отдельный стиль для воскресенья */
+.weekend {
+    color: red !important;
+    font-weight: bold;
+}
+
+
+/* Отображение дней недели в правильном порядке */
+.react-datepicker__day-name:nth-child(1) { order: 1; } /* ПН */
+.react-datepicker__day-name:nth-child(2) { order: 2; } /* ВТ */
+.react-datepicker__day-name:nth-child(3) { order: 3; } /* СР */
+.react-datepicker__day-name:nth-child(4) { order: 4; } /* ЧТ */
+.react-datepicker__day-name:nth-child(5) { order: 5; } /* ПТ */
+.react-datepicker__day-name:nth-child(6) { order: 6; } /* СБ */
+.react-datepicker__day-name:nth-child(7) { order: 7; } /* ВС */
+
+
+.custom-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Кнопки "Назад" и "Вперед" */
+.custom-header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.custom-header button:disabled {
+    color: gray;
+    cursor: default;
+}
+
 
 .schedule-info h1 {
     font-size: 24px;
