@@ -47,8 +47,8 @@ function Home() {
                   <table>
                   <thead>
                       <tr>
-                        <th>Победа</th>
-                        <th>Победа</th>
+                        <th>Победитель</th>
+                        <th>Линия</th>
                       </tr>
                     </thead>
                     <tbody>

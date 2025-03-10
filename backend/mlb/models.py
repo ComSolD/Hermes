@@ -4,6 +4,7 @@ import uuid
 class MLBTeam(models.Model):
     team_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
+    second_name = models.CharField(max_length=100, null = True)
 
     class Meta():
         db_table = 'mlb_team'
@@ -133,11 +134,16 @@ class MLBMoneylineBet(models.Model):
         choices=[
             ('full_time', 'Весь Матч'),
             ('1st_half', '1-я Половина'),
+            ('1st_inning', '1-й Иннинг'),
+            ('2nd_inning', '2-й Иннинг'),
+            ('3rd_inning', '3-й Иннинг'),
+            ('4th_inning', '4-й Иннинг'),
+            ('5th_inning', '4-й Иннинг'),
             ('2nd_half', '2-я Половина'),
-            ('1st_quarter', '1-я Четверть'),
-            ('2nd_quarter', '2-я Четверть'),
-            ('3rd_quarter', '3-я Четверть'),
-            ('4th_quarter', '4-я Четверть'),
+            ('6th_inning', '4-й Иннинг'),
+            ('7th_inning', '4-й Иннинг'),
+            ('8th_inning', '4-й Иннинг'),
+            ('9th_inning', '4-й Иннинг'),
         ]
     )
 
@@ -160,11 +166,16 @@ class MLBTotalBet(models.Model):
         choices=[
             ('full_time', 'Весь Матч'),
             ('1st_half', '1-я Половина'),
+            ('1st_inning', '1-й Иннинг'),
+            ('2nd_inning', '2-й Иннинг'),
+            ('3rd_inning', '3-й Иннинг'),
+            ('4th_inning', '4-й Иннинг'),
+            ('5th_inning', '4-й Иннинг'),
             ('2nd_half', '2-я Половина'),
-            ('1st_quarter', '1-я Четверть'),
-            ('2nd_quarter', '2-я Четверть'),
-            ('3rd_quarter', '3-я Четверть'),
-            ('4th_quarter', '4-я Четверть'),
+            ('6th_inning', '4-й Иннинг'),
+            ('7th_inning', '4-й Иннинг'),
+            ('8th_inning', '4-й Иннинг'),
+            ('9th_inning', '4-й Иннинг'),
         ]
     )
 
@@ -187,17 +198,23 @@ class MLBHandicapBet(models.Model):
         choices=[
             ('full_time', 'Весь Матч'),
             ('1st_half', '1-я Половина'),
+            ('1st_inning', '1-й Иннинг'),
+            ('2nd_inning', '2-й Иннинг'),
+            ('3rd_inning', '3-й Иннинг'),
+            ('4th_inning', '4-й Иннинг'),
+            ('5th_inning', '4-й Иннинг'),
             ('2nd_half', '2-я Половина'),
-            ('1st_quarter', '1-я Четверть'),
-            ('2nd_quarter', '2-я Четверть'),
-            ('3rd_quarter', '3-я Четверть'),
-            ('4th_quarter', '4-я Четверть'),
+            ('6th_inning', '4-й Иннинг'),
+            ('7th_inning', '4-й Иннинг'),
+            ('8th_inning', '4-й Иннинг'),
+            ('9th_inning', '4-й Иннинг'),
         ]
     )
     handicap = models.FloatField(null=True, blank=True)
     handicap_team1_odds = models.FloatField(null=True, blank=True)
     handicap_team2_odds = models.FloatField(null=True, blank=True)
-    handicap_result = models.CharField(max_length=36, null=True, blank=True)
+    handicap_team1_result = models.CharField(max_length=5, null=True, blank=True)
+    handicap_team2_result = models.CharField(max_length=5, null=True, blank=True)
 
     class Meta():
         db_table = 'mlb_handicap_bet'

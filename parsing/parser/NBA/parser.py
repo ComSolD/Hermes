@@ -91,9 +91,9 @@ class ParsingNBA(object):
         items_td = items_tbody.find_all("td", class_="teams__col Table__TD")
 
         if len(items_td) == 0:
-                items_tbody = items_tbody.find_next("tbody", class_="Table__TBODY")
+            items_tbody = items_tbody.find_next("tbody", class_="Table__TBODY")
 
-                items_td = items_tbody.find_all("td", class_="teams__col Table__TD")
+            items_td = items_tbody.find_all("td", class_="teams__col Table__TD")
 
         matches = list()
 
@@ -155,7 +155,6 @@ class ParsingNBA(object):
 
         self.match_id = "_".join(teams)
 
-
         self.match_id += f"_{match_date.replace('-', '_')}_%"
 
         self.match_id = id_check(self.match_id, match_time)
@@ -214,7 +213,6 @@ class ParsingNBA(object):
     def open_box_score(self):
         
         self.driver.get(f'https://www.espn.com/nba/boxscore/_/gameId/{self.game_num}')
-
 
         playerStat_selenium = self.driver.find_elements(By.CSS_SELECTOR, 'div[class="Boxscore Boxscore__ResponsiveWrapper"] div.Wrapper div.Boxscore div.ResponsiveTable div.flex div.Table__ScrollerWrapper div.Table__Scroller table.Table tbody.Table__TBODY tr.Table__TR td.Table__TD') # Собираем стартер команд
 

@@ -1,11 +1,12 @@
 from datetime import datetime
+import logging
+import traceback
 import psycopg2
 import configparser
 
 import uuid
 
 from dictionary.NBA import getDictionary
-
 
 def team_table(name_team1, name_team2):
     config = configparser.ConfigParser()
@@ -73,6 +74,42 @@ def team_table_espn(name_team1, name_team2):
     
 
     return team1_id, team2_id, team1_name, team2_name
+
+
+def match_table(match_id, teams, season, date_match, stage):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    cur.execute("SELECT 1 FROM nba_match WHERE match_id = %s", (match_id,))
+    exists = cur.fetchone()
+
+    cur.execute("SELECT stage FROM nba_match WHERE match_id = %s", (match_id,))
+    stage_check = cur.fetchone()
+        
+
+    if not exists and season != '':
+
+        cur.execute(f"INSERT INTO nba_match(match_id, team1_id, team2_id, season, date) VALUES('{match_id}', '{teams[0]}', '{teams[1]}', '{season}', '{date_match}')")
+        conn.commit()
+
+        return False
+    
+    elif exists and stage_check[0] is None and stage != '':
+
+        cur.execute(f'''UPDATE nba_match SET stage = '{stage}' WHERE match_id = '{match_id}';''')
+        conn.commit()
+
+        return False
+    
+
+    return True
 
 
 def team_stat_tables(match_id, teams_id, resul_team1, resul_team2, stat_team1, stat_team2):
@@ -219,42 +256,6 @@ def odds_moneyline_table(match_id, team1_moneyline, team2_moneyline, period):
 
     cur.execute(f"INSERT INTO nba_moneyline_bet(moneyline_bet_id, match_id, team1_odds, team2_odds, period) VALUES('{bet_id}', '{match_id}', '{team1_moneyline}', '{team2_moneyline}', '{period}')")
     conn.commit()
-
-
-def match_table(match_id, teams, season, date_match, stage):
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
-    # Получаем параметры подключения
-    db_params = config["postgresql"]
-
-    # Подключение к базе данных
-    conn = psycopg2.connect(**db_params)
-    cur = conn.cursor()
-
-    cur.execute("SELECT 1 FROM nba_match WHERE match_id = %s", (match_id,))
-    exists = cur.fetchone()
-
-    cur.execute("SELECT stage FROM nba_match WHERE match_id = %s", (match_id,))
-    stage_check = cur.fetchone()
-        
-
-    if not exists and season != '':
-
-        cur.execute(f"INSERT INTO nba_match(match_id, team1_id, team2_id, season, date) VALUES('{match_id}', '{teams[0]}', '{teams[1]}', '{season}', '{date_match}')")
-        conn.commit()
-
-        return False
-    
-    elif exists and stage_check[0] is None and stage != '':
-
-        cur.execute(f'''UPDATE nba_match SET stage = '{stage}' WHERE match_id = '{match_id}';''')
-        conn.commit()
-
-        return False
-    
-
-    return True
 
 
 def moneyline_result_table(match_id, teams_ID, total):

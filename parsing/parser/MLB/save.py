@@ -45,6 +45,37 @@ def team_table(name_team1, name_team2):
     return team1_id, team2_id
 
 
+def team_table_espn(name_team1, name_team2):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    # Получаем параметры подключения
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    cur.execute(f"SELECT team_id, name FROM mlb_team WHERE name = '{name_team1}' OR second_name = '{name_team1}';")
+
+    team1_id = cur.fetchall()
+
+    team1_name = team1_id[0][1]
+
+    team1_id = team1_id[0][0]
+
+    cur.execute(f"SELECT team_id, name FROM mlb_team WHERE name = '{name_team2}' OR second_name = '{name_team2}';")
+
+    team2_id = cur.fetchall()
+
+    team2_name = team2_id[0][1]
+
+    team2_id = team2_id[0][0]
+    
+
+    return team1_id, team2_id, team1_name, team2_name
+
+
 def match_table(match_id, teams, season, date_match, stage):
     config = configparser.ConfigParser()
     config.read("config.ini")
@@ -70,8 +101,7 @@ def match_table(match_id, teams, season, date_match, stage):
 
         return False
     
-    elif exists and stage_check[0] is None:
-
+    elif exists and stage_check[0] is None and stage != '':
 
         cur.execute(f'''UPDATE mlb_match SET stage = '{stage}' WHERE match_id = '{match_id}';''')
         conn.commit()
@@ -347,12 +377,19 @@ def handicap_result_table(match_id, teams_ID, handicap):
         value = getDictionary(period[0], handicap)
 
         if 0 < value[0] - value[1] + period[1]:
-            result = teams_ID[0]
-        elif 0 < value[1] - value[0] + period[1]:
-            result = teams_ID[1]
+            team1_result = 'win'
+        elif 0 == value[0] - value[1] + period[1]:
+            team1_result = 'draw'
         else:
-            result = 'draw'
+            team1_result = 'lose'
 
-        cur.execute(f'''UPDATE mlb_handicap_bet SET handicap_result = '{result}' WHERE match_id = '{match_id}' AND period = '{period[0]}' AND handicap = {period[1]};''')
+        if 0 < value[1] - value[0] + period[1]:
+            team2_result = 'win'
+        elif 0 == value[1] - value[0] + period[1]:
+            team2_result = 'draw'
+        else:
+            team2_result = 'lose'
+
+        cur.execute(f'''UPDATE mlb_handicap_bet SET handicap_team1_result = '{team1_result}', handicap_team2_result = '{team2_result}' WHERE match_id = '{match_id}' AND period = '{period[0]}' AND handicap = {period[1]};''')
         conn.commit()
 

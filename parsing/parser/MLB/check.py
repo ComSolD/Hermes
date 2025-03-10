@@ -1,4 +1,8 @@
 import numpy as np
+import psycopg2
+import configparser
+import re
+from datetime import datetime, timedelta
 
 def total_check(totals):
     hit_team1 = int(totals[int(len(totals)/2)-2])
@@ -449,3 +453,67 @@ def check_stat(player_names, player_stats, player_roles, player_IDs):
         hitter_player_stat_team2[num].append(player_IDs.pop(0))
 
     return pitcher_player_stat_team1, pitcher_player_stat_team2, hitter_player_stat_team1, hitter_player_stat_team2
+
+
+def extract_time(match_id):
+    """Извлекает время из match_id в формате HH:MM."""
+    time_match = re.search(r'_(\d{2}_\d{2})$', match_id)
+    return time_match.group(1).replace('_', ':') if time_match else None
+
+
+def find_closest_match(db_matches, search_time):
+    """Находит ближайший match_id с минимальной разницей во времени."""
+
+
+    search_dt = datetime.strptime(search_time, "%H:%M")
+
+    min_diff = timedelta.max
+    closest_match = None
+
+
+    for match_id in db_matches:
+        match_time = extract_time(match_id)
+
+        if match_time:
+            match_dt = datetime.strptime(match_time, "%H:%M")
+            diff = abs(search_dt - match_dt)
+            
+            if diff < min_diff:
+                min_diff = diff
+                closest_match = match_id
+
+    return closest_match
+
+
+def id_check(match_id, search_time):
+    """Поиск ближайшего match_id в базе данных с учетом разницы во времени."""
+    # Читаем конфигурацию БД
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    db_params = config["postgresql"]
+    
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+    
+    try:
+        # Формируем основную часть match_id без времени
+        
+        # SQL-запрос для поиска матчей с нужным префиксом
+        cur.execute("""SELECT match_id FROM mlb_match WHERE match_id LIKE %s""", (match_id,))
+        
+        # Получаем все найденные match_id
+        db_matches = [row[0] for row in cur.fetchall()]
+        
+        if not db_matches:
+            return None  # Нет совпадений
+        
+        
+        # Находим ближайший match_id по времени
+        best_match = find_closest_match(db_matches, search_time)
+        
+        return best_match
+    
+    finally:
+        cur.close()
+        conn.close()
