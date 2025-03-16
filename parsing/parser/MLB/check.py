@@ -3,6 +3,7 @@ import psycopg2
 import configparser
 import re
 from datetime import datetime, timedelta
+from thefuzz import fuzz, process
 
 def total_check(totals):
     hit_team1 = int(totals[int(len(totals)/2)-2])
@@ -12,152 +13,152 @@ def total_check(totals):
     error_team2 = int(totals[-1])
 
     if totals[0] == '-':
-        inning1_team1 = 'NULL'
+        inning1_team1 = 0
     else:
         inning1_team1 = int(totals[0])
     if totals[1] == '-':
-        inning2_team1 = 'NULL'
+        inning2_team1 = 0
     else:
         inning2_team1 = int(totals[1])
     if totals[2] == '-':
-        inning3_team1 = 'NULL'
+        inning3_team1 = 0
     else:
         inning3_team1 = int(totals[2])
     if totals[3] == '-':
-        inning4_team1 = 'NULL'
+        inning4_team1 = 0
     else:
         inning4_team1 = int(totals[3])
     if totals[4] == '-':
-        inning5_team1 = 'NULL'
+        inning5_team1 = 0
     else:
         inning5_team1 = int(totals[4])
     if totals[5] == '-':
-        inning6_team1 = 'NULL'
+        inning6_team1 = 0
     else:
         inning6_team1 = int(totals[5])
     if totals[6] == '-':
-        inning7_team1 = 'NULL'
+        inning7_team1 = 0
     else:
         inning7_team1 = int(totals[6])
     if totals[7] == '-':
-        inning8_team1 = 'NULL'
+        inning8_team1 = 0
     else:
         inning8_team1 = int(totals[7])
     if totals[8] == '-':
-        inning9_team1 = 'NULL'
+        inning9_team1 = 0
     else:
         inning9_team1 = int(totals[8])
 
     if totals[int(len(totals)/2)] == '-':
-        missed_inning1_team1 = 'NULL'
+        missed_inning1_team1 = 0
     else:
         missed_inning1_team1 = int(totals[int(len(totals)/2)])
     if totals[int(len(totals)/2)+1] == '-':
-        missed_inning2_team1 = 'NULL'
+        missed_inning2_team1 = 0
     else:
         missed_inning2_team1 = int(totals[int(len(totals)/2)+1])
     if totals[int(len(totals)/2)+2] == '-':
-        missed_inning3_team1 = 'NULL'
+        missed_inning3_team1 = 0
     else:
         missed_inning3_team1 = int(totals[int(len(totals)/2)+2])
     if totals[int(len(totals)/2)+3] == '-':
-        missed_inning4_team1 = 'NULL'
+        missed_inning4_team1 = 0
     else:
         missed_inning4_team1 = int(totals[int(len(totals)/2)+3])
     if totals[int(len(totals)/2)+4] == '-':
-        missed_inning5_team1 = 'NULL'
+        missed_inning5_team1 = 0
     else:
         missed_inning5_team1 = int(totals[int(len(totals)/2)+4])
     if totals[int(len(totals)/2)+5] == '-':
-        missed_inning6_team1 = 'NULL'
+        missed_inning6_team1 = 0
     else:
         missed_inning6_team1 = int(totals[int(len(totals)/2)+5])
     if totals[int(len(totals)/2)+6] == '-':
-        missed_inning7_team1 = 'NULL'
+        missed_inning7_team1 = 0
     else:
         missed_inning7_team1 = int(totals[int(len(totals)/2)+6])
     if totals[int(len(totals)/2)+7] == '-':
-        missed_inning8_team1 = 'NULL'
+        missed_inning8_team1 = 0
     else:
         missed_inning8_team1 = int(totals[int(len(totals)/2)+7])
     if totals[int(len(totals)/2)+8] == '-':
-        missed_inning9_team1 = 'NULL'
+        missed_inning9_team1 = 0
     else:
         missed_inning9_team1 = int(totals[int(len(totals)/2)+8])
     
 
 
     if totals[int(len(totals)/2)] == '-':
-        inning1_team2 = 'NULL'
+        inning1_team2 = 0
     else:
         inning1_team2 = int(totals[int(len(totals)/2)])
     if totals[int(len(totals)/2)+1] == '-':
-        inning2_team2 = 'NULL'
+        inning2_team2 = 0
     else:
         inning2_team2 = int(totals[int(len(totals)/2)+1])
     if totals[int(len(totals)/2)+2] == '-':
-        inning3_team2 = 'NULL'
+        inning3_team2 = 0
     else:
         inning3_team2 = int(totals[int(len(totals)/2)+2])
     if totals[int(len(totals)/2)+3] == '-':
-        inning4_team2 = 'NULL'
+        inning4_team2 = 0
     else:
         inning4_team2 = int(totals[int(len(totals)/2)+3])
     if totals[int(len(totals)/2)+4] == '-':
-        inning5_team2 = 'NULL'
+        inning5_team2 = 0
     else:
         inning5_team2 = int(totals[int(len(totals)/2)+4])
     if totals[int(len(totals)/2)+5] == '-':
-        inning6_team2 = 'NULL'
+        inning6_team2 = 0
     else:
         inning6_team2 = int(totals[int(len(totals)/2)+5])
     if totals[int(len(totals)/2)+6] == '-':
-        inning7_team2 = 'NULL'
+        inning7_team2 = 0
     else:
         inning7_team2 = int(totals[int(len(totals)/2)+6])
     if totals[int(len(totals)/2)+7] == '-':
-        inning8_team2 = 'NULL'
+        inning8_team2 = 0
     else:
         inning8_team2 = int(totals[int(len(totals)/2)+7])
     if totals[int(len(totals)/2)+8] == '-':
-        inning9_team2 = 'NULL'
+        inning9_team2 = 0
     else:
         inning9_team2 = int(totals[int(len(totals)/2)+8])
 
     if totals[0] == '-':
-        missed_inning1_team2 = 'NULL'
+        missed_inning1_team2 = 0
     else:
         missed_inning1_team2 = int(totals[0])
     if totals[1] == '-':
-        missed_inning2_team2 = 'NULL'
+        missed_inning2_team2 = 0
     else:
         missed_inning2_team2 = int(totals[1])
     if totals[2] == '-':
-        missed_inning3_team2 = 'NULL'
+        missed_inning3_team2 = 0
     else:
         missed_inning3_team2 = int(totals[2])
     if totals[3] == '-':
-        missed_inning4_team2 = 'NULL'
+        missed_inning4_team2 = 0
     else:
         missed_inning4_team2 = int(totals[3])
     if totals[4] == '-':
-        missed_inning5_team2 = 'NULL'
+        missed_inning5_team2 = 0
     else:
         missed_inning5_team2 = int(totals[4])
     if totals[5] == '-':
-        missed_inning6_team2 = 'NULL'
+        missed_inning6_team2 = 0
     else:
         missed_inning6_team2 = int(totals[5])
     if totals[6] == '-':
-        missed_inning7_team2 = 'NULL'
+        missed_inning7_team2 = 0
     else:
         missed_inning7_team2 = int(totals[6])
     if totals[7] == '-':
-        missed_inning8_team2 = 'NULL'
+        missed_inning8_team2 = 0
     else:
         missed_inning8_team2 = int(totals[7])
     if totals[8] == '-':
-        missed_inning9_team2 = 'NULL'
+        missed_inning9_team2 = 0
     else:
         missed_inning9_team2 = int(totals[8])
 
@@ -258,7 +259,7 @@ def check_stat(player_names, player_stats, player_roles, player_IDs):
 
                 era_check = player_stats.pop(-1)
                 if era_check == '---'or era_check == 'INF':
-                    redact_list.append('NULL')
+                    redact_list.append(0)
                 else:
                     redact_list.append(era_check)
 
@@ -326,7 +327,7 @@ def check_stat(player_names, player_stats, player_roles, player_IDs):
 
                 era_check = player_stats.pop(-1)
                 if era_check == '---'or era_check == 'INF':
-                    redact_list.append('NULL')
+                    redact_list.append(0)
                 else:
                     redact_list.append(era_check)
 
@@ -517,3 +518,44 @@ def id_check(match_id, search_time):
     finally:
         cur.close()
         conn.close()
+
+
+def get_best_match(input_name, team_names):
+    """ Возвращает название команды и ID с наибольшим совпадением """
+    best_match = process.extractOne(
+        input_name, 
+        team_names.keys(), 
+        scorer=fuzz.partial_ratio  # Используем partial_ratio для учета частичных совпадений
+    )
+
+    if best_match and best_match[1] > 70:  # Снижен порог на 70%
+        return team_names[best_match[0]], best_match[0]  # Возвращаем (team_id, team_name)
+    else:
+        return None, None  # Если совпадения нет
+
+
+def team_check(name_team1, name_team2):
+    # Загружаем конфиг
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    # Получаем все команды
+    cur.execute("SELECT team_id, name FROM mlb_team;")
+    teams = cur.fetchall()
+
+    # Создаем словарь {team_name: team_id}
+    team_dict = {name: team_id for team_id, name in teams}
+
+    # Поиск ближайшего совпадения
+    team1_id, team1_name = get_best_match(name_team1, team_dict)
+    team2_id, team2_name = get_best_match(name_team2, team_dict)
+
+    if not team1_id or not team2_id:
+        return f"Одна или обе команды не найдены: {name_team1}, {name_team2}"
+
+    return team1_id, team2_id, team1_name, team2_name

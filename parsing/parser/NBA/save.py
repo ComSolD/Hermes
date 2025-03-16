@@ -45,37 +45,6 @@ def team_table(name_team1, name_team2):
     return team1_id, team2_id
 
 
-def team_table_espn(name_team1, name_team2):
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-
-    # Получаем параметры подключения
-    db_params = config["postgresql"]
-
-    # Подключение к базе данных
-    conn = psycopg2.connect(**db_params)
-    cur = conn.cursor()
-
-    cur.execute(f"SELECT team_id, name FROM nba_team WHERE name = '{name_team1}' OR second_name = '{name_team1}';")
-
-    team1_id = cur.fetchall()
-
-    team1_name = team1_id[0][1]
-
-    team1_id = team1_id[0][0]
-
-    cur.execute(f"SELECT team_id, name FROM nba_team WHERE name = '{name_team2}' OR second_name = '{name_team2}';")
-
-    team2_id = cur.fetchall()
-
-    team2_name = team2_id[0][1]
-
-    team2_id = team2_id[0][0]
-    
-
-    return team1_id, team2_id, team1_name, team2_name
-
-
 def match_table(match_id, teams, season, date_match, stage):
     config = configparser.ConfigParser()
     config.read("config.ini")
@@ -380,9 +349,16 @@ def handicap_result_table(match_id, handicap):
         else:
             team1_result = 'lose'
 
-        if 0 < value[1] - value[0] + period[1]:
+        if period[1] > 0:
+            handi = -period[1]
+        elif period[1] < 0:
+            handi = abs(period[1])
+        else:
+            handi = period[1]
+
+        if 0 < value[1] - value[0] + handi:
             team2_result = 'win'
-        elif 0 == value[1] - value[0] + period[1]:
+        elif 0 == value[1] - value[0] + handi:
             team2_result = 'draw'
         else:
             team2_result = 'lose'

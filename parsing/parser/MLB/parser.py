@@ -10,8 +10,8 @@ from pathlib import Path
 import datetime
 import time
 
-from parser.MLB.check import check_stat, id_check, stage_check, total_check
-from parser.MLB.save import handicap_result_table, moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, team_table, match_table, team_table_espn, total_result_table, update_time
+from parser.MLB.check import check_stat, id_check, stage_check, team_check, total_check
+from parser.MLB.save import handicap_result_table, moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, team_table, match_table, total_result_table, update_time
 from parser.MLB.redact import date_redact_full_month, time_redact
 
 
@@ -120,7 +120,7 @@ class ParsingMLB(object):
                     self.open_matches_link(f"https://www.espn.com{match}")
                 except Exception as e:
                     logging.error(f"Ошибка при обработке матча {match}: {e}")
-
+    
 
     def open_matches_link(self, link):
         
@@ -157,7 +157,7 @@ class ParsingMLB(object):
 
         teams = [team.get_attribute('textContent') for team in teams_selenium]
 
-        data_teams = team_table_espn(teams[0], teams[1])
+        data_teams = team_check(teams[0], teams[1])
 
         self.teams_id = [data_teams[0], data_teams[1]]
 
@@ -205,16 +205,14 @@ class ParsingMLB(object):
 
         if not self.open_box_score():
             return 0
-        
-        
+                
         if not match_table(self.match_id, self.teams_id, '', self.date_match, stage):
 
+            moneyline_result_table(self.match_id, self.teams_id, redact_total)
 
-            moneyline_result_table(self.match_id, self.teams_id, total[0])
+            total_result_table(self.match_id, redact_total)
 
-            total_result_table(self.match_id, total[0])
-
-            handicap_result_table(self.match_id, self.teams_id, total[0])
+            handicap_result_table(self.match_id, self.teams_id, redact_total)
 
             team_stat_pts_tables(self.match_id, self.teams_id, total)
             team_stat_tables(self.match_id, self.teams_id, resul_team1, resul_team2)

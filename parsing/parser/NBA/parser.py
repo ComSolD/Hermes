@@ -10,8 +10,8 @@ from pathlib import Path
 import datetime
 import time
 
-from parser.NBA.check import check_stat, id_check, stage_check, total_check
-from parser.NBA.save import handicap_result_table, moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, team_table_espn, match_table, total_result_table, update_time
+from parser.NBA.check import check_stat, id_check, stage_check, team_check, total_check
+from parser.NBA.save import handicap_result_table, moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, match_table, total_result_table, update_time
 from parser.NBA.redact import date_redact_full_month, time_redact
 
 
@@ -144,7 +144,7 @@ class ParsingNBA(object):
 
         teams = [team.get_attribute('textContent') for team in teams_selenium]
 
-        data_teams = team_table_espn(teams[0], teams[1])
+        data_teams = team_check(teams[0], teams[1])
 
         self.teams_id = [data_teams[0], data_teams[1]]
 

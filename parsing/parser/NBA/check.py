@@ -3,6 +3,8 @@ import psycopg2
 import configparser
 import re
 from datetime import datetime, timedelta
+from thefuzz import fuzz, process
+
 
 def total_check(totals):
     totals.pop(int(len(totals)/2))
@@ -339,3 +341,45 @@ def id_check(match_id, search_time):
     finally:
         cur.close()
         conn.close()
+
+
+def get_best_match(input_name, team_names):
+    """ Возвращает название команды и ID с наибольшим совпадением """
+    best_match = process.extractOne(
+        input_name, 
+        team_names.keys(), 
+        scorer=fuzz.partial_ratio  # Используем partial_ratio для учета частичных совпадений
+    )
+
+    if best_match and best_match[1] > 70:  # Снижен порог на 70%
+        return team_names[best_match[0]], best_match[0]  # Возвращаем (team_id, team_name)
+    else:
+        return None, None  # Если совпадения нет
+
+
+def team_check(name_team1, name_team2):
+    # Загружаем конфиг
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    # Получаем все команды
+    cur.execute("SELECT team_id, name FROM nba_team;")
+    teams = cur.fetchall()
+
+    # Создаем словарь {team_name: team_id}
+    team_dict = {name: team_id for team_id, name in teams}
+
+    # Поиск ближайшего совпадения
+    team1_id, team1_name = get_best_match(name_team1, team_dict)
+    team2_id, team2_name = get_best_match(name_team2, team_dict)
+
+    if not team1_id or not team2_id:
+        return f"Одна или обе команды не найдены: {name_team1}, {name_team2}"
+
+    return team1_id, team2_id, team1_name, team2_name
+

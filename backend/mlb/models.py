@@ -4,7 +4,6 @@ import uuid
 class MLBTeam(models.Model):
     team_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    second_name = models.CharField(max_length=100, null = True)
 
     class Meta():
         db_table = 'mlb_team'
