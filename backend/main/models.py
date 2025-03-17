@@ -5,6 +5,7 @@ class Tournament(models.Model):
         ('NBA', 'NBA'),
         ('NHL', 'NHL'),
         ('NFL', 'NFL'),
+        ('MLB', 'MLB'),
     ]
     
     name = models.CharField(max_length=100, unique=True, choices=LEAGUE_CHOICES)

@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../../components/Header";
-import MatchHeader from "./MatchHeaderNBA";
+import MatchHeader from "./MatchHeaderMLB";
 import "../../styles/MatchDetail.css";
 import { Link } from "react-router-dom";
 
 
-function TotalDetailNBA() {
+function TotalDetailMLB() {
   const { id, period } = useParams(); // Получаем ID матча из URL
   const [match, setMatch] = useState(null);
 
   useEffect(() => {
 
-    fetch(`http://127.0.0.1:8000/api/nba/match/${id}/handicap/${period || 0}`) // Загружаем данные о матче
+    fetch(`http://127.0.0.1:8000/api/mlb/match/${id}/handicap/${period || 0}`) // Загружаем данные о матче
       .then((response) => response.json())
       .then((data) => {
         setMatch(data)
@@ -45,7 +45,7 @@ function TotalDetailNBA() {
             {match.match_info.periods.map((p) => (
               <Link
                 key={p.number}
-                to={`/nba/match/${id}/handicap/${p.number}`} // Динамический URL
+                to={`/mlb/match/${id}/handicap/${p.number}`} // Динамический URL
                 className={`tab ${Number(period) === p.number ? "active" : ""}`} // Подсветка активного периода
                 onClick={(e) => Number(period) === p.number && e.preventDefault()}
               >
@@ -97,4 +97,4 @@ function TotalDetailNBA() {
   );
 }
 
-export default TotalDetailNBA;
+export default TotalDetailMLB;

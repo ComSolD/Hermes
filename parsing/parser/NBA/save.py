@@ -342,13 +342,6 @@ def handicap_result_table(match_id, handicap):
 
         value = getDictionary(period[0], handicap)
 
-        if 0 < value[0] - value[1] + period[1]:
-            team1_result = 'win'
-        elif 0 == value[0] - value[1] + period[1]:
-            team1_result = 'draw'
-        else:
-            team1_result = 'lose'
-
         if period[1] > 0:
             handi = -period[1]
         elif period[1] < 0:
@@ -356,9 +349,17 @@ def handicap_result_table(match_id, handicap):
         else:
             handi = period[1]
 
-        if 0 < value[1] - value[0] + handi:
+
+        if 0 < value[0] - value[1] + handi:
+            team1_result = 'win'
+        elif 0 == value[0] - value[1] + handi:
+            team1_result = 'draw'
+        else:
+            team1_result = 'lose'
+
+        if 0 < value[1] - value[0] + period[1]:
             team2_result = 'win'
-        elif 0 == value[1] - value[0] + handi:
+        elif 0 == value[1] - value[0] + period[1]:
             team2_result = 'draw'
         else:
             team2_result = 'lose'

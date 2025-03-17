@@ -3,18 +3,28 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from nba.models import NBATeamPtsStat, NBAUpdate, NBAMatch, NBAMoneylineBet, NBATeam
+from mlb.models import MLBTeamPtsStat, MLBUpdate, MLBMatch, MLBMoneylineBet, MLBTeam
+
 from nhl.models import NHLTeamPtsStat, NHLUpdate, NHLMatch, NHLTeam
 
 from .models import Tournament
 
 UPDATE_MODELS = {
     "NBA": NBAUpdate,
+    "MLB": MLBUpdate,
+
+
+
     "NHL": NHLUpdate,
 }
 
 MATCH_MODELS = {
     "NBA": (NBAMatch, NBAMoneylineBet, NBATeam, NBATeamPtsStat),
+    "MLB": (MLBMatch, MLBMoneylineBet, MLBTeam, MLBTeamPtsStat),
+
+
     "NHL": (NHLMatch, NHLTeam, NHLTeamPtsStat),
+
 }
 
 class TournamentSerializer(serializers.ModelSerializer):

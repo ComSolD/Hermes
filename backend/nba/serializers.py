@@ -1,6 +1,4 @@
-from datetime import datetime
 from rest_framework import serializers
-from django.utils import timezone
 from nba.models import NBAHandicapBet, NBAPlayer, NBAPlayerStat, NBATeamPtsStat, NBATeamStat, NBAMatch, NBAMoneylineBet, NBATeam, NBATotalBet
 
 class NBAMatchSerializer(serializers.ModelSerializer):

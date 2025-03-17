@@ -33,6 +33,11 @@ const Header = () => {
           paths={["/nba/schedule", "/nba/teams", "/nba/statistic"]} 
         />
         <MenuItem 
+          title="MLB" 
+          links={["Расписание", "Команды", "Статистика"]} 
+          paths={["/mlb/schedule", "/mlb/teams", "/mlb/statistic"]} 
+        />
+        <MenuItem 
           title="NHL" 
           links={["Расписание", "Команды"]} 
           paths={["/nhl/schedule", "/nhl/teams"]} 
