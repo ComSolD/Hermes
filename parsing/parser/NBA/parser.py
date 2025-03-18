@@ -163,6 +163,7 @@ class ParsingNBA(object):
         totals_selenium = self.driver.find_elements(By.CSS_SELECTOR, 'div.Gamestrip__Table div.flex div.Table__ScrollerWrapper div.Table__Scroller table.Table tbody.Table__TBODY tr.Table__TR td.Table__TD') # Собирает результаты команд
         stages_selenium = self.driver.find_elements(By.CSS_SELECTOR, 'div[class="ScoreCell__GameNote di"]') # Собираем данные об этапе
 
+
         totals = [total.get_attribute('textContent') for total in totals_selenium]
         stages = [stage.get_attribute('textContent') for stage in stages_selenium]
 
@@ -189,7 +190,6 @@ class ParsingNBA(object):
         
         redact_total[-2] = int(total[2][0])
         redact_total[-1] = int(total[2][1])
-
 
         if not self.open_box_score():
             return 0

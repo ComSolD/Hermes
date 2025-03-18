@@ -94,11 +94,11 @@ def team_stat_tables(match_id, teams_id, resul_team1, resul_team2, stat_team1, s
 
     # Заполнение таблицы статистики команд
     team1_Stat_id = str(uuid.uuid4())
-    cur.execute(f'''INSERT INTO nba_team_stat(team_stat_id, match_id, team_id, result, status, fg, trying_fg, three_pt, attempted_three_pt, ft, trying_ft, oreb, dreb, reb, ast, stl, blk, turnovers, pf) VALUES('{team1_Stat_id}', '{match_id}', '{teams_id[0]}', '{resul_team1}', 'Away', {stat_team1[0][0]}, {stat_team1[0][1]}, {stat_team1[1][0]}, {stat_team1[1][1]}, {stat_team1[2][0]}, {stat_team1[2][1]}, {int(stat_team1[3])}, {int(stat_team1[4])}, {int(stat_team1[5])}, {int(stat_team1[6])}, {int(stat_team1[7])}, {int(stat_team1[8])}, {int(stat_team1[9])}, {int(stat_team1[10])})''')
+    cur.execute(f'''INSERT INTO nba_team_stat(team_stat_id, match_id, team_id, result, status, fg, trying_fg, three_pt, attempted_three_pt, ft, trying_ft, oreb, dreb, reb, ast, stl, blk, turnovers, pf) VALUES('{team1_Stat_id}', '{match_id}', '{teams_id[0]}', '{resul_team1}', 'away', {stat_team1[0][0]}, {stat_team1[0][1]}, {stat_team1[1][0]}, {stat_team1[1][1]}, {stat_team1[2][0]}, {stat_team1[2][1]}, {int(stat_team1[3])}, {int(stat_team1[4])}, {int(stat_team1[5])}, {int(stat_team1[6])}, {int(stat_team1[7])}, {int(stat_team1[8])}, {int(stat_team1[9])}, {int(stat_team1[10])})''')
     conn.commit()
 
     team2_Stat_id = str(uuid.uuid4()) 
-    cur.execute(f'''INSERT INTO nba_team_stat(team_stat_id, match_id, team_id, result, status, fg, trying_fg, three_pt, attempted_three_pt, ft, trying_ft, oreb, dreb, reb, ast, stl, blk, turnovers, pf) VALUES('{team2_Stat_id}', '{match_id}', '{teams_id[1]}', '{resul_team2}', 'Home', {stat_team2[0][0]}, {stat_team2[0][1]}, {stat_team2[1][0]}, {stat_team2[1][1]}, {stat_team2[2][0]}, {stat_team2[2][1]}, {int(stat_team2[3])}, {int(stat_team2[4])}, {int(stat_team2[5])}, {int(stat_team2[6])}, {int(stat_team2[7])}, {int(stat_team2[8])}, {int(stat_team2[9])}, {int(stat_team2[10])})''')
+    cur.execute(f'''INSERT INTO nba_team_stat(team_stat_id, match_id, team_id, result, status, fg, trying_fg, three_pt, attempted_three_pt, ft, trying_ft, oreb, dreb, reb, ast, stl, blk, turnovers, pf) VALUES('{team2_Stat_id}', '{match_id}', '{teams_id[1]}', '{resul_team2}', 'home', {stat_team2[0][0]}, {stat_team2[0][1]}, {stat_team2[1][0]}, {stat_team2[1][1]}, {stat_team2[2][0]}, {stat_team2[2][1]}, {int(stat_team2[3])}, {int(stat_team2[4])}, {int(stat_team2[5])}, {int(stat_team2[6])}, {int(stat_team2[7])}, {int(stat_team2[8])}, {int(stat_team2[9])}, {int(stat_team2[10])})''')
     conn.commit()
 
 

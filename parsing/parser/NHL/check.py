@@ -1,5 +1,9 @@
 import numpy as np
-
+import psycopg2
+import configparser
+import re
+from datetime import datetime, timedelta
+from thefuzz import fuzz, process
 
 def total_check(totals):
     totals.pop(int(len(totals)/2))
@@ -276,3 +280,109 @@ def check_stat(player_names, player_stats, player_IDs):
         forwards_team1.append(defensemen)
 
     return forwards_team1, forwards_team2, defensemen_team1, defensemen_team2, goalies_team1, goalies_team2
+
+
+def extract_time(match_id):
+    """Извлекает время из match_id в формате HH:MM."""
+    time_match = re.search(r'_(\d{2}_\d{2})$', match_id)
+    return time_match.group(1).replace('_', ':') if time_match else None
+
+
+def find_closest_match(db_matches, search_time):
+    """Находит ближайший match_id с минимальной разницей во времени."""
+
+
+    search_dt = datetime.strptime(search_time, "%H:%M")
+
+    min_diff = timedelta.max
+    closest_match = None
+
+
+    for match_id in db_matches:
+        match_time = extract_time(match_id)
+
+        if match_time:
+            match_dt = datetime.strptime(match_time, "%H:%M")
+            diff = abs(search_dt - match_dt)
+            
+            if diff < min_diff:
+                min_diff = diff
+                closest_match = match_id
+
+    return closest_match
+
+
+def id_check(match_id, search_time):
+    """Поиск ближайшего match_id в базе данных с учетом разницы во времени."""
+    # Читаем конфигурацию БД
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    db_params = config["postgresql"]
+    
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+    
+    try:
+        # Формируем основную часть match_id без времени
+        
+        # SQL-запрос для поиска матчей с нужным префиксом
+        cur.execute("""SELECT match_id FROM nhl_match WHERE match_id LIKE %s""", (match_id,))
+        
+        # Получаем все найденные match_id
+        db_matches = [row[0] for row in cur.fetchall()]
+        
+        if not db_matches:
+            return None  # Нет совпадений
+        
+        
+        # Находим ближайший match_id по времени
+        best_match = find_closest_match(db_matches, search_time)
+        
+        return best_match
+    
+    finally:
+        cur.close()
+        conn.close()
+
+
+def get_best_match(input_name, team_names):
+    """ Возвращает название команды и ID с наибольшим совпадением """
+    best_match = process.extractOne(
+        input_name, 
+        team_names.keys(), 
+        scorer=fuzz.partial_ratio  # Используем partial_ratio для учета частичных совпадений
+    )
+
+    if best_match and best_match[1] > 70:  # Снижен порог на 70%
+        return team_names[best_match[0]], best_match[0]  # Возвращаем (team_id, team_name)
+    else:
+        return None, None  # Если совпадения нет
+
+
+def team_check(name_team1, name_team2):
+    # Загружаем конфиг
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    db_params = config["postgresql"]
+
+    # Подключение к базе данных
+    conn = psycopg2.connect(**db_params)
+    cur = conn.cursor()
+
+    # Получаем все команды
+    cur.execute("SELECT team_id, name FROM nhl_team;")
+    teams = cur.fetchall()
+
+    # Создаем словарь {team_name: team_id}
+    team_dict = {name: team_id for team_id, name in teams}
+
+    # Поиск ближайшего совпадения
+    team1_id, team1_name = get_best_match(name_team1, team_dict)
+    team2_id, team2_name = get_best_match(name_team2, team_dict)
+
+    if not team1_id or not team2_id:
+        return f"Одна или обе команды не найдены: {name_team1}, {name_team2}"
+
+    return team1_id, team2_id, team1_name, team2_name
+

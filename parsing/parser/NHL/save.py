@@ -62,14 +62,14 @@ def match_table(match_id, teams, season, date_match, stage, status):
     stage_check = cur.fetchone()
         
 
-    if not exists and stage == '':
+    if not exists and season != '':
 
         cur.execute(f"INSERT INTO nhl_match(match_id, team1_id, team2_id, season, date) VALUES('{match_id}', '{teams[0]}', '{teams[1]}', '{season}', '{date_match}')")
         conn.commit()
 
         return False
     
-    elif exists and stage_check[0] is None:
+    elif exists and stage_check[0] is None and stage != '':
         cur.execute(f'''UPDATE nhl_match SET stage = '{stage}', status = '{status}' WHERE match_id = '{match_id}';''')
         conn.commit()
 
@@ -92,11 +92,11 @@ def team_stat_tables(match_id, teams_id, result_team1, result_team2):
 
     # Заполнение таблицы статистики команд
     team1_Stat_id = str(uuid.uuid4())
-    cur.execute(f"INSERT INTO nhl_team_stat(team_stat_id, match_id, team_id, result, status) VALUES('{team1_Stat_id}', '{match_id}', '{teams_id[0]}', '{result_team1}', 'Away')")
+    cur.execute(f"INSERT INTO nhl_team_stat(team_stat_id, match_id, team_id, result, status) VALUES('{team1_Stat_id}', '{match_id}', '{teams_id[0]}', '{result_team1}', 'away')")
     conn.commit()
 
     team2_Stat_id = str(uuid.uuid4()) 
-    cur.execute(f"INSERT INTO nhl_team_stat(team_stat_id, match_id, team_id, result, status) VALUES('{team2_Stat_id}', '{match_id}', '{teams_id[1]}', '{result_team2}', 'Home')")
+    cur.execute(f"INSERT INTO nhl_team_stat(team_stat_id, match_id, team_id, result, status) VALUES('{team2_Stat_id}', '{match_id}', '{teams_id[1]}', '{result_team2}', 'home')")
     conn.commit()
 
 
@@ -360,14 +360,29 @@ def handicap_result_table(match_id, teams_ID, handicap):
 
         value = getDictionary(period[0], handicap)
 
-        if 0 < value[0] - value[1] + period[1]:
-            result = teams_ID[0]
-        elif 0 < value[1] - value[0] + period[1]:
-            result = teams_ID[1]
+        if period[1] > 0:
+            handi = -period[1]
+        elif period[1] < 0:
+            handi = abs(period[1])
         else:
-            result = 'draw'
+            handi = period[1]
 
-        cur.execute(f'''UPDATE nhl_handicap_bet SET handicap_result = '{result}' WHERE match_id = '{match_id}' AND period = '{period[0]}' AND handicap = {period[1]};''')
+
+        if 0 < value[0] - value[1] + handi:
+            team1_result = 'win'
+        elif 0 == value[0] - value[1] + handi:
+            team1_result = 'draw'
+        else:
+            team1_result = 'lose'
+
+        if 0 < value[1] - value[0] + period[1]:
+            team2_result = 'win'
+        elif 0 == value[1] - value[0] + period[1]:
+            team2_result = 'draw'
+        else:
+            team2_result = 'lose'
+
+        cur.execute(f'''UPDATE nhl_handicap_bet SET handicap_team1_result = '{team1_result}', handicap_team2_result = '{team2_result}' WHERE match_id = '{match_id}' AND period = '{period[0]}' AND handicap = {period[1]};''')
         conn.commit()
 
 

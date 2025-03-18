@@ -90,7 +90,7 @@ class NHLPlayerStat(models.Model):
     sa = models.IntegerField(null = True)
     ga = models.IntegerField(null = True)
     sv = models.IntegerField(null = True)
-    sv_procent = models.IntegerField(null = True)
+    sv_procent = models.FloatField(null = True)
     essv = models.IntegerField(null = True)
     ppsv = models.IntegerField(null = True)
 
@@ -188,7 +188,8 @@ class NHLHandicapBet(models.Model):
     handicap = models.FloatField(null=True, blank=True)
     handicap_team1_odds = models.FloatField(null=True, blank=True)
     handicap_team2_odds = models.FloatField(null=True, blank=True)
-    handicap_result = models.CharField(max_length=36, null=True, blank=True)
+    handicap_team1_result = models.CharField(max_length=5, null=True, blank=True)
+    handicap_team2_result = models.CharField(max_length=5, null=True, blank=True)
 
     class Meta():
         db_table = 'nhl_handicap_bet'

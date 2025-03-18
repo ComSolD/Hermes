@@ -55,8 +55,8 @@ class OddsNBA(object):
                 self.process_matches_on_page()
             else:
                 self.paginate_and_process_matches(url)
-        except:
-            pass
+        except Exception as e:
+            logging.error(f"Ошибка: {e}\n{traceback.format_exc()}")
 
         self.driver.quit()
 

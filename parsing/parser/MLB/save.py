@@ -63,7 +63,7 @@ def match_table(match_id, teams, season, date_match, stage):
     stage_check = cur.fetchone()
         
 
-    if not exists and stage == '':
+    if not exists and season != '':
 
         cur.execute(f"INSERT INTO mlb_match(match_id, team1_id, team2_id, season, date) VALUES('{match_id}', '{teams[0]}', '{teams[1]}', '{season}', '{date_match}')")
         conn.commit()

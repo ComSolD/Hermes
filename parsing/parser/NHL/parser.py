@@ -10,7 +10,7 @@ from pathlib import Path
 import datetime
 import time
 
-from parser.NHL.check import stage_check, total_check, check_stat
+from parser.NHL.check import id_check, stage_check, team_check, total_check, check_stat
 from parser.NHL.save import handicap_result_table, moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, team_table, match_table, total_result_table, update_time, x_result_table
 from parser.NHL.redact import date_redact_full_month, time_redact
 
@@ -65,9 +65,7 @@ class ParsingNHL(object):
             logging.warning(f"Ошибка загрузки страницы: {self.url}: {e}")
             return 0
 
-
         soup = BeautifulSoup(self.driver.page_source,'lxml')
-
 
         no_games = soup.find_all("section", class_="EmptyTable")
 
@@ -93,12 +91,16 @@ class ParsingNHL(object):
 
         items_td = items_tbody.find_all("td", class_="teams__col Table__TD")
 
+        if len(items_td) == 0:
+            items_tbody = items_tbody.find_next("tbody", class_="Table__TBODY")
+
+            items_td = items_tbody.find_all("td", class_="teams__col Table__TD")
+
         matches = list()
 
         for td in items_td:
             if len(td) > 0 and td.find("a").get_text() != 'Postponed' and td.find("a").get_text() != 'Canceled':
                 matches.append(td.find("a").get("href"))
-
         
         for match in matches:
             try:
@@ -142,7 +144,11 @@ class ParsingNHL(object):
 
         teams = [team.get_attribute('textContent') for team in teams_selenium]
 
-        self.teams_id = team_table(teams[0], teams[1])
+        data_teams = team_check(teams[0], teams[1])
+
+        self.teams_id = [data_teams[0], data_teams[1]]
+
+        teams = [data_teams[2], data_teams[3]]
 
         # Создаем уникальный ID
         teams = [team.lower().replace(" ", "_") for team in teams]
@@ -150,6 +156,8 @@ class ParsingNHL(object):
         self.match_id = "_".join(teams)
 
         self.match_id += f"_{match_date.replace('-', '_')}_{match_time.replace(':', '_')}"
+
+        self.match_id = id_check(self.match_id, match_time)
 
         # Получение данных через HTML и запись в список
         totals_selenium = self.driver.find_elements(By.CSS_SELECTOR, 'div.Gamestrip__Table div.flex div.Table__ScrollerWrapper div.Table__Scroller table.Table tbody.Table__TBODY tr.Table__TR td.Table__TD') # Собирает результаты команд
@@ -179,6 +187,14 @@ class ParsingNHL(object):
         
         total = total_check(totals)
 
+        redact_total = []
+        
+        for i in total[0]:
+            redact_total.append(i)
+        
+        redact_total[-2] = int(total[2][0])
+        redact_total[-1] = int(total[2][1])
+
         if not self.open_box_score():
             return 0
         
@@ -186,7 +202,7 @@ class ParsingNHL(object):
 
             x_result_table(self.match_id, self.teams_id, total[0])
 
-            moneyline_result_table(self.match_id, self.teams_id, total[0])
+            moneyline_result_table(self.match_id, self.teams_id, redact_total)
 
             total_result_table(self.match_id, total[0])
 
@@ -211,7 +227,7 @@ class ParsingNHL(object):
         if len(player_stats) == 0:
             return False
 
-        # time.sleep(2)
+        time.sleep(2)
 
         player_link_selenium = WebDriverWait(self.driver, 10).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="Boxscore Boxscore__ResponsiveWrapper"] div.Wrapper div.Boxscore div.ResponsiveTable div.flex table.Table tbody.Table__TBODY tr[class="Table__TR Table__TR--sm Table__even"] td.Table__TD div.flex a.AnchorLink')) # Собираем игроков команд

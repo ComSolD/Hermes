@@ -253,11 +253,11 @@ def team_stat_tables(match_id, teams_id, result_team1, result_team2):
 
     # Заполнение таблицы статистики команд
     team1_Stat_id = str(uuid.uuid4())
-    cur.execute(f"INSERT INTO nfl_team_stat(team_stat_id, match_id, team_id, result, status) VALUES('{team1_Stat_id}', '{match_id}', '{teams_id[0]}', '{result_team1}', 'Away')")
+    cur.execute(f"INSERT INTO nfl_team_stat(team_stat_id, match_id, team_id, result, status) VALUES('{team1_Stat_id}', '{match_id}', '{teams_id[0]}', '{result_team1}', 'away')")
     conn.commit()
 
     team2_Stat_id = str(uuid.uuid4()) 
-    cur.execute(f"INSERT INTO nfl_team_stat(team_stat_id, match_id, team_id, result, status) VALUES('{team2_Stat_id}', '{match_id}', '{teams_id[1]}', '{result_team2}', 'Home')")
+    cur.execute(f"INSERT INTO nfl_team_stat(team_stat_id, match_id, team_id, result, status) VALUES('{team2_Stat_id}', '{match_id}', '{teams_id[1]}', '{result_team2}', 'home')")
     conn.commit()
 
 

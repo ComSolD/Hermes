@@ -86,7 +86,15 @@ class OddsNHL(object):
                 self.driver.get(main_url + f"#/page/{page}/")
                 self.driver.refresh()
 
-                time.sleep(5)
+                time.sleep(2)
+
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+                time.sleep(2)
+
+                self.driver.execute_script("window.scrollTo(0, 0);")
+
+                time.sleep(1)
 
                 match_urls = [match.get_attribute('href') for match in self.get_match_links()]
 
@@ -109,7 +117,7 @@ class OddsNHL(object):
         if self.first_year == "now" or self.first_year == "get" or self.first_year == "now forward":
             xpath = base_xpath + '/") and not(@href="/hockey/usa/nhl/") and not(contains(@href, "standings")) and not(contains(@href, "outrights")) and not(contains(@href, "results"))]'
         else:
-            xpath = base_xpath + f'-{self.first_year}-{self.second_year}/") and not(@href="/hockey/usa/nhl/") and not(contains(@href, "standings"))]'
+            xpath = base_xpath + f'-{self.first_year}-{self.second_year}/") and not(@href="/hockey/usa/nhl/") and not(@href="/hockey/usa/nhl-{self.first_year}-{self.second_year}/") and not(contains(@href, "standings"))]'
 
         return self.driver.find_elements(By.XPATH, xpath)
 
@@ -133,7 +141,7 @@ class OddsNHL(object):
             date = datetime.strptime(match_date, '%d-%m-%Y')
 
 
-            if (self.first_year == 'get' and date >= datetime.strptime(self.enough_date, '%d-%m-%Y')) or (self.first_year == 'now forward' and date <= datetime.strptime(self.enough_date, '%d-%m-%Y')):
+            if (self.first_year == 'get' and date >= datetime.strptime(self.enough_date, '%d-%m-%Y')) or (self.first_year == 'now forward' and date < datetime.strptime(self.enough_date, '%d-%m-%Y')):
                 return 'enough'
 
             teams = list()
@@ -155,7 +163,6 @@ class OddsNHL(object):
             for team in team2_selenium:
                 team2 = team.get_attribute("textContent")
                 teams.append(team.get_attribute("textContent"))
-
             
             teams_id = team_table(team2, team1)
 
@@ -170,28 +177,22 @@ class OddsNHL(object):
 
             self.match_id += f"_{match_date.replace('-', '_')}_{dates[2].replace(':', '_')}"
 
+
             if match_table(self.match_id, teams_id, self.season, match_date, '', ''):
 
                 return 0
 
             self.process_odds_for_periods(self.driver, self.onextwo)
 
-            div_element = WebDriverWait(self.driver, 10).until(
+            div_element = WebDriverWait(self.driver, 1).until(
                 EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Home/Away")]'))
             )
             self.driver.execute_script("arguments[0].click();", div_element)
 
             self.process_odds_for_periods(self.driver, self.moneyline)
 
-            div_element = WebDriverWait(self.driver, 10).until(
+            div_element = WebDriverWait(self.driver, 1).until(
                 EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Over/Under")]'))
-            )
-            self.driver.execute_script("arguments[0].click();", div_element)
-
-            time.sleep(1)
-
-            div_element = WebDriverWait(self.driver, 2).until(
-                EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Full Time")]'))
             )
             self.driver.execute_script("arguments[0].click();", div_element)
 
@@ -199,15 +200,8 @@ class OddsNHL(object):
 
             self.process_odds_for_periods(self.driver, self.total)
 
-            div_element = WebDriverWait(self.driver, 10).until(
+            div_element = WebDriverWait(self.driver, 1).until(
                 EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Asian Handicap")]'))
-            )
-            self.driver.execute_script("arguments[0].click();", div_element)
-
-            time.sleep(1)
-
-            div_element = WebDriverWait(self.driver, 2).until(
-                EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Full Time")]'))
             )
             self.driver.execute_script("arguments[0].click();", div_element)
 
@@ -222,13 +216,11 @@ class OddsNHL(object):
     # Функции для работы с ставками
     def process_odds_for_periods(self, driver, action_function):
         periods = {
-            "full_time": "",  # Без клика, сразу вызываем функцию
+            "full_time": "Full Time",  
             "1st_period": "1st Period",
             "2nd_period": "2nd Period",
             "3rd_period": "3rd Period",
         }
-
-        action_function("full_time")
 
         for key, period_text in periods.items():
             if period_text:
