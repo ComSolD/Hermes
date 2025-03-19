@@ -39,8 +39,8 @@ const Header = () => {
         />
         <MenuItem 
           title="NHL" 
-          links={["Расписание", "Команды"]} 
-          paths={["/nhl/schedule", "/nhl/teams"]} 
+          links={["Расписание", "Команды", "Статистика"]} 
+          paths={["/nhl/schedule", "/nhl/teams", "/nhl/statistic"]} 
         />
       </nav>
     </header>

@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import RoutesNBA from "./routes/RoutesNBA"; // Импортируем роуты NBA
 import RoutesMLB from "./routes/RoutesMLB"; // Импортируем роуты MLB
+import RoutesNHL from "./routes/RoutesNHL"; // Импортируем роуты NHL
 
 import MatchDetailNFL from "./pages/MatchDetailNFL";
 
@@ -17,6 +18,9 @@ function App() {
 
       {/* Родительский маршрут MLB */}
       <Route path="/mlb/*" element={<RoutesMLB />} />
+
+      {/* Родительский маршрут MLB */}
+      <Route path="/nhl/*" element={<RoutesNHL />} />
 
       {/* NFL матч */}
       <Route path="/nfl/match/:id" element={<MatchDetailNFL />} />

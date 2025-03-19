@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 import datetime
 import time
+import traceback
 
 from parser.MLB.check import check_stat, id_check, stage_check, team_check, total_check
 from parser.MLB.save import handicap_result_table, moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, team_table, match_table, total_result_table, update_time
@@ -208,17 +209,32 @@ class ParsingMLB(object):
                 
         if not match_table(self.match_id, self.teams_id, '', self.date_match, stage):
 
-            moneyline_result_table(self.match_id, self.teams_id, redact_total)
+            try:
+                moneyline_result_table(self.match_id, self.teams_id, redact_total)
+            except Exception as e:
+                logging.error(f"Ошибка в линии {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            total_result_table(self.match_id, redact_total)
+            try:
+                total_result_table(self.match_id, redact_total)
+            except Exception as e:
+                logging.error(f"Ошибка в тотале {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            handicap_result_table(self.match_id, redact_total)
+            try:
+                handicap_result_table(self.match_id, redact_total)
+            except Exception as e:
+                logging.error(f"Ошибка в форе {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            team_stat_pts_tables(self.match_id, self.teams_id, total)
-            team_stat_tables(self.match_id, self.teams_id, resul_team1, resul_team2)
+            try:
+                team_stat_pts_tables(self.match_id, self.teams_id, total)
+                team_stat_tables(self.match_id, self.teams_id, resul_team1, resul_team2)
+            except Exception as e:
+                logging.error(f"Ошибка в командной статистики {self.match_id}: {e}\n{traceback.format_exc()}")
             
-            player_tables(self.match_id, self.teams_id[0], self.stats[0], self.stats[2])
-            player_tables(self.match_id, self.teams_id[1], self.stats[1], self.stats[3])
+            try:
+                player_tables(self.match_id, self.teams_id[0], self.stats[0], self.stats[2])
+                player_tables(self.match_id, self.teams_id[1], self.stats[1], self.stats[3])
+            except Exception as e:
+                logging.error(f"Ошибка в статистики игроков {self.match_id}: {e}\n{traceback.format_exc()}")
 
 
     def open_box_score(self):

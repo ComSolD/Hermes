@@ -182,32 +182,44 @@ class OddsNHL(object):
 
                 return 0
 
-            self.process_odds_for_periods(self.driver, self.onextwo)
+            try:
+                self.process_odds_for_periods(self.driver, self.onextwo)
+            except Exception as e:
+                logging.error(f"Ошибка в данных по 1x2 {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            div_element = WebDriverWait(self.driver, 1).until(
-                EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Home/Away")]'))
-            )
-            self.driver.execute_script("arguments[0].click();", div_element)
+            try:
+                div_element = WebDriverWait(self.driver, 1).until(
+                    EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Home/Away")]'))
+                )
+                self.driver.execute_script("arguments[0].click();", div_element)
 
-            self.process_odds_for_periods(self.driver, self.moneyline)
+                self.process_odds_for_periods(self.driver, self.moneyline)
+            except Exception as e:
+                logging.error(f"Ошибка в данных по линии {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            div_element = WebDriverWait(self.driver, 1).until(
-                EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Over/Under")]'))
-            )
-            self.driver.execute_script("arguments[0].click();", div_element)
+            try:
+                div_element = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Over/Under")]'))
+                )
+                self.driver.execute_script("arguments[0].click();", div_element)
 
-            time.sleep(1)
+                time.sleep(1)
 
-            self.process_odds_for_periods(self.driver, self.total)
+                self.process_odds_for_periods(self.driver, self.total)
+            except Exception as e:
+                logging.error(f"Ошибка в данных по тоталу {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            div_element = WebDriverWait(self.driver, 1).until(
-                EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Asian Handicap")]'))
-            )
-            self.driver.execute_script("arguments[0].click();", div_element)
+            try:
+                div_element = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "Asian Handicap")]'))
+                )
+                self.driver.execute_script("arguments[0].click();", div_element)
 
-            time.sleep(1)
+                time.sleep(1)
 
-            self.process_odds_for_periods(self.driver, self.handicap)
+                self.process_odds_for_periods(self.driver, self.handicap)
+            except Exception as e:
+                logging.error(f"Ошибка в данных по форе {self.match_id}: {e}\n{traceback.format_exc()}")
         except Exception as e:
             logging.error(f"Ошибка обработки матча {link}: {e}\n{traceback.format_exc()}")
 
@@ -230,10 +242,20 @@ class OddsNHL(object):
                     )
                     driver.execute_script("arguments[0].click();", div_element)
                 except:
+                    if action_function == self.moneyline and key == 'full_time':
+                        action_function(key)
+
                     continue
                 
-                action_function(key)
-   
+                try:
+                    action_function(key)
+                except:
+                    self.driver.refresh()
+
+                    time.sleep(1)
+                    
+                    action_function(key)
+
 
     def handicap(self, period):
 

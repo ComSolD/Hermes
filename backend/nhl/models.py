@@ -42,12 +42,12 @@ class NHLTeamPtsStat(models.Model):
     team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE)
     total = models.IntegerField()
     total_missed = models.IntegerField()
-    total_t1 = models.IntegerField()
-    total_t1_missed = models.IntegerField()
-    total_t2 = models.IntegerField()
-    total_t2_missed = models.IntegerField()
-    total_t3 = models.IntegerField()
-    total_t3_missed = models.IntegerField()
+    total_p1 = models.IntegerField()
+    total_p1_missed = models.IntegerField()
+    total_p2 = models.IntegerField()
+    total_p2_missed = models.IntegerField()
+    total_p3 = models.IntegerField()
+    total_p3_missed = models.IntegerField()
 
     class Meta():
         db_table = 'nhl_team_pts_stat'

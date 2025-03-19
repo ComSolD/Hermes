@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 import datetime
 import time
+import traceback
 
 from parser.NHL.check import id_check, stage_check, team_check, total_check, check_stat
 from parser.NHL.save import handicap_result_table, moneyline_result_table, player_tables, team_stat_pts_tables, team_stat_tables, team_table, match_table, total_result_table, update_time, x_result_table
@@ -115,6 +116,7 @@ class ParsingNHL(object):
 
         try:
             logging.info(f"Открываем матч: {link}")
+            
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'div.GameInfo__Meta span'))
             )
@@ -178,8 +180,7 @@ class ParsingNHL(object):
         else:
             result_team2 = 'win'
             result_team1 = 'lose'
-
-
+        
         stage = stage_check(stages)
 
         if stage == 0:
@@ -199,20 +200,38 @@ class ParsingNHL(object):
             return 0
         
         if not match_table(self.match_id, self.teams_id, '', self.date_match, stage, status):
+            
+            try:
+                x_result_table(self.match_id, self.teams_id, total[0])
+            except Exception as e:
+                logging.error(f"Ошибка в 1x2 {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            x_result_table(self.match_id, self.teams_id, total[0])
+            try:
+                moneyline_result_table(self.match_id, self.teams_id, redact_total)
+            except Exception as e:
+                logging.error(f"Ошибка в линии {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            moneyline_result_table(self.match_id, self.teams_id, redact_total)
+            try:
+                total_result_table(self.match_id, total[0])
+            except Exception as e:
+                logging.error(f"Ошибка в тотале {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            total_result_table(self.match_id, total[0])
+            try:
+                handicap_result_table(self.match_id, self.teams_id, total[0])
+            except Exception as e:
+                logging.error(f"Ошибка в форе {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            handicap_result_table(self.match_id, self.teams_id, total[0])
+            try:
+                team_stat_pts_tables(self.match_id, self.teams_id, total)
+                team_stat_tables(self.match_id, self.teams_id, result_team1, result_team2)
+            except Exception as e:
+                logging.error(f"Ошибка в командной статистики {self.match_id}: {e}\n{traceback.format_exc()}")
 
-            team_stat_pts_tables(self.match_id, self.teams_id, total)
-            team_stat_tables(self.match_id, self.teams_id, result_team1, result_team2)
-
-            player_tables(self.match_id, self.teams_id[0], self.stats[0], self.stats[2], self.stats[4])
-            player_tables(self.match_id, self.teams_id[1], self.stats[1], self.stats[3], self.stats[5])
+            try:
+                player_tables(self.match_id, self.teams_id[0], self.stats[0], self.stats[2], self.stats[4])
+                player_tables(self.match_id, self.teams_id[1], self.stats[1], self.stats[3], self.stats[5])
+            except Exception as e:
+                logging.error(f"Ошибка в статистики игроков {self.match_id}: {e}\n{traceback.format_exc()}")
     
 
     def open_box_score(self):

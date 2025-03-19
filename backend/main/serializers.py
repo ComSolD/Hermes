@@ -5,7 +5,7 @@ from rest_framework import serializers
 from nba.models import NBATeamPtsStat, NBAUpdate, NBAMatch, NBAMoneylineBet, NBATeam
 from mlb.models import MLBTeamPtsStat, MLBUpdate, MLBMatch, MLBMoneylineBet, MLBTeam
 
-from nhl.models import NHLTeamPtsStat, NHLUpdate, NHLMatch, NHLTeam
+from nhl.models import NHLTeamPtsStat, NHLUpdate, NHLMatch, NHLMoneylineBet, NHLTeam
 
 from .models import Tournament
 
@@ -23,7 +23,7 @@ MATCH_MODELS = {
     "MLB": (MLBMatch, MLBMoneylineBet, MLBTeam, MLBTeamPtsStat),
 
 
-    "NHL": (NHLMatch, NHLTeam, NHLTeamPtsStat),
+    "NHL": (NHLMatch, NHLMoneylineBet, NHLTeam, NHLTeamPtsStat),
 
 }
 
