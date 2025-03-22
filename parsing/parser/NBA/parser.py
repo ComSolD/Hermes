@@ -102,12 +102,13 @@ class ParsingNBA(object):
             if len(td) > 0 and td.find("a").get_text() != 'Postponed' and td.find("a").get_text() != 'Canceled':
                 matches.append(td.find("a").get("href"))
 
+        matches.reverse()
         
         for match in matches:
             try:
                 self.open_matches_link(f"https://www.espn.com{match}")
             except Exception as e:
-                logging.error(f"Ошибка при обработке матча {match}: {e}")
+                logging.error(f"Ошибка при обработке матча {match}: {e}")            
 
 
     def open_matches_link(self, link):
@@ -215,7 +216,7 @@ class ParsingNBA(object):
 
             try:
                 team_stat_pts_tables(self.match_id, self.teams_id, total)
-                team_stat_tables(self.match_id, self.teams_id, resul_team1, resul_team2, self.stats[0], self.stats[1])
+                team_stat_tables(self.match_id, self.teams_id, resul_team1, resul_team2)
             except Exception as e:
                 logging.error(f"Ошибка в командной статистики {self.match_id}: {e}\n{traceback.format_exc()}")
             

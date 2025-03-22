@@ -125,6 +125,8 @@ class OddsNBA(object):
     def open_matches_link(self, link):
         self.driver.get(link)
 
+        time.sleep(2)
+
         try:
             # Дата матча
             date_selenium = WebDriverWait(self.driver, 10).until(
@@ -227,7 +229,14 @@ class OddsNBA(object):
             "4th_quarter": "4th Quarter",
         }
 
-        action_function("full_time")
+        try:
+            action_function("full_time")
+        except:
+            self.driver.refresh()
+
+            time.sleep(1)
+            
+            action_function("full_time") 
 
         for key, period_text in periods.items():
             if period_text:

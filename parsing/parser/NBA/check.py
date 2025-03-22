@@ -110,13 +110,16 @@ def check_stat(player_names, player_stats, player_IDs):
         redact_list[i].remove('+/-')
         redact_list[i].remove('PTS')
 
-    redact_list[3].pop(-3)
-    redact_list[3].pop(-2)
-    redact_list[3].pop(-1)
+    if "%" in redact_list[3][-3]:
+        redact_list[3].pop(-3)
+        redact_list[3].pop(-2)
+        redact_list[3].pop(-1)
 
-    redact_list[1].pop(-3)
-    redact_list[1].pop(-2)
-    redact_list[1].pop(-1)
+    if "%" in redact_list[1][-3]:
+        redact_list[1].pop(-3)
+        redact_list[1].pop(-2)
+        redact_list[1].pop(-1)
+
 
     # Общая статистика 1 команды
     stat_team1 = list()
@@ -126,6 +129,7 @@ def check_stat(player_names, player_stats, player_IDs):
         stat_team1.append(stat)
 
     stat_team1.reverse()
+
 
     stat_team1[0] = stat_team1[0].split('-')
     stat_team1[1] = stat_team1[1].split('-')

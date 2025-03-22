@@ -113,11 +113,11 @@ def team_stat_pts_tables(match_id, teams_id, total):
 
     # Заполнение таблицы статистики очков команд
     team1_PTS_Stat_id = str(uuid.uuid4())
-    cur.execute(f"INSERT INTO nhl_team_pts_stat(team_pts_stat_id, match_id, team_id, total, total_missed, total_t1, total_t1_missed, total_t2, total_t2_missed, total_t3, total_t3_missed) VALUES('{team1_PTS_Stat_id}', '{match_id}', '{teams_id[0]}', {total[0][-2]}, {total[0][-1]}, {total[0][0]}, {total[0][1]}, {total[0][2]}, {total[0][3]}, {total[0][4]}, {total[0][5]})")
+    cur.execute(f"INSERT INTO nhl_team_pts_stat(team_pts_stat_id, match_id, team_id, total, total_missed, total_p1, total_p1_missed, total_p2, total_p2_missed, total_p3, total_p3_missed) VALUES('{team1_PTS_Stat_id}', '{match_id}', '{teams_id[0]}', {total[0][-2]}, {total[0][-1]}, {total[0][0]}, {total[0][1]}, {total[0][2]}, {total[0][3]}, {total[0][4]}, {total[0][5]})")
     conn.commit()
 
     team2_PTS_Stat_id = str(uuid.uuid4())
-    cur.execute(f"INSERT INTO nhl_team_pts_stat(team_pts_stat_id, match_id, team_id, total, total_missed, total_t1, total_t1_missed, total_t2, total_t2_missed, total_t3, total_t3_missed) VALUES('{team2_PTS_Stat_id}', '{match_id}', '{teams_id[1]}', {total[1][-2]}, {total[1][-1]}, {total[1][0]}, {total[1][1]}, {total[1][2]}, {total[1][3]}, {total[1][4]}, {total[1][5]})")
+    cur.execute(f"INSERT INTO nhl_team_pts_stat(team_pts_stat_id, match_id, team_id, total, total_missed, total_p1, total_p1_missed, total_p2, total_p2_missed, total_p3, total_p3_missed) VALUES('{team2_PTS_Stat_id}', '{match_id}', '{teams_id[1]}', {total[1][-2]}, {total[1][-1]}, {total[1][0]}, {total[1][1]}, {total[1][2]}, {total[1][3]}, {total[1][4]}, {total[1][5]})")
     conn.commit()
 
 

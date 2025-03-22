@@ -41,21 +41,7 @@ class NBATeamStat(models.Model):
     team = models.ForeignKey(NBATeam, on_delete=models.CASCADE)
     result = models.CharField(max_length=10, choices=RESULT_CHOICES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
-    fg = models.IntegerField(null = True)
-    trying_fg = models.IntegerField(null = True)
-    three_pt = models.IntegerField(null = True)
-    attempted_three_pt = models.IntegerField(null = True)
-    ft = models.IntegerField(null = True)
-    trying_ft = models.IntegerField(null = True)
-    oreb = models.IntegerField(null = True)
-    dreb = models.IntegerField(null = True)
-    reb = models.IntegerField(null = True)
-    ast = models.IntegerField(null = True)
-    stl = models.IntegerField(null = True)
-    blk = models.IntegerField(null = True)
-    turnovers = models.IntegerField(null = True)
-    pf = models.IntegerField(null = True)
-
+    
     class Meta():
         db_table = 'nba_team_stat'
         verbose_name = 'Статистика команды'

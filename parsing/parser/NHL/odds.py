@@ -125,6 +125,8 @@ class OddsNHL(object):
     def open_matches_link(self, link):
         self.driver.get(link)
 
+        time.sleep(2)
+
         try:
             # Дата матча
             date_selenium = WebDriverWait(self.driver, 10).until(
@@ -234,6 +236,16 @@ class OddsNHL(object):
             "3rd_period": "3rd Period",
         }
 
+        if action_function == self.moneyline:
+            try:
+                action_function("full_time")
+            except:
+                self.driver.refresh()
+
+                time.sleep(1)
+                
+                action_function("full_time") 
+
         for key, period_text in periods.items():
             if period_text:
                 try:
@@ -242,9 +254,6 @@ class OddsNHL(object):
                     )
                     driver.execute_script("arguments[0].click();", div_element)
                 except:
-                    if action_function == self.moneyline and key == 'full_time':
-                        action_function(key)
-
                     continue
                 
                 try:
