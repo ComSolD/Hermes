@@ -15,7 +15,11 @@ class NBAMatch(models.Model):
     team1 = models.ForeignKey(NBATeam, related_name='away_matches', on_delete=models.CASCADE)
     team2 = models.ForeignKey(NBATeam, related_name='home_matches', on_delete=models.CASCADE)
     season = models.CharField(max_length=10)
-    stage = models.CharField(null=True, blank=True, max_length=50)
+    stage = models.CharField(null=True, blank=True, max_length=50,
+        choices=[
+            ('regular', 'Регулярный сезон'),
+            ('preseason', 'Пресезон'),
+        ])
     date = models.DateField()
 
     class Meta():
