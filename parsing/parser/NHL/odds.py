@@ -77,6 +77,16 @@ class OddsNHL(object):
         if not pagination_links:
             return
 
+        dropdown_button = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'group')]/button[contains(@class, 'flex')]"))
+        )
+        dropdown_button.click()
+
+
+        # Шаг 2: Подождать пока откроется dropdown и выбрать нужный элемент
+        dropdown_item = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Decimal Odds')]")))
+        dropdown_item.click()
+        
         max_page = max(int(link.get_attribute("data-number")) for link in pagination_links)
 
         pages = range(max_page, 0, -1) if self.first_year != "now forward" else range(1, max_page + 1)

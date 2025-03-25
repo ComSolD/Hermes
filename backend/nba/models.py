@@ -19,6 +19,9 @@ class NBAMatch(models.Model):
         choices=[
             ('regular', 'Регулярный сезон'),
             ('preseason', 'Пресезон'),
+            ('in-season championship', 'Внутрисезонный финал'),
+            ('in-season semifinals', 'Внутрисезонный полуфинал'),
+            ('in-season quarterfinals', 'Внутрисезонный 1/4'),
         ])
     date = models.DateField()
 
