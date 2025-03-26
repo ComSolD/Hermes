@@ -264,6 +264,20 @@ def filter_stat(request):
     # Пример: считаем количество матчей по фильтрам
     matches = NBAMatch.objects.filter(filters).exclude(stage__isnull=True)
 
+
+    limitation = data.get("limitation")
+
+    if limitation:
+        try:
+            count, order = limitation.split()
+            count = int(count)
+            if order.upper() == "ASC":
+                matches = matches.order_by("date")[:count]
+            else:
+                matches = matches.order_by("-date")[:count]
+        except Exception:
+            pass
+
     # Можно добавить реальные поля (победы, очки и т.д.)
     result = {
         "total_matches": matches.count(),

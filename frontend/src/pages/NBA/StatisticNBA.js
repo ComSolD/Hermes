@@ -11,6 +11,13 @@ const filterOptions = [
   { value: "opponent_id", label: "Оппонент" },
 ];
 
+const limitationOptions = [
+  { value: "5 DESC", label: "Последние 5 матчей" },
+  { value: "5 ASC", label: "Первые 5 матчей" },
+  { value: "10 DESC", label: "Последние 10 матчей" },
+  { value: "10 ASC", label: "Первые 10 матчей" },
+];
+
 function StatisticNBA() {
   const [seasons, setSeasons] = useState([]);
   const [stages, setStages] = useState([]);
@@ -21,7 +28,13 @@ function StatisticNBA() {
   const [activeFilters, setActiveFilters] = useState([]);
   const [selectedFilterType, setSelectedFilterType] = useState(null);
 
+
+  const [limitations, setLimitations] = useState(null);
+  const [selectedLimitationType, setSelectedLimitationType] = useState(null);
+
   const [answer, setAnswer] = useState("");
+
+  document.title = `Статистика NBA`;
 
   useEffect(() => {
     const isTeamActive = activeFilters.includes("team_id");
@@ -115,13 +128,33 @@ function StatisticNBA() {
 
 
 
+  const removeLimitation = () => {
+    setLimitations(null);
+    setSelectedLimitationType(null);
+  };
+  
+  const handleAddLimitation = () => {
+    const hasFilters = Object.values(filters).some((val) => val);
+    if (selectedLimitationType && !limitations && hasFilters) {
+      setLimitations(selectedLimitationType);
+      setSelectedLimitationType(null);
+    }
+  };
+
+
+
   const handleSubmit = () => {
+    const requestData = {
+      ...filters,
+      limitation: limitations?.value || null, // ✅ добавляем сюда
+    };
+
     fetch("http://127.0.0.1:8000/api/nba/filterstat/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(filters),
+      body: JSON.stringify(requestData),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -318,6 +351,11 @@ function StatisticNBA() {
   });
 
 
+  const availableLimitationOptions = limitationOptions.filter(
+    (opt) => !limitations || opt.value !== limitations.value
+  );
+
+
 
 
   return (
@@ -337,7 +375,7 @@ function StatisticNBA() {
                   placeholder="Выберите параметр..."
                   styles={customStyles}
                 />
-                <button onClick={handleAddFilter}>+</button>
+                <button className="add-btn-selector" onClick={handleAddFilter}>+</button>
               </div>
             </div>
 
@@ -347,7 +385,7 @@ function StatisticNBA() {
                   <label htmlFor="season-select">Сезон</label>
                   <div style={{ display: "flex", alignItems: "center"  }}>
                     <SeasonSelector />
-                    <button onClick={() => removeFilter("season")}>×</button>
+                    <button className="delete-btn-selector" onClick={() => removeFilter("season")}>×</button>
                   </div>
                 </div>
               )}
@@ -357,7 +395,7 @@ function StatisticNBA() {
                   <label htmlFor="stage-select">Стадия</label>
                   <div style={{ display: "flex", alignItems: "center"  }}>
                     <StageSelector />
-                    <button onClick={() => removeFilter("stage")}>×</button>
+                    <button className="delete-btn-selector" onClick={() => removeFilter("stage")}>×</button>
                   </div>
                 </div>
               )}
@@ -367,7 +405,7 @@ function StatisticNBA() {
                   <label htmlFor="team-select">Команда</label>
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <TeamSelector />
-                    <button onClick={() => removeFilter("team_id")}>×</button>
+                    <button className="delete-btn-selector" onClick={() => removeFilter("team_id")}>×</button>
                   </div>
                 </div>
               )}
@@ -377,12 +415,43 @@ function StatisticNBA() {
                   <label htmlFor="opponent-select">Оппоненты</label>
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <OpponentSelector />
-                    <button onClick={() => removeFilter("opponent_id")}>×</button>
+                    <button className="delete-btn-selector" onClick={() => removeFilter("opponent_id")}>×</button>
                   </div>
                 </div>
               )}
             </div>
-          </div>
+
+            <div className="selector" style={{ width: "100%" }}>
+              <label htmlFor="limitation-type">Добавить ограничение</label>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Select
+                  id="limitation-type"
+                  options={availableLimitationOptions}
+                  value={selectedLimitationType}
+                  onChange={setSelectedLimitationType}
+                  placeholder="Выберите ограничения..."
+                  styles={customStyles}
+                  isDisabled={!Object.values(filters).some((v) => v) || limitations}
+                />
+                <button className="add-btn-selector" onClick={handleAddLimitation} disabled={!selectedLimitationType || limitations}>+</button>
+              </div>
+            </div>
+
+            {limitations && (
+              <div className="selector">
+                <label>Ограничение</label>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Select
+                    value={limitations}
+                    components={{ DropdownIndicator: null }}
+                    isDisabled
+                    styles={customStyles}
+                  />
+                  <button className="delete-btn-selector" onClick={removeLimitation}>×</button>
+                </div>
+              </div>
+            )}
+            </div>
 
           <button className="submit-button" onClick={handleSubmit}>
             Отправить

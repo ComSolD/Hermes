@@ -101,8 +101,25 @@
 
 
 /* Общий стиль кнопки */
-.selectors button {
+.add-btn-selector {
     background-color: #36c;
+    color: white;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+    height: 42px;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 0 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+.delete-btn-selector{
+    background-color: red;
     color: white;
     border: 1px solid #ccc;
     border-left: none;
