@@ -432,8 +432,14 @@ class NBAMatchesSchedule(serializers.ModelSerializer):
         }
 
 
-class NBAStatistic(serializers.ModelSerializer):
+class NBATeamStatisticSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NBATeam
         fields = ['team_id', 'name']
+
+
+class NBAPlayerStatisticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NBAPlayer
+        fields = ['player_id', 'name']

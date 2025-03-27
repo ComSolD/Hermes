@@ -8,6 +8,7 @@ const filterOptions = [
   { value: "season", label: "Сезон" },
   { value: "stage", label: "Стадия" },
   { value: "team_id", label: "Команда" },
+  { value: "player_id", label: "Игрок" },
   { value: "opponent_id", label: "Оппонент" },
 ];
 
@@ -20,6 +21,7 @@ function StatisticNBA() {
   const [seasons, setSeasons] = useState([]);
   const [stages, setStages] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [players, setPlayers] = useState([]);
   const [opponents, setOpponents] = useState([]);
 
   const [filters, setFilters] = useState({});
@@ -52,6 +54,25 @@ function StatisticNBA() {
       }
     }, [filters, activeFilters]);
 
+
+    useEffect(() => {
+      const isPlayerActive = activeFilters.includes("player_id");
+  
+      if (isPlayerActive) {
+        fetch(`http://127.0.0.1:8000/api/nba/players_by_filters/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(filters),
+        })
+          .then((res) => res.json())
+          .then((data) => setPlayers(data.players || []))
+          .catch((err) => console.error("Ошибка загрузки команд:", err));
+        }
+      }, [filters, activeFilters]);
+
+
     useEffect(() => {
       const isOpponentActive = activeFilters.includes("opponent_id");
   
@@ -69,6 +90,7 @@ function StatisticNBA() {
         }
       }, [filters, activeFilters]);
 
+
     useEffect(() => {
       const isSeasonActive = activeFilters.includes("season");
     
@@ -83,6 +105,7 @@ function StatisticNBA() {
           .catch((err) => console.error("Ошибка загрузки сезонов:", err));
       }
     }, [filters, activeFilters]);
+
 
     useEffect(() => {
       const isStageActive = activeFilters.includes("stage");
@@ -270,6 +293,28 @@ function StatisticNBA() {
   };
 
 
+  const PlayerSelector = () => {
+    const options = players.map((player) => ({
+      value: player.player_id,
+      label: player.name,
+    }));
+  
+    const currentValue = options.find((opt) => opt.value === filters.player_id) || null;
+  
+    return (
+      <Select
+        options={[{ value: "", label: "Все игроки" }, ...options]}
+        value={currentValue}
+        onChange={(selectedOption) => updateFilter("player_id", selectedOption?.value || "")}
+        placeholder="Выберите игрока..."
+        styles={customStyles}
+        isSearchable
+        isDisabled={options.length === 0}  // 🔹 отключаем пока нет данных
+      />
+    );
+  };
+
+
   const OpponentSelector = () => {
     const options = opponents.map((opponent) => ({
       value: opponent.team_id,
@@ -417,10 +462,20 @@ function StatisticNBA() {
 
               {activeFilters.includes("opponent_id") && (
                 <div className="selector">
-                  <label htmlFor="opponent-select">Оппоненты</label>
+                  <label htmlFor="opponent-select">Оппонент</label>
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <OpponentSelector />
                     <button className="delete-btn-selector" onClick={() => removeFilter("opponent_id")}>×</button>
+                  </div>
+                </div>
+              )}
+
+              {activeFilters.includes("player_id") && (
+                <div className="selector">
+                  <label htmlFor="player-select">Игрок</label>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <PlayerSelector />
+                    <button className="delete-btn-selector" onClick={() => removeFilter("player_id")}>×</button>
                   </div>
                 </div>
               )}
