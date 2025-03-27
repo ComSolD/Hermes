@@ -12,10 +12,8 @@ const filterOptions = [
 ];
 
 const limitationOptions = [
-  { value: "5 DESC", label: "Последние 5 матчей" },
-  { value: "5 ASC", label: "Первые 5 матчей" },
-  { value: "10 DESC", label: "Последние 10 матчей" },
-  { value: "10 ASC", label: "Первые 10 матчей" },
+  { value: "DESC", label: "Последние N матчей" },
+  { value: "ASC", label: "Первые N матчей" },
 ];
 
 function StatisticNBA() {
@@ -29,7 +27,8 @@ function StatisticNBA() {
   const [selectedFilterType, setSelectedFilterType] = useState(null);
 
 
-  const [limitations, setLimitations] = useState(null);
+  const [limitations, setLimitations] = useState(null); // ✅ обязательно null
+
   const [selectedLimitationType, setSelectedLimitationType] = useState(null);
 
   const [answer, setAnswer] = useState("");
@@ -134,9 +133,11 @@ function StatisticNBA() {
   };
   
   const handleAddLimitation = () => {
-    const hasFilters = Object.values(filters).some((val) => val);
-    if (selectedLimitationType && !limitations && hasFilters) {
-      setLimitations(selectedLimitationType);
+    if (!limitations && selectedLimitationType) {
+      setLimitations({
+        direction: selectedLimitationType.value, // ASC | DESC
+        count: 5, // значение по умолчанию
+      });
       setSelectedLimitationType(null);
     }
   };
@@ -146,7 +147,9 @@ function StatisticNBA() {
   const handleSubmit = () => {
     const requestData = {
       ...filters,
-      limitation: limitations?.value || null, // ✅ добавляем сюда
+      limitation: limitations
+        ? `${limitations.count} ${limitations.direction}`
+        : null,
     };
 
     fetch("http://127.0.0.1:8000/api/nba/filterstat/", {
@@ -355,6 +358,8 @@ function StatisticNBA() {
     (opt) => !limitations || opt.value !== limitations.value
   );
 
+  
+
 
 
 
@@ -439,18 +444,39 @@ function StatisticNBA() {
 
             {limitations && (
               <div className="selector">
-                <label>Ограничение</label>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <Select
-                    value={limitations}
-                    components={{ DropdownIndicator: null }}
-                    isDisabled
-                    styles={customStyles}
+                <label>
+                  {limitations.direction === 'ASC'
+                    ? `Первые ${limitations.count} матчей`
+                    : `Последние ${limitations.count} матчей`}
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center'}}>
+                  <input
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={limitations.count}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      if (val >= 1 && val <= 50) {
+                        setLimitations((prev) => ({
+                          ...prev,
+                          count: val,
+                        }));
+                      }
+                    }}
+                    className="input-limitation"
                   />
-                  <button className="delete-btn-selector" onClick={removeLimitation}>×</button>
+                  <button
+                    className="delete-btn-selector"
+                    onClick={() => removeLimitation(null)}
+                  >
+                    ×
+                  </button>
                 </div>
               </div>
             )}
+
+
             </div>
 
           <button className="submit-button" onClick={handleSubmit}>
