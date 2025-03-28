@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.cache import cache
 from datetime import datetime, date
-from django.db.models import Q
+from django.db.models import Q, Sum
 
-from .models import NBAMatch, NBAPlayer, NBAPlayerStat, NBATeam
+from .models import NBAMatch, NBAPlayer, NBAPlayerStat, NBATeam, NBATeamPtsStat
 from .serializers import NBAHandicapSerializer, NBAMatchSerializer, NBAMatchesSchedule, NBATotalSerializer, NBAMoneylineSerializer, NBATeamStatisticSerializer, NBAPlayerStatisticSerializer  # Импортируем сериализатор матча
 
 
@@ -371,6 +371,32 @@ def filter_stat(request):
                 matches = matches.order_by("-date")[:count]
         except Exception:
             pass
+    
+    # 4. Обработка статистики
+    statistic_data = data.get("statistic")
+    statistic_values = []
+
+    if statistic_data and isinstance(statistic_data, dict):
+        model = statistic_data.get("model")
+        fields = statistic_data.get("fields", [])
+
+        match_ids = list(matches.values_list("match_id", flat=True))
+        team_id = data.get("team_id")
+
+        match_stat_map = {mid: 0 for mid in match_ids}
+
+        if model == "NBATeamPtsStat":
+            stat_queryset = NBATeamPtsStat.objects.filter(match_id__in=match_ids)
+
+            for stat in stat_queryset:
+                if str(stat.team_id) != team_id:
+                    continue  # учитываем только выбранную команду
+                total = sum([getattr(stat, f, 0) or 0 for f in fields])
+                match_stat_map[stat.match_id] += total
+
+        # В будущем: elif model == "NBAPlayerStat": ...
+
+        statistic_values = [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
 
     # Можно добавить реальные поля (победы, очки и т.д.)
     result = {

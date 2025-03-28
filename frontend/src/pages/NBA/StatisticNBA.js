@@ -12,6 +12,50 @@ const filterOptions = [
   { value: "opponent_id", label: "Оппонент" },
 ];
 
+const statisticOptions = [
+  { value: { 
+      model: "NBATeamPtsStat",
+      fields: ["total_q1"]
+    }, 
+    label: "1-я Четверть тотал команды" },
+
+  { value: { 
+      model: "NBATeamPtsStat",
+      fields: ["total_q2"]
+    }, 
+    label: "2-я Четверть тотал команды" },
+
+  { value: { 
+      model: "NBATeamPtsStat",
+      fields: ["total_q3"]
+    }, 
+    label: "3-я Четверть тотал команды" },
+
+  { value: { 
+      model: "NBATeamPtsStat",
+      fields: ["total_q4"]
+    }, 
+    label: "4-я Четверть тотал команды" },
+
+  { value: { 
+      model: "NBATeamPtsStat",
+      fields: ["total"]
+    },  
+    label: "Тотал команды" },
+
+  { value: { 
+      model: "NBATeamPtsStat",
+      fields: ["total_q1", "total_q1_missed"]
+    },   
+    label: "1-я Четверть тотал" },
+
+  { value: { 
+      model: "NBATeamPtsStat",
+      fields: ["total", "total_missed"]
+    }, 
+    label: "Тотал" },
+];
+
 const limitationOptions = [
   { value: "DESC", label: "Последние N матчей" },
   { value: "ASC", label: "Первые N матчей" },
@@ -32,6 +76,9 @@ function StatisticNBA() {
   const [limitations, setLimitations] = useState(null); // ✅ обязательно null
 
   const [selectedLimitationType, setSelectedLimitationType] = useState(null);
+
+
+  const [statistics, setStatistics] = useState(null);
 
   const [answer, setAnswer] = useState("");
 
@@ -173,6 +220,7 @@ function StatisticNBA() {
       limitation: limitations
         ? `${limitations.count} ${limitations.direction}`
         : null,
+      statistic: statistics?.value || null, // ✅ передаем выбранное поле
     };
 
     fetch("http://127.0.0.1:8000/api/nba/filterstat/", {
@@ -265,9 +313,6 @@ function StatisticNBA() {
       fontSize: '15px',
     }),
   };
-
-
-
 
 
 
@@ -403,7 +448,10 @@ function StatisticNBA() {
     (opt) => !limitations || opt.value !== limitations.value
   );
 
-  
+
+  const availableStatisticOptions = statisticOptions.filter(
+    (opt) => !statistics || opt.value !== statistics.value
+  );  
 
 
 
@@ -531,8 +579,22 @@ function StatisticNBA() {
               </div>
             )}
 
-
+            <div className="selector" style={{ width: "100%" }}>
+              <label htmlFor="statistic-type">Выбрать статистику</label>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Select
+                  id="statistic-type"
+                  options={statisticOptions}
+                  value={statisticOptions.find((opt) => opt.value === statistics?.value) || null}
+                  onChange={setStatistics}
+                  placeholder="Выберите статистику..."
+                  styles={customStyles}
+                  isDisabled={!Object.values(filters).some((v) => v)}
+                />
+              </div>
             </div>
+
+          </div>
 
           <button className="submit-button" onClick={handleSubmit}>
             Отправить
