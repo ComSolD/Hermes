@@ -12,6 +12,11 @@ const filterOptions = [
   { value: "opponent_id", label: "Оппонент" },
 ];
 
+const displayOptions = [
+  { value: "avg", label: "AVG" },
+  { value: "list", label: "Список" },
+];
+
 const statisticOptions = [
   { value: { 
       model: "NBATeamPtsStat",
@@ -77,6 +82,7 @@ function StatisticNBA() {
 
   const [selectedLimitationType, setSelectedLimitationType] = useState(null);
 
+  const [displayMode, setDisplayMode] = useState(null);
 
   const [statistics, setStatistics] = useState(null);
 
@@ -221,6 +227,7 @@ function StatisticNBA() {
         ? `${limitations.count} ${limitations.direction}`
         : null,
       statistic: statistics?.value || null, // ✅ передаем выбранное поле
+      display: displayMode || null,
     };
 
     fetch("http://127.0.0.1:8000/api/nba/filterstat/", {
@@ -449,11 +456,6 @@ function StatisticNBA() {
   );
 
 
-  const availableStatisticOptions = statisticOptions.filter(
-    (opt) => !statistics || opt.value !== statistics.value
-  );  
-
-
 
 
   return (
@@ -594,6 +596,22 @@ function StatisticNBA() {
               </div>
             </div>
 
+
+            <div className="selector" style={{ width: "100%" }}>
+              <label htmlFor="statistic-type">Отобразить как</label>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Select
+                  id="statistic-type"
+                  options={displayOptions}
+                  value={displayOptions.find((opt) => opt.value === displayMode) || null}
+                  onChange={(selected) => setDisplayMode(selected.value)}
+                  placeholder="Отобразить как..."
+                  styles={customStyles}
+                  isDisabled={!Object.values(filters).some((v) => v)}
+                />
+              </div>
+            </div>
+
           </div>
 
           <button className="submit-button" onClick={handleSubmit}>
@@ -602,7 +620,11 @@ function StatisticNBA() {
 
           <div className="results">
             <h3>Результаты</h3>
-            <strong>{answer.total_matches}</strong>
+            <strong>
+              {Array.isArray(answer.statistic_display)
+                ? answer.statistic_display.join(', ')
+                : answer.statistic_display}
+            </strong>
           </div>
         </div>
       </main>

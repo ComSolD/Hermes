@@ -7,7 +7,7 @@ from django.db.models import Q, Sum
 
 from .models import NBAMatch, NBAPlayer, NBAPlayerStat, NBATeam, NBATeamPtsStat
 from .serializers import NBAHandicapSerializer, NBAMatchSerializer, NBAMatchesSchedule, NBATotalSerializer, NBAMoneylineSerializer, NBATeamStatisticSerializer, NBAPlayerStatisticSerializer  # Импортируем сериализатор матча
-
+from .utils import calculate_statistic_display
 
 
 @api_view(['GET'])
@@ -398,10 +398,14 @@ def filter_stat(request):
 
         statistic_values = [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
 
+    display_mode = data.get("display")
+    display_result = calculate_statistic_display(statistic_values, display_mode)
+
     # Можно добавить реальные поля (победы, очки и т.д.)
     result = {
         "total_matches": matches.count(),
         "example_match_ids": list(matches.values_list("match_id", flat=True)),  # просто пример
+        "statistic_display": display_result,
     }
 
     return Response({
