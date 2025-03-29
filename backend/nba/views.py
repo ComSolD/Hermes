@@ -351,9 +351,10 @@ def filter_stat(request):
     matches = NBAMatch.objects.filter(filters).exclude(stage__isnull=True)
 
     # 2. Если выбран игрок — ограничиваем по его матчам
-    if data.get("player_id"):
+    player_id = data.get("player_id")
+    if player_id:
         player_match_ids = NBAPlayerStat.objects.filter(
-            player_id=data["player_id"]
+            player_id=player_id
         ).values_list("match_id", flat=True)
 
         matches = matches.filter(match_id__in=player_match_ids)
@@ -379,6 +380,7 @@ def filter_stat(request):
     if statistic_data and isinstance(statistic_data, dict):
         model = statistic_data.get("model")
         fields = statistic_data.get("fields", [])
+        aggregate = statistic_data.get("aggregate", "team")
 
         match_ids = list(matches.values_list("match_id", flat=True))
         team_id = data.get("team_id")
@@ -394,7 +396,16 @@ def filter_stat(request):
                 total = sum([getattr(stat, f, 0) or 0 for f in fields])
                 match_stat_map[stat.match_id] += total
 
-        # В будущем: elif model == "NBAPlayerStat": ...
+        elif model == "NBAPlayerStat":
+            stat_queryset = NBAPlayerStat.objects.filter(match_id__in=match_ids)
+
+            for stat in stat_queryset:
+                if str(stat.team_id) != team_id:
+                    continue
+                if aggregate == "player" and player_id and str(stat.player_id) != player_id:
+                    continue
+                total = sum([getattr(stat, f, 0) or 0 for f in fields])
+                match_stat_map[stat.match_id] += total
 
         statistic_values = [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
 

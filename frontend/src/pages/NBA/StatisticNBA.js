@@ -59,6 +59,18 @@ const statisticOptions = [
       fields: ["total", "total_missed"]
     }, 
     label: "Тотал" },
+  { value: { 
+    model: "NBAPlayerStat",
+    fields: ["ast"],
+    aggregate: "team",
+  }, 
+    label: "Передачи команды" },
+  { value: { 
+    model: "NBAPlayerStat",
+    fields: ["ast"],
+    aggregate: "player",
+  }, 
+    label: "Передачи игрока" },
 ];
 
 const limitationOptions = [
@@ -455,6 +467,17 @@ function StatisticNBA() {
     (opt) => !limitations || opt.value !== limitations.value
   );
 
+  const availableStatisticOptions = statisticOptions.filter((opt) => {
+    const { model, aggregate } = opt.value;
+  
+    // Статистика по игроку доступна только если выбран игрок
+    if (model === "NBAPlayerStat" && aggregate === "player") {
+      return Boolean(filters.player_id);
+    }
+  
+    // Статистика команды доступна всегда
+    return true;
+  });
 
 
 
@@ -586,8 +609,8 @@ function StatisticNBA() {
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <Select
                   id="statistic-type"
-                  options={statisticOptions}
-                  value={statisticOptions.find((opt) => opt.value === statistics?.value) || null}
+                  options={availableStatisticOptions}
+                  value={availableStatisticOptions.find((opt) => opt.value === statistics?.value) || null}
                   onChange={setStatistics}
                   placeholder="Выберите статистику..."
                   styles={customStyles}
@@ -598,10 +621,10 @@ function StatisticNBA() {
 
 
             <div className="selector" style={{ width: "100%" }}>
-              <label htmlFor="statistic-type">Отобразить как</label>
+              <label htmlFor="display-type">Отобразить как</label>
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <Select
-                  id="statistic-type"
+                  id="display-type"
                   options={displayOptions}
                   value={displayOptions.find((opt) => opt.value === displayMode) || null}
                   onChange={(selected) => setDisplayMode(selected.value)}
