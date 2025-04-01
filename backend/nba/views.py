@@ -5,7 +5,7 @@ from django.core.cache import cache
 from datetime import datetime, date
 from django.db.models import Q, Sum
 
-from .models import NBAMatch, NBAPlayer, NBAPlayerStat, NBATeam, NBATeamPtsStat
+from .models import NBAMatch, NBAPlayer, NBAPlayerStat, NBATeam, NBATeamPtsStat, NBATeamStat
 from .serializers import NBAHandicapSerializer, NBAMatchSerializer, NBAMatchesSchedule, NBATotalSerializer, NBAMoneylineSerializer, NBATeamStatisticSerializer, NBAPlayerStatisticSerializer  # Импортируем сериализатор матча
 from .utils import calculate_statistic_display
 
@@ -123,8 +123,23 @@ def seasons_by_filters(request):
 
         matches = matches.filter(match_id__in=player_match_ids)
 
-    # 5. Получение сезонов
-    seasons = matches.values_list("season", flat=True).distinct()
+    match_ids = matches.values_list("match_id", flat=True)
+
+    teamstat_qs = NBATeamStat.objects.filter(match_id__in=match_ids)
+
+    # 5. Учитываем команду
+    if data.get("team_id"):
+        teamstat_qs = teamstat_qs.filter(team_id=data["team_id"])
+
+    # 6. Учитываем status (home / away)
+    if data.get("homeaway"):
+        teamstat_qs = teamstat_qs.filter(status=data["homeaway"])
+
+    # 7. Получаем окончательный список match_id
+    filtered_match_ids = teamstat_qs.values_list("match_id", flat=True)
+
+    # 8. Получаем сезоны из NBAMatch
+    seasons = NBAMatch.objects.filter(match_id__in=filtered_match_ids).values_list("season", flat=True).distinct()
 
     return Response({"seasons": list(seasons)})
 
@@ -170,10 +185,19 @@ def stages_by_filters(request):
 
         matches = matches.filter(match_id__in=player_match_ids)
 
-    # 5. Получение стадий
-    raw_stages = matches.values_list("stage", flat=True).distinct()
+    match_ids = matches.values_list("match_id", flat=True)
 
-    # 6. Получаем список всех choices из модели
+    # Промежуточный фильтр NBATeamStat по статусу и (если есть) команде
+    teamstat_filters = Q(match_id__in=match_ids)
+    if data.get("team_id"):
+        teamstat_filters &= Q(team_id=data["team_id"])
+    if data.get("homeaway"):
+        teamstat_filters &= Q(status=data["homeaway"])
+
+    filtered_match_ids = NBATeamStat.objects.filter(teamstat_filters).values_list("match_id", flat=True)
+
+    # Получение стадий
+    raw_stages = NBAMatch.objects.filter(match_id__in=filtered_match_ids).values_list("stage", flat=True).distinct()
     stage_choices_dict = dict(NBAMatch._meta.get_field("stage").choices)
 
     # 7. Формируем [{ value: 'regular', label: 'Регулярный сезон' }, ...]
@@ -183,6 +207,65 @@ def stages_by_filters(request):
     ]
 
     return Response({"stages": list(stages)})
+
+
+@api_view(['POST'])
+def homeaway_by_filters(request):
+    data = request.data
+    filters = Q()
+
+    # 1. Простая фильтрация матчей (по stage, season, team/opponent/player)
+    filter_map = {
+        "season": "season",
+        "stage": "stage",
+    }
+
+    for param, field in filter_map.items():
+        value = data.get(param)
+        if value:
+            filters &= Q(**{field: value})
+
+    # Команда и оппонент
+    if data.get("team_id"):
+        team_id = data["team_id"]
+        filters &= Q(team1_id=team_id) | Q(team2_id=team_id)
+
+        if data.get("opponent_id"):
+            opponent_id = data["opponent_id"]
+            filters &= (
+                Q(team1_id=team_id, team2_id=opponent_id) |
+                Q(team2_id=team_id, team1_id=opponent_id)
+            )
+
+    # Получаем все подходящие матчи
+    matches = NBAMatch.objects.filter(filters).exclude(stage__isnull=True)
+
+    # Фильтр по игроку
+    if data.get("player_id"):
+        player_match_ids = NBAPlayerStat.objects.filter(
+            player_id=data["player_id"]
+        ).values_list("match_id", flat=True)
+        matches = matches.filter(match_id__in=player_match_ids)
+
+    match_ids = matches.values_list("match_id", flat=True)
+
+    # 2. Фильтрация по NBATeamStat и получение статусов
+    teamstat_qs = NBATeamStat.objects.filter(match_id__in=match_ids)
+
+    if data.get("team_id"):
+        teamstat_qs = teamstat_qs.filter(team_id=data["team_id"])
+
+    raw_statuses = teamstat_qs.values_list("status", flat=True).distinct()
+
+    # 3. Форматируем ответ с учетом CHOICES
+    status_dict = dict(NBATeamStat.STATUS_CHOICES)
+
+    statuses = [
+        { "value": status, "label": status_dict.get(status, status) }
+        for status in raw_statuses if status
+    ]
+
+    return Response({ "homeaways": statuses })
 
 
 @api_view(['POST'])
@@ -220,16 +303,29 @@ def opponents_by_filters(request):
 
         matches = matches.filter(match_id__in=player_match_ids)
 
-    # 6. Находим соперников
-    team1_opponents = matches.filter(team2_id=team_id).values_list("team1_id", flat=True)
-    team2_opponents = matches.filter(team1_id=team_id).values_list("team2_id", flat=True)
+    match_ids = matches.values_list("match_id", flat=True)
+
+    # 6. Промежуточный фильтр NBATeamStat по status и team_id
+    teamstat_filters = Q(match_id__in=match_ids, team_id=team_id)
+    if data.get("homeaway"):
+        teamstat_filters &= Q(status=data["homeaway"])
+
+    relevant_match_ids = NBATeamStat.objects.filter(teamstat_filters).values_list("match_id", flat=True)
+
+    # 7. Повторный фильтр матчей, чтобы найти оппонентов
+    relevant_matches = NBAMatch.objects.filter(match_id__in=relevant_match_ids)
+
+    
+    team1_opponents = relevant_matches.filter(team2_id=team_id).values_list("team1_id", flat=True)
+    team2_opponents = relevant_matches.filter(team1_id=team_id).values_list("team2_id", flat=True)
     opponent_ids = set(team1_opponents) | set(team2_opponents)
 
-    # 7. Получаем объекты команд
+    # 8. Получаем объекты команд
     opponents = NBATeam.objects.filter(team_id__in=opponent_ids)
     serializer = NBATeamStatisticSerializer(opponents, many=True)
 
     return Response({"opponents": serializer.data})
+
 
 @api_view(['POST'])
 def teams_by_filters(request):
@@ -250,6 +346,9 @@ def teams_by_filters(request):
     # 2. Фильтрация матчей по фильтрам
     matches = NBAMatch.objects.filter(filters).exclude(stage__isnull=True)
 
+    match_ids = matches.values_list("match_id", flat=True)
+
+
     # 3. Получение всех команд
     if data.get("player_id"):
         team_ids = NBAPlayerStat.objects.filter(
@@ -257,9 +356,15 @@ def teams_by_filters(request):
             match_id__in=matches.values_list("match_id", flat=True)
         ).values_list("team_id", flat=True).distinct()
     else:
-        team1_ids = matches.values_list("team1_id", flat=True)
-        team2_ids = matches.values_list("team2_id", flat=True)
-        team_ids = set(team1_ids) | set(team2_ids)
+        if data.get("homeaway"):
+            team_ids = NBATeamStat.objects.filter(
+                match_id__in=match_ids,
+                status=data["homeaway"]
+            ).values_list("team_id", flat=True).distinct()
+        else:
+            team1_ids = matches.values_list("team1_id", flat=True)
+            team2_ids = matches.values_list("team2_id", flat=True)
+            team_ids = set(team1_ids) | set(team2_ids)
 
     teams = NBATeam.objects.filter(team_id__in=team_ids)
 
@@ -308,7 +413,27 @@ def players_by_filters(request):
     if data.get("team_id"):
         player_stats_filter &= Q(team_id=data["team_id"])
 
-    player_ids = NBAPlayerStat.objects.filter(player_stats_filter).values_list("player_id", flat=True).distinct()
+
+    if data.get("homeaway"):
+        # Находим match_id + team_id, соответствующие статусу
+        valid_team_stats = NBATeamStat.objects.filter(
+            match_id__in=match_ids,
+            team_id=data.get("team_id") if data.get("team_id") else None,
+            status=data["homeaway"]
+        ).values_list("match_id", "team_id")
+
+        # Преобразуем в set для ускорения поиска
+        valid_pairs = set(valid_team_stats)
+
+        # Уточняем фильтр: только если match_id и team_id совпадают
+        player_ids = NBAPlayerStat.objects.filter(player_stats_filter).filter(
+            Q(*[
+                Q(match_id=match_id, team_id=team_id)
+                for match_id, team_id in valid_pairs
+            ], _connector=Q.OR)
+        ).values_list("player_id", flat=True).distinct()
+    else:
+        player_ids = NBAPlayerStat.objects.filter(player_stats_filter).values_list("player_id", flat=True).distinct()
 
 
     # 5. Получаем игроков
@@ -358,6 +483,24 @@ def filter_stat(request):
         ).values_list("match_id", flat=True)
 
         matches = matches.filter(match_id__in=player_match_ids)
+
+    match_ids = list(matches.values_list("match_id", flat=True))
+
+    # Ограничение по положению (home/away)
+    valid_match_team_pairs = set()
+    status = data.get("homeaway")
+
+    if status and team_id:
+        valid_match_team_pairs = set(
+            NBATeamStat.objects.filter(
+                match_id__in=match_ids,
+                team_id=team_id,
+                status=status
+            ).values_list("match_id", "team_id")
+        )
+        # 🔸 можно сузить список матчей
+        match_ids = [mid for mid, tid in valid_match_team_pairs]
+        matches = matches.filter(match_id__in=match_ids)
 
     # 3. Ограничение по лимиту матчей
     limitation = data.get("limitation")

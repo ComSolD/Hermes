@@ -87,3 +87,21 @@ export const SeasonSelector = ({ seasons, filters, updateFilter, customSelectorS
     />
   );
 };
+
+export const HomeAwaySelector = ({ homeaways, filters, updateFilter, customSelectorStyles }) => {
+  const options = homeaways.map((homeaway) => ({ value: homeaway.value, label: homeaway.label }));
+  const currentValue = options.find((opt) => opt.value === filters.homeaway) || null;
+
+  return (
+    <Select
+      options={[{ value: "", label: "Положение команды" }, ...options]}
+      value={currentValue}
+      onChange={(selected) => updateFilter("homeaway", selected?.value || "")}
+      placeholder="Выберите положение команды..."
+      isSearchable
+      isDisabled={options.length === 0}
+      styles={customSelectorStyles}
+      classNamePrefix="custom-select"
+    />
+  );
+};

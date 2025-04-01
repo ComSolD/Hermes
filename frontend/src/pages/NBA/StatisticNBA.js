@@ -20,7 +20,8 @@ import {
   PlayerSelector,
   OpponentSelector,
   StageSelector,
-  SeasonSelector
+  SeasonSelector,
+  HomeAwaySelector
 } from "./statistic/FilterSelectors";
 
 import { createFilterHandlers } from "./statistic/filterHandlers";
@@ -42,6 +43,10 @@ const filterRenderMap = {
     label: "Стадия",
     render: (props) => <StageSelector {...props} />,
   },
+  homeaway: {
+    label: "Положение команды",
+    render: (props) => <HomeAwaySelector {...props} />,
+  },
   team_id: {
     label: "Команда",
     render: (props) => <TeamSelector {...props} />,
@@ -60,6 +65,7 @@ const filterRenderMap = {
 function StatisticNBA() {
   const [seasons, setSeasons] = useState([]);
   const [stages, setStages] = useState([]);
+  const [homeaways, setHomeAway] = useState([]);
   const [teams, setTeams] = useState([]);
   const [players, setPlayers] = useState([]);
   const [opponents, setOpponents] = useState([]);
@@ -75,7 +81,7 @@ function StatisticNBA() {
 
   const [displayMode, setDisplayMode] = useState(null);
 
-  const [statistics, setStatistics] = useState(null);
+  const [statistic, setStatistic] = useState(null);
 
   const [answer, setAnswer] = useState("");
 
@@ -91,6 +97,7 @@ function StatisticNBA() {
     setOpponents,
     setSeasons,
     setStages,
+    setHomeAway,
   });
 
 
@@ -114,7 +121,7 @@ function StatisticNBA() {
       limitation: limitations
         ? `${limitations.count} ${limitations.direction}`
         : null,
-      statistic: statistics?.value || null, // ✅ передаем выбранное поле
+      statistic: statistic?.value || null, // ✅ передаем выбранное поле
       display: displayMode || null,
     };
 
@@ -172,7 +179,7 @@ function StatisticNBA() {
                   <div key={filterKey} className="selector">
                     <label>{filter.label}</label>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      {filter.render({ filters, updateFilter, customSelectorStyles, teams, players, opponents, stages, seasons })}
+                      {filter.render({ filters, updateFilter, customSelectorStyles, teams, players, opponents, stages, seasons, homeaways })}
                       <button
                         className="delete-btn-selector"
                         onClick={() => removeFilter(filterKey)}
@@ -184,96 +191,104 @@ function StatisticNBA() {
                 );
               })}
             </div>
-
-            <div className="selector" style={{ width: "100%" }}>
-              <label htmlFor="limitation-type">Добавить ограничение</label>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <Select
-                  id="limitation-type"
-                  options={availableLimitationOptions}
-                  placeholder="Выберите ограничение..."
-                  styles={customMainSelectorStyles}
-                  isDisabled={!Object.values(filters).some((v) => v) || limitations}
-                  onChange={(selectedOption) => {
-                    if (!limitations && selectedOption) {
-                      setLimitations({
-                        direction: selectedOption.value, // ASC / DESC
-                        count: 5, // значение по умолчанию
-                      });
-                    }
-                  }}
-                />
-              </div>
-            </div>
-
-            {limitations && (
-              <div className="selector">
-                <label>
-                  {limitations.direction === 'ASC'
-                    ? `Первые ${limitations.count} матчей`
-                    : `Последние ${limitations.count} матчей`}
-                </label>
-                <div style={{ display: 'flex', alignItems: 'center'}}>
-                  <input
-                    type="number"
-                    min={1}
-                    max={50}
-                    value={limitations.count}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value, 10);
-                      if (val >= 1 && val <= 50) {
-                        setLimitations((prev) => ({
-                          ...prev,
-                          count: val,
-                        }));
-                      }
-                    }}
-                    className="input-limitation"
-                  />
-                  <button
-                    className="delete-btn-selector"
-                    onClick={() => removeLimitation(null)}
-                  >
-                    ×
-                  </button>
+            
+            {Object.values(filters).some((v) => v) && (
+              <>
+                <div className="selector" style={{ width: "100%" }}>
+                  <label htmlFor="limitation-type">Добавить ограничение</label>
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Select
+                      id="limitation-type"
+                      options={availableLimitationOptions}
+                      placeholder="Выберите ограничение..."
+                      styles={customMainSelectorStyles}
+                      isDisabled={!Object.values(filters).some((v) => v) || limitations}
+                      onChange={(selectedOption) => {
+                        if (!limitations && selectedOption) {
+                          setLimitations({
+                            direction: selectedOption.value, // ASC / DESC
+                            count: 5, // значение по умолчанию
+                          });
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
+
+                {limitations && (
+                  <div className="selector">
+                    <label>
+                      {limitations.direction === 'ASC'
+                        ? `Первые ${limitations.count} матчей`
+                        : `Последние ${limitations.count} матчей`}
+                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center'}}>
+                      <input
+                        type="number"
+                        min={1}
+                        max={50}
+                        value={limitations.count}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          if (val >= 1 && val <= 50) {
+                            setLimitations((prev) => ({
+                              ...prev,
+                              count: val,
+                            }));
+                          }
+                        }}
+                        className="input-limitation"
+                      />
+                      <button
+                        className="delete-btn-selector"
+                        onClick={() => removeLimitation(null)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="selector" style={{ width: "100%" }}>
+                  <label htmlFor="statistic-type">Выбрать статистику (обязательное поле)</label>
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Select
+                      id="statistic-type"
+                      options={availableStatisticOptions}
+                      value={availableStatisticOptions.find((opt) => opt.value === statistic?.value) || null}
+                      onChange={setStatistic}
+                      placeholder="Выберите статистику..."
+                      styles={customMainSelectorStyles}
+                      isDisabled={!Object.values(filters).some((v) => v)}
+                    />
+                  </div>
+                </div>
+
+
+                <div className="selector" style={{ width: "100%" }}>
+                  <label htmlFor="display-type">Отобразить как (обязательное поле)</label>
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Select
+                      id="display-type"
+                      options={displayOptions}
+                      value={displayOptions.find((opt) => opt.value === displayMode) || null}
+                      onChange={(selected) => setDisplayMode(selected.value)}
+                      placeholder="Отобразить как..."
+                      styles={customMainSelectorStyles}
+                      isDisabled={!Object.values(filters).some((v) => v)}
+                    />
+                  </div>
+                </div>
+              </>
             )}
-
-            <div className="selector" style={{ width: "100%" }}>
-              <label htmlFor="statistic-type">Выбрать статистику</label>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <Select
-                  id="statistic-type"
-                  options={availableStatisticOptions}
-                  value={availableStatisticOptions.find((opt) => opt.value === statistics?.value) || null}
-                  onChange={setStatistics}
-                  placeholder="Выберите статистику..."
-                  styles={customMainSelectorStyles}
-                  isDisabled={!Object.values(filters).some((v) => v)}
-                />
-              </div>
-            </div>
-
-
-            <div className="selector" style={{ width: "100%" }}>
-              <label htmlFor="display-type">Отобразить как</label>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <Select
-                  id="display-type"
-                  options={displayOptions}
-                  value={displayOptions.find((opt) => opt.value === displayMode) || null}
-                  onChange={(selected) => setDisplayMode(selected.value)}
-                  placeholder="Отобразить как..."
-                  styles={customMainSelectorStyles}
-                  isDisabled={!Object.values(filters).some((v) => v)}
-                />
-              </div>
-            </div>
 
           </div>
 
-          <button className="submit-button" onClick={handleSubmit}>
+          <button className="submit-button" 
+          onClick={handleSubmit}
+          disabled={
+            !Object.values(filters).some((v) => v) || !statistic || !displayMode
+          }>
             Отправить
           </button>
 
@@ -284,6 +299,16 @@ function StatisticNBA() {
                 ? answer.statistic_display.join(', ')
                 : answer.statistic_display}
             </strong>
+
+            {(
+              !Object.values(filters).some((v) => v) ||
+              !statistic ||
+              !displayMode
+            ) && (
+              <div className="error-message" style={{ color: '#FF0000', marginTop: '8px' }}>
+                Выберите параметры
+              </div>
+            )}
           </div>
         </div>
       </main>

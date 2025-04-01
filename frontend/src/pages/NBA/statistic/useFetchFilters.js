@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export const useFetchFilters = ({ filters, activeFilters, setTeams, setPlayers, setOpponents, setSeasons, setStages }) => {
+export const useFetchFilters = ({ filters, activeFilters, setTeams, setPlayers, setOpponents, setSeasons, setStages, setHomeAway }) => {
   useEffect(() => {
     if (activeFilters.includes("team_id")) {
       fetch("http://127.0.0.1:8000/api/nba/teams_by_filters/", {
@@ -52,6 +52,19 @@ export const useFetchFilters = ({ filters, activeFilters, setTeams, setPlayers, 
         .catch((err) => console.error("Ошибка загрузки сезонов:", err));
     }
   }, [filters, activeFilters, setSeasons]);
+
+  useEffect(() => {
+    if (activeFilters.includes("homeaway")) {
+      fetch("http://127.0.0.1:8000/api/nba/homeaway_by_filters/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filters),
+      })
+        .then((res) => res.json())
+        .then((data) => setHomeAway(data.homeaways || []))
+        .catch((err) => console.error("Ошибка загрузки положения:", err));
+    }
+  }, [filters, activeFilters, setHomeAway]);
 
   useEffect(() => {
     if (activeFilters.includes("stage")) {

@@ -1,6 +1,7 @@
 export const filterOptions = [
     { value: "season", label: "Сезон" },
     { value: "stage", label: "Стадия" },
+    { value: "homeaway", label: "Положение команды" },
     { value: "team_id", label: "Команда" },
     { value: "player_id", label: "Игрок" },
     { value: "opponent_id", label: "Оппонент" },
