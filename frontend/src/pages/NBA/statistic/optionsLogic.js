@@ -23,4 +23,13 @@ export const getAvailableFilterOptions = (filterOptions, activeFilters) => {
       return true;
     });
   };
+
+  export const getAvailableDisplayOptions = (displayOptions, statistic) => {
+    return displayOptions.filter((opt) => {
+      if (opt.value === "overdrawunder") {
+        return statistic?.model === "NBATotalBet";
+      }
+      return true;
+    });
+  };
   

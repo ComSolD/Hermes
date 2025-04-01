@@ -30,6 +30,7 @@ import {
   getAvailableFilterOptions,
   getAvailableLimitationOptions,
   getAvailableStatisticOptions,
+  getAvailableDisplayOptions,
 } from "./statistic/optionsLogic";
 
 
@@ -77,7 +78,7 @@ function StatisticNBA() {
 
   const [limitations, setLimitations] = useState(null); // ✅ обязательно null
 
-  const [setSelectedLimitationType] = useState(null);
+  const [selectedLimitationType, setSelectedLimitationType] = useState(null);
 
   const [displayMode, setDisplayMode] = useState(null);
 
@@ -121,7 +122,7 @@ function StatisticNBA() {
       limitation: limitations
         ? `${limitations.count} ${limitations.direction}`
         : null,
-      statistic: statistic?.value || null, // ✅ передаем выбранное поле
+      statistic: statistic || null, // ✅ передаем выбранное поле
       display: displayMode || null,
     };
 
@@ -144,7 +145,7 @@ function StatisticNBA() {
   const availableFilterOptions = getAvailableFilterOptions(filterOptions, activeFilters);
   const availableLimitationOptions = getAvailableLimitationOptions(limitationOptions, limitations);
   const availableStatisticOptions = getAvailableStatisticOptions(statisticOptions, filters);
-
+  const availableDisplayOptions = getAvailableDisplayOptions(displayOptions, statistic);
 
 
   return (
@@ -255,13 +256,63 @@ function StatisticNBA() {
                     <Select
                       id="statistic-type"
                       options={availableStatisticOptions}
-                      value={availableStatisticOptions.find((opt) => opt.value === statistic?.value) || null}
-                      onChange={setStatistic}
+                      value={statistic?.label ? { label: statistic.label, value: statistic } : null}
+                      onChange={(selectedOption) => {
+                        setStatistic({
+                          ...selectedOption.value,
+                          label: selectedOption.label
+                        });
+                      }}
                       placeholder="Выберите статистику..."
                       styles={customMainSelectorStyles}
                       isDisabled={!Object.values(filters).some((v) => v)}
                     />
                   </div>
+
+                  {statistic?.dynamicValue && (
+                    <div style={{ marginTop: '10px' }}>
+                      <input
+                        id="threshold-input"
+                        type="text"
+                        inputMode="decimal"
+                        value={statistic.threshold}
+                        onChange={(e) => {
+                          const raw = e.target.value.replace(',', '.');
+                  
+                          // Разрешаем любой ввод, но фильтруем позже
+                          if (/^[0-9]*[.,]?[05]?$/.test(raw)) {
+                            setStatistic((prev) => ({
+                              ...prev,
+                              threshold: raw,
+                            }));
+                          }
+                        }}
+                        onBlur={(e) => {
+                          // Очистка или округление при потере фокуса
+                          const val = e.target.value.replace(',', '.');
+                          const num = parseFloat(val);
+                          if (!isNaN(num)) {
+                            const fixed = Math.round(num * 2) / 2; // округляем до ближайшего .5
+                            setStatistic((prev) => ({
+                              ...prev,
+                              threshold: fixed.toString(),
+                            }));
+                          } else {
+                            setStatistic((prev) => ({ ...prev, threshold: '0' }));
+                          }
+                        }}
+                        className="input-limitation"
+                        style={{
+                          borderRadius: '6px',
+                          padding: '8px 12px',
+                          fontSize: '16px',
+                          width: '100%',
+                          border: '1px solid #ccc',
+                          outline: 'none',
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
 
 
@@ -270,8 +321,8 @@ function StatisticNBA() {
                   <div style={{ display: "flex", justifyContent: "center" }}>
                     <Select
                       id="display-type"
-                      options={displayOptions}
-                      value={displayOptions.find((opt) => opt.value === displayMode) || null}
+                      options={availableDisplayOptions}
+                      value={availableDisplayOptions.find((opt) => opt.value === displayMode) || null}
                       onChange={(selected) => setDisplayMode(selected.value)}
                       placeholder="Отобразить как..."
                       styles={customMainSelectorStyles}

@@ -146,6 +146,13 @@ class NBAMoneylineBet(models.Model):
         verbose_name_plural = 'Ставки на победу'
 
 class NBATotalBet(models.Model):
+
+    RESULT_CHOICES = [
+        ('over', 'Больше'),
+        ('draw', 'Равно'),
+        ('under', 'Меньше')
+    ]
+
     total_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
 
@@ -165,7 +172,7 @@ class NBATotalBet(models.Model):
     total = models.FloatField()
     over_odds = models.FloatField(null=True, blank=True)
     under_odds = models.FloatField(null=True, blank=True)
-    total_result = models.CharField(max_length=10, null=True, blank=True)
+    total_result = models.CharField(max_length=10, null=True, blank=True, choices=RESULT_CHOICES)
 
     class Meta():
         db_table = 'nba_total_bet'

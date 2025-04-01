@@ -5,7 +5,7 @@ from django.core.cache import cache
 from datetime import datetime, date
 from django.db.models import Q, Sum
 
-from .models import NBAMatch, NBAPlayer, NBAPlayerStat, NBATeam, NBATeamPtsStat, NBATeamStat
+from .models import NBAMatch, NBAPlayer, NBAPlayerStat, NBATeam, NBATeamPtsStat, NBATeamStat, NBATotalBet
 from .serializers import NBAHandicapSerializer, NBAMatchSerializer, NBAMatchesSchedule, NBATotalSerializer, NBAMoneylineSerializer, NBATeamStatisticSerializer, NBAPlayerStatisticSerializer  # Импортируем сериализатор матча
 from .utils import calculate_statistic_display
 
@@ -539,6 +539,8 @@ def filter_stat(request):
                 total = sum([getattr(stat, f, 0) or 0 for f in fields])
                 match_stat_map[stat.match_id] += total
 
+            statistic_values = [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
+
         elif model == "NBAPlayerStat":
             stat_queryset = NBAPlayerStat.objects.filter(match_id__in=match_ids)
 
@@ -550,9 +552,29 @@ def filter_stat(request):
                 total = sum([getattr(stat, f, 0) or 0 for f in fields])
                 match_stat_map[stat.match_id] += total
 
-        statistic_values = [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
+            statistic_values = [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
+
+        elif model == "NBATotalBet":
+            threshold = statistic_data.get("threshold", 0)
+
+            stat_queryset = NBATotalBet.objects.filter(match_id__in=match_ids, period=aggregate)
+
+            RESULT_CHOICES = {
+                "over": "Больше",
+                "under": "Меньше",
+                "draw": "Равно"
+            }
+
+
+            # Формируем список значений для дальнейшей обработки
+            statistic_values = [
+                RESULT_CHOICES.get(stat.total_result, stat.total_result)
+                for stat in stat_queryset
+                if float(stat.total) == float(threshold)
+            ]
 
     display_mode = data.get("display")
+
     display_result = calculate_statistic_display(statistic_values, display_mode)
 
     # Можно добавить реальные поля (победы, очки и т.д.)
@@ -561,7 +583,6 @@ def filter_stat(request):
         "example_match_ids": list(matches.values_list("match_id", flat=True)),  # просто пример
         "statistic_display": display_result,
     }
-
     return Response({
         "answer": result
     })
