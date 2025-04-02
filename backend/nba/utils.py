@@ -1,3 +1,5 @@
+
+
 def calculate_statistic_display(statistic_values, mode):
     if not statistic_values:
         return None
@@ -35,6 +37,7 @@ def handle_statistic_data(statistic_data, matches, data, player_id=None):
         NBATotalBet,
         NBAHandicapBet,
         NBAMatch,
+        NBAMoneylineBet
     )
 
     if not statistic_data or not isinstance(statistic_data, dict):
@@ -73,6 +76,19 @@ def handle_statistic_data(statistic_data, matches, data, player_id=None):
             match_stat_map[stat.match_id] += total
 
         return [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
+    
+    elif model == "NBAMoneylineBet" and "result" in fields:
+        stat_queryset = NBAMoneylineBet.objects.filter(match_id__in=match_ids, period=aggregate)
+
+        matched_results = []
+
+        for stat in stat_queryset:
+            if str(stat.result) == str(team_id):
+                matched_results.append("Победа")
+            else:
+                matched_results.append("Поражение")
+
+        return matched_results
 
     elif model == "NBATotalBet" and "total" in fields:
         stat_queryset = NBATotalBet.objects.filter(match_id__in=match_ids, period=aggregate)

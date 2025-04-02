@@ -31,7 +31,10 @@ export const getAvailableFilterOptions = (filterOptions, activeFilters) => {
       }
 
       if (opt.value === "windrawlose") {
-        return statistic?.model === "NBAHandicapBet";
+        return (
+          statistic?.model === "NBAHandicapBet" ||
+          statistic?.model === "NBAMoneylineBet"
+        );
       }
 
       if (opt.value === "avg") {

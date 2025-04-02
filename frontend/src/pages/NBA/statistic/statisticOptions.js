@@ -10,7 +10,7 @@ export const filterOptions = [
   export const displayOptions = [
     { value: "avg", label: "AVG" },
     { value: "overdrawunder", label: "Больше/Равно/Меньше" },
-    { value: "windrawlose", label: "Победа/Равно/Поражение" },
+    { value: "windrawlose", label: "Победа/Ничья/Поражение" },
     { value: "list", label: "Список" },
   ];
   
@@ -70,6 +70,14 @@ export const filterOptions = [
     {
       value: { model: "NBATeamPtsStat", fields: ["total", "total_missed"] },
       label: "Тотал",
+    },
+    {
+      value: {
+        model: "NBAMoneylineBet",
+        fields: ["result"],
+        aggregate: "full_time",
+      },
+      label: "Количество побед/поражений"
     },
     {
       value: {
