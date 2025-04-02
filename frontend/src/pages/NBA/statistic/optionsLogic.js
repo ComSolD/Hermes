@@ -29,6 +29,17 @@ export const getAvailableFilterOptions = (filterOptions, activeFilters) => {
       if (opt.value === "overdrawunder") {
         return statistic?.model === "NBATotalBet";
       }
+
+      if (opt.value === "windrawlose") {
+        return statistic?.model === "NBAHandicapBet";
+      }
+
+      if (opt.value === "avg") {
+        return (
+          statistic?.model === "NBATeamPtsStat" ||
+          statistic?.model === "NBAPlayerStat"
+        );
+      }
       return true;
     });
   };

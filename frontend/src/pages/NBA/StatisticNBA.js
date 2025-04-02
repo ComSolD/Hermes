@@ -24,7 +24,14 @@ import {
   HomeAwaySelector
 } from "./statistic/FilterSelectors";
 
-import { createFilterHandlers } from "./statistic/filterHandlers";
+import { createFilterHandlers,
+  handleChangeHandicap,
+  handleChangeOdds,
+  handleChangeTotal,
+  blurTotal,
+  blurHandicap,
+  blurOdds,
+ } from "./statistic/filterHandlers";
 
 import {
   getAvailableFilterOptions,
@@ -139,6 +146,40 @@ function StatisticNBA() {
       })
       .catch((error) => console.error("Ошибка при отправке:", error));
   };
+
+
+  const getThresholdHandler = (stat, setStatistic) => {
+    if (!stat) return () => {};
+  
+    const model = stat.model;
+    const fields = stat.fields || [];
+  
+    if (fields.includes("over_odds") || fields.includes("under_odds")) {
+      return (e) => handleChangeOdds(e, setStatistic);
+    }
+  
+    if (model === "NBAHandicapBet") {
+      return (e) => handleChangeHandicap(e, setStatistic);
+    }
+  
+    return (e) => handleChangeTotal(e, setStatistic);
+  };
+
+  const getThresholdBlurHandler = (stat, setStatistic) => {
+    if (!stat) return () => {};
+  
+    const model = stat.model;
+    const fields = stat.fields || [];
+  
+    if (fields.includes("over_odds") || fields.includes("under_odds")) {
+      return (e) => blurOdds(e, setStatistic);
+    }
+    if (model === "NBAHandicapBet") {
+      return (e) => blurHandicap(e, setStatistic);
+    }
+    return (e) => blurTotal(e, setStatistic);
+  };
+  
 
 
   // Взаимодействует с optionsLogic.js
@@ -276,31 +317,8 @@ function StatisticNBA() {
                         type="text"
                         inputMode="decimal"
                         value={statistic.threshold}
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(',', '.');
-                  
-                          // Разрешаем любой ввод, но фильтруем позже
-                          if (/^[0-9]*[.,]?[05]?$/.test(raw)) {
-                            setStatistic((prev) => ({
-                              ...prev,
-                              threshold: raw,
-                            }));
-                          }
-                        }}
-                        onBlur={(e) => {
-                          // Очистка или округление при потере фокуса
-                          const val = e.target.value.replace(',', '.');
-                          const num = parseFloat(val);
-                          if (!isNaN(num)) {
-                            const fixed = Math.round(num * 2) / 2; // округляем до ближайшего .5
-                            setStatistic((prev) => ({
-                              ...prev,
-                              threshold: fixed.toString(),
-                            }));
-                          } else {
-                            setStatistic((prev) => ({ ...prev, threshold: '0' }));
-                          }
-                        }}
+                        onChange={getThresholdHandler(statistic, setStatistic)}
+                        onBlur={getThresholdBlurHandler(statistic, setStatistic)}
                         className="input-limitation"
                         style={{
                           borderRadius: '6px',

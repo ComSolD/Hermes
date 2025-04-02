@@ -5,9 +5,10 @@ from django.core.cache import cache
 from datetime import datetime, date
 from django.db.models import Q, Sum
 
-from .models import NBAMatch, NBAPlayer, NBAPlayerStat, NBATeam, NBATeamPtsStat, NBATeamStat, NBATotalBet
+
+from .models import NBAMatch, NBAPlayer, NBAPlayerStat, NBATeam, NBATeamStat
 from .serializers import NBAHandicapSerializer, NBAMatchSerializer, NBAMatchesSchedule, NBATotalSerializer, NBAMoneylineSerializer, NBATeamStatisticSerializer, NBAPlayerStatisticSerializer  # Импортируем сериализатор матча
-from .utils import calculate_statistic_display
+from .utils import calculate_statistic_display, handle_statistic_data
 
 
 @api_view(['GET'])
@@ -520,58 +521,7 @@ def filter_stat(request):
     statistic_data = data.get("statistic")
     statistic_values = []
 
-    if statistic_data and isinstance(statistic_data, dict):
-        model = statistic_data.get("model")
-        fields = statistic_data.get("fields", [])
-        aggregate = statistic_data.get("aggregate", "team")
-
-        match_ids = list(matches.values_list("match_id", flat=True))
-        team_id = data.get("team_id")
-
-        match_stat_map = {mid: 0 for mid in match_ids}
-
-        if model == "NBATeamPtsStat":
-            stat_queryset = NBATeamPtsStat.objects.filter(match_id__in=match_ids)
-
-            for stat in stat_queryset:
-                if str(stat.team_id) != team_id:
-                    continue  # учитываем только выбранную команду
-                total = sum([getattr(stat, f, 0) or 0 for f in fields])
-                match_stat_map[stat.match_id] += total
-
-            statistic_values = [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
-
-        elif model == "NBAPlayerStat":
-            stat_queryset = NBAPlayerStat.objects.filter(match_id__in=match_ids)
-
-            for stat in stat_queryset:
-                if str(stat.team_id) != team_id:
-                    continue
-                if aggregate == "player" and player_id and str(stat.player_id) != player_id:
-                    continue
-                total = sum([getattr(stat, f, 0) or 0 for f in fields])
-                match_stat_map[stat.match_id] += total
-
-            statistic_values = [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
-
-        elif model == "NBATotalBet":
-            threshold = statistic_data.get("threshold", 0)
-
-            stat_queryset = NBATotalBet.objects.filter(match_id__in=match_ids, period=aggregate)
-
-            RESULT_CHOICES = {
-                "over": "Больше",
-                "under": "Меньше",
-                "draw": "Равно"
-            }
-
-
-            # Формируем список значений для дальнейшей обработки
-            statistic_values = [
-                RESULT_CHOICES.get(stat.total_result, stat.total_result)
-                for stat in stat_queryset
-                if float(stat.total) == float(threshold)
-            ]
+    statistic_values = handle_statistic_data(statistic_data, matches, data, player_id)
 
     display_mode = data.get("display")
 
