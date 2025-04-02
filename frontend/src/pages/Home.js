@@ -38,7 +38,7 @@ function Home() {
                         <td>
                           {tournament.name === "NFL"
                         ? `${match.stage}`
-                        : `${match.date}`}
+                        : `${match.date}`} {match.time}
                         </td>
                       </tr>
 

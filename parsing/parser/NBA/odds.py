@@ -189,7 +189,7 @@ class OddsNBA(object):
 
             self.match_id += f"_{match_date.replace('-', '_')}_{dates[2].replace(':', '_')}"
 
-            if match_table(self.match_id, teams_id, self.season, match_date, ''):
+            if match_table(self.match_id, teams_id, self.season, match_date, '', ''):
 
                 return 0
 

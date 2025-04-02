@@ -17,8 +17,6 @@ class NBAMatchSerializer(serializers.ModelSerializer):
         # Домашняя команда
         home_team = NBATeam.objects.filter(team_id=match.team2_id).first()
 
-        home_stat = NBATeamStat.objects.filter(match_id=match.match_id, team_id=match.team2_id).first()
-
             # Стартер
         home_starter_players = NBAPlayerStat.objects.filter(match_id=match.match_id, team_id=match.team2_id, position="starter")
 
@@ -68,8 +66,6 @@ class NBAMatchSerializer(serializers.ModelSerializer):
         # Выездная команда
         away_team = NBATeam.objects.filter(team_id=match.team1_id).first()
 
-        away_stat = NBATeamStat.objects.filter(match_id=match.match_id, team_id=match.team1_id).first()
-
             # Стартер
         away_starter_players = NBAPlayerStat.objects.filter(match_id=match.match_id, team_id=match.team1_id, position="starter")
 
@@ -117,6 +113,7 @@ class NBAMatchSerializer(serializers.ModelSerializer):
             "min": p.min,
         } for p in away_bench_players]
 
+        ot = (pts.total_q1 + pts.total_q2 + pts.total_q3 + pts.total_q4 + pts.total_q1_missed + pts.total_q2_missed + pts.total_q3_missed + pts.total_q4_missed) - (pts.total + pts.total_missed)
 
         return {
             "match_id": match.match_id,
@@ -172,6 +169,12 @@ class NBAMatchSerializer(serializers.ModelSerializer):
                 "turnovers": sum(player["turnovers"] for player in away_starter_players_info) + sum(player["turnovers"] for player in away_bench_players_info),
                 "pf": sum(player["pf"] for player in away_starter_players_info) + sum(player["pf"] for player in away_bench_players_info),
             },
+
+            "ot": ot,
+
+            "stage": match.get_stage_display(),
+
+            "time": match.time.strftime("%H:%M"),
 
             "date": match.date.strftime("%d-%m-%Y"),
         }

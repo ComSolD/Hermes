@@ -98,7 +98,8 @@ class TournamentSerializer(serializers.ModelSerializer):
                 "match_bet": {
                     "ml_result": ml_result.name if bet.result else "N/A",
                     "ml_odds": bet.team2_odds if bet.result == str(match.team2_id) else bet.team1_odds,
-                }
+                },
+                "time": match.time.strftime("%H:%M"),
             }
 
            

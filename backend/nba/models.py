@@ -15,13 +15,29 @@ class NBAMatch(models.Model):
     team1 = models.ForeignKey(NBATeam, related_name='away_matches', on_delete=models.CASCADE)
     team2 = models.ForeignKey(NBATeam, related_name='home_matches', on_delete=models.CASCADE)
     season = models.CharField(max_length=10)
+    time = models.TimeField(null=True, blank=True)
     stage = models.CharField(null=True, blank=True, max_length=50,
         choices=[
             ('regular', 'Регулярный сезон'),
             ('preseason', 'Пресезон'),
             ('in-season championship', 'Внутрисезонный финал'),
             ('in-season semifinals', 'Внутрисезонный полуфинал'),
-            ('in-season quarterfinals', 'Внутрисезонный 1/4'),
+            ('in-season quarterfinals', 'Внутрисезонный четвертьфинал'),
+            ('east finals', 'Финал востока'),
+            ('west finals', 'Финал запада'),
+            ('east semifinals', 'Полуфинал востока'),
+            ('west semifinals', 'Полуфинал запада'),
+            ('east 1st round', 'Первый раунд востока'),
+            ('west 1st round', 'Первый раунд запада'),
+            ('play-in east 9th place vs 10th place', 'Play-in востока'),
+            ('play-in west 9th place vs 10th place', 'Play-in запада'),
+            ('play-in east 7th place vs 8th place', 'Play-in востока'),
+            ('play-in west 7th place vs 8th place', 'Play-in запада'),
+            ('play-in east 8th seed', 'Play-in востока'),
+            ('play-in west 8th seed', 'Play-in запада'),
+            ('cup group play', 'Кубок - групповая стадия'),
+            ('cup quarterfinals', 'Кубок - четвертьфинал'),
+            ('cup championship', 'Кубок - чемпионат'),
         ])
     date = models.DateField()
 

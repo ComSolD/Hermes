@@ -17,8 +17,9 @@ const MatchHeader = ({ match, id }) => {
               <th>2</th>
               <th>3</th>
               <th>4</th>
+              {match.match_info.ot !== 0 && <th>OT</th>}
               <th>T</th>
-              <th></th>
+              <th style={{ fontSize: "12px" }}>{match.match_info.stage}</th>
             </tr>
           </thead>
           <tbody>
@@ -28,8 +29,9 @@ const MatchHeader = ({ match, id }) => {
               <td>{match.match_info.total.home_q2}</td>
               <td>{match.match_info.total.home_q3}</td>
               <td>{match.match_info.total.home_q4}</td>
+              {match.match_info.ot !== 0 && <td>{match.match_info.total.home_total - match.match_info.total.home_q1 - match.match_info.total.home_q2 - match.match_info.total.home_q3 -match.match_info.total.home_q4}</td>}
               <td>{match.match_info.total.home_total}</td>
-              <td>Стадия: {match.stage}</td>
+              <td>{match.match_info.date}</td>
             </tr>
           </tbody>
           <tbody>
@@ -39,8 +41,9 @@ const MatchHeader = ({ match, id }) => {
               <td>{match.match_info.total.away_q2}</td>
               <td>{match.match_info.total.away_q3}</td>
               <td>{match.match_info.total.away_q4}</td>
+              {match.match_info.ot !== 0 && <td>{match.match_info.total.away_total - match.match_info.total.away_q1 - match.match_info.total.away_q2 - match.match_info.total.away_q3 -match.match_info.total.away_q4}</td>}
               <td>{match.match_info.total.away_total}</td>
-              <td>Дата: {match.match_info.date}</td>
+              <td>{match.match_info.time}</td>
             </tr>
           </tbody>
         </table>

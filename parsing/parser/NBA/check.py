@@ -68,7 +68,10 @@ def stage_check(stages):
         ('play-in', 'west', '8th', 'seed'): "play-in west 8th seed",
         ('in-season', 'quarterfinals'): "in-season quarterfinals",
         ('in-season', 'semifinals'): "in-season semifinals",
-        ('in-season', 'championship'): "in-season championship"
+        ('in-season', 'championship'): "in-season championship",
+        ('nba', 'cup', 'quarterfinals'): "cup quarterfinals",
+        ('nba', 'cup', 'semifinals'): "cup semifinals",
+        ('nba', 'cup', 'сhampionship'): "cup сhampionship",
     }
 
     # Проверяем соответствие шаблонам

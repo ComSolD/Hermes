@@ -45,7 +45,7 @@ def team_table(name_team1, name_team2):
     return team1_id, team2_id
 
 
-def match_table(match_id, teams, season, date_match, stage):
+def match_table(match_id, teams, season, date_match, stage, time):
     config = configparser.ConfigParser()
     config.read("config.ini")
 
@@ -72,7 +72,7 @@ def match_table(match_id, teams, season, date_match, stage):
     
     elif exists and stage_check[0] is None and stage != '':
 
-        cur.execute(f'''UPDATE nba_match SET stage = '{stage}' WHERE match_id = '{match_id}';''')
+        cur.execute(f'''UPDATE nba_match SET stage = '{stage}', time = '{time}' WHERE match_id = '{match_id}';''')
         conn.commit()
 
         return False
@@ -115,11 +115,11 @@ def team_stat_pts_tables(match_id, teams_id, total):
 
     # Заполнение таблицы статистики очков команд
     team1_PTS_Stat_id = str(uuid.uuid4())
-    cur.execute(f"INSERT INTO nba_team_pts_stat(team_pts_stat_id, match_id, team_id, total, total_missed, total_q1, total_q1_missed, total_q2, total_q2_missed, total_q3, total_q3_missed, total_q4, total_q4_missed) VALUES('{team1_PTS_Stat_id}', '{match_id}', '{teams_id[0]}', {total[0][-2]}, {total[0][-1]}, {total[0][0]}, {total[0][1]}, {total[0][2]}, {total[0][3]}, {total[0][4]}, {total[0][5]}, {total[0][6]}, {total[0][7]})")
+    cur.execute(f"INSERT INTO nba_team_pts_stat(team_pts_stat_id, match_id, team_id, total, total_missed, total_q1, total_q1_missed, total_q2, total_q2_missed, total_q3, total_q3_missed, total_q4, total_q4_missed) VALUES('{team1_PTS_Stat_id}', '{match_id}', '{teams_id[0]}', {total[2][-2]}, {total[2][-1]}, {total[0][0]}, {total[0][1]}, {total[0][2]}, {total[0][3]}, {total[0][4]}, {total[0][5]}, {total[0][6]}, {total[0][7]})")
     conn.commit()
 
     team2_PTS_Stat_id = str(uuid.uuid4())
-    cur.execute(f"INSERT INTO nba_team_pts_stat(team_pts_stat_id, match_id, team_id, total, total_missed, total_q1, total_q1_missed, total_q2, total_q2_missed, total_q3, total_q3_missed, total_q4, total_q4_missed) VALUES('{team2_PTS_Stat_id}', '{match_id}', '{teams_id[1]}', {total[1][-2]}, {total[1][-1]}, {total[1][0]}, {total[1][1]}, {total[1][2]}, {total[1][3]}, {total[1][4]}, {total[1][5]}, {total[1][6]}, {total[1][7]})")
+    cur.execute(f"INSERT INTO nba_team_pts_stat(team_pts_stat_id, match_id, team_id, total, total_missed, total_q1, total_q1_missed, total_q2, total_q2_missed, total_q3, total_q3_missed, total_q4, total_q4_missed) VALUES('{team2_PTS_Stat_id}', '{match_id}', '{teams_id[1]}', {total[2][-2]}, {total[2][-1]}, {total[1][0]}, {total[1][1]}, {total[1][2]}, {total[1][3]}, {total[1][4]}, {total[1][5]}, {total[1][6]}, {total[1][7]})")
     conn.commit()
 
 
