@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.cache import cache
 from datetime import datetime, date
-from django.db.models import Q, Sum
+from django.db.models import Q
 
 
 from .models import NBAMatch, NBAPlayer, NBAPlayerStat, NBATeam, NBATeamStat

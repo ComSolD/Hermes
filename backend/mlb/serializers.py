@@ -89,6 +89,7 @@ class MLBMatchSerializer(serializers.ModelSerializer):
             "era": p.era,
         } for p in away_pitcher_players]
 
+        ot = (pts.total_i1 + pts.total_i2 + pts.total_i3 + pts.total_i4 + pts.total_i5 + pts.total_i6 + pts.total_i7 + pts.total_i8 + pts.total_i9 + pts.total_i1_missed + pts.total_i2_missed + pts.total_i3_missed + pts.total_i4_missed + pts.total_i5_missed + pts.total_i6_missed + pts.total_i7_missed + pts.total_i8_missed + pts.total_i9_missed) - (pts.total + pts.total_missed)
 
         return {
             "match_id": match.match_id,
@@ -168,6 +169,12 @@ class MLBMatchSerializer(serializers.ModelSerializer):
                 "pc": sum(player["pc"] for player in away_pitcher_players_info),
                 "st": sum(player["st"] for player in away_pitcher_players_info),
             },
+
+            "ot": ot,
+
+            "stage": match.get_stage_display(),
+
+            "time": match.time.strftime("%H:%M"),
 
             "date": match.date.strftime("%d-%m-%Y"),
         }
@@ -496,3 +503,14 @@ class MLBMatchesSchedule(serializers.ModelSerializer):
         }
 
 
+class MLBTeamStatisticSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MLBTeam
+        fields = ['team_id', 'name']
+
+
+class MLBPlayerStatisticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MLBPlayer
+        fields = ['player_id', 'name']

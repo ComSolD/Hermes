@@ -70,7 +70,7 @@ const filterRenderMap = {
 };
 
 
-function StatisticNBA() {
+function StatisticMLB() {
   const [seasons, setSeasons] = useState([]);
   const [stages, setStages] = useState([]);
   const [homeaways, setHomeAway] = useState([]);
@@ -93,7 +93,7 @@ function StatisticNBA() {
 
   const [answer, setAnswer] = useState("");
 
-  document.title = `Статистика NBA`;
+  document.title = `Статистика MLB`;
 
 
   // Взаимодействует с useFetchFilters.js
@@ -133,7 +133,7 @@ function StatisticNBA() {
       display: displayMode || null,
     };
 
-    fetch("http://127.0.0.1:8000/api/nba/filterstat/", {
+    fetch("http://127.0.0.1:8000/api/mlb/filterstat/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -158,7 +158,7 @@ function StatisticNBA() {
       return (e) => handleChangeOdds(e, setStatistic);
     }
   
-    if (model === "NBAHandicapBet") {
+    if (model === "MLBHandicapBet") {
       return (e) => handleChangeHandicap(e, setStatistic);
     }
   
@@ -174,7 +174,7 @@ function StatisticNBA() {
     if (fields.includes("over_odds") || fields.includes("under_odds")) {
       return (e) => blurOdds(e, setStatistic);
     }
-    if (model === "NBAHandicapBet") {
+    if (model === "MLBHandicapBet") {
       return (e) => blurHandicap(e, setStatistic);
     }
     return (e) => blurTotal(e, setStatistic);
@@ -305,6 +305,7 @@ function StatisticNBA() {
                         });
                       }}
                       placeholder="Выберите статистику..."
+                      isSearchable
                       styles={customMainSelectorStyles}
                       isDisabled={!Object.values(filters).some((v) => v)}
                     />
@@ -385,4 +386,4 @@ function StatisticNBA() {
   );
 }
 
-export default StatisticNBA;
+export default StatisticMLB;

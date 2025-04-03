@@ -31,13 +31,13 @@ def calculate_statistic_display(statistic_values, mode):
 
 
 def handle_statistic_data(statistic_data, matches, data, player_id=None):
-    from nba.models import (
-        NBATeamPtsStat,
-        NBAPlayerStat,
-        NBATotalBet,
-        NBAHandicapBet,
-        NBAMatch,
-        NBAMoneylineBet
+    from mlb.models import (
+        MLBTeamPtsStat,
+        MLBPlayerStat,
+        MLBTotalBet,
+        MLBHandicapBet,
+        MLBMatch,
+        MLBMoneylineBet
     )
 
     if not statistic_data or not isinstance(statistic_data, dict):
@@ -54,8 +54,8 @@ def handle_statistic_data(statistic_data, matches, data, player_id=None):
 
     match_stat_map = {mid: 0 for mid in match_ids}
 
-    if model == "NBATeamPtsStat":
-        stat_queryset = NBATeamPtsStat.objects.filter(match_id__in=match_ids)
+    if model == "MLBTeamPtsStat":
+        stat_queryset = MLBTeamPtsStat.objects.filter(match_id__in=match_ids)
 
         for stat in stat_queryset:
             if str(stat.team_id) != team_id:
@@ -65,8 +65,8 @@ def handle_statistic_data(statistic_data, matches, data, player_id=None):
 
         return [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
 
-    elif model == "NBAPlayerStat":
-        stat_queryset = NBAPlayerStat.objects.filter(match_id__in=match_ids)
+    elif model == "MLBPlayerStat":
+        stat_queryset = MLBPlayerStat.objects.filter(match_id__in=match_ids)
 
         for stat in stat_queryset:
             if team_id and str(stat.team_id) != str(team_id):
@@ -79,8 +79,8 @@ def handle_statistic_data(statistic_data, matches, data, player_id=None):
 
         return [match_stat_map[mid] for mid in match_ids if mid in match_stat_map]
     
-    elif model == "NBAMoneylineBet" and "result" in fields:
-        stat_queryset = NBAMoneylineBet.objects.filter(match_id__in=match_ids, period=aggregate)
+    elif model == "MLBMoneylineBet" and "result" in fields:
+        stat_queryset = MLBMoneylineBet.objects.filter(match_id__in=match_ids, period=aggregate)
 
         matched_results = []
 
@@ -92,8 +92,9 @@ def handle_statistic_data(statistic_data, matches, data, player_id=None):
 
         return matched_results
 
-    elif model == "NBATotalBet" and "total" in fields:
-        stat_queryset = NBATotalBet.objects.filter(match_id__in=match_ids, period=aggregate)
+    elif model == "MLBTotalBet" and "total" in fields:
+
+        stat_queryset = MLBTotalBet.objects.filter(match_id__in=match_ids, period=aggregate)
 
         RESULT_CHOICES = {
             "over": "Больше",
@@ -106,13 +107,13 @@ def handle_statistic_data(statistic_data, matches, data, player_id=None):
             for stat in stat_queryset
             if float(stat.total) == threshold
         ]
-    elif model == "NBATotalBet" and "over_odds" in fields:
+    elif model == "MLBTotalBet" and "over_odds" in fields:
         threshold = float(threshold)
         rounded = round(threshold, 1)
         lower_bound = rounded
         upper_bound = rounded + 0.09
 
-        stat_queryset = NBATotalBet.objects.filter(
+        stat_queryset = MLBTotalBet.objects.filter(
             match_id__in=match_ids,
             period=aggregate,
             over_odds__gte=lower_bound,
@@ -132,13 +133,13 @@ def handle_statistic_data(statistic_data, matches, data, player_id=None):
 
         return matched_results
     
-    elif model == "NBATotalBet" and "under_odds" in fields:
+    elif model == "MLBTotalBet" and "under_odds" in fields:
         threshold = float(threshold)
         rounded = round(threshold, 1)
         lower_bound = rounded
         upper_bound = rounded + 0.09
 
-        stat_queryset = NBATotalBet.objects.filter(
+        stat_queryset = MLBTotalBet.objects.filter(
             match_id__in=match_ids,
             period=aggregate,
             under_odds__gte=lower_bound,
@@ -158,15 +159,15 @@ def handle_statistic_data(statistic_data, matches, data, player_id=None):
 
         return matched_results
 
-    elif model == "NBAHandicapBet" and "handicap" in fields:
+    elif model == "MLBHandicapBet" and "handicap" in fields:
         match_team_map = {
             match_id: (team1_id, team2_id)
-            for match_id, team1_id, team2_id in NBAMatch.objects
+            for match_id, team1_id, team2_id in MLBMatch.objects
                 .filter(match_id__in=match_ids)
                 .values_list("match_id", "team1_id", "team2_id")
         }
 
-        stat_queryset = NBAHandicapBet.objects.filter(match_id__in=match_ids, period=aggregate)
+        stat_queryset = MLBHandicapBet.objects.filter(match_id__in=match_ids, period=aggregate)
 
         RESULT_CHOICES = {
             "win": "Победа",

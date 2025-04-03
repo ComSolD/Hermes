@@ -17,22 +17,22 @@ export const getAvailableFilterOptions = (filterOptions, activeFilters) => {
   export const getAvailableStatisticOptions = (statisticOptions, filters) => {
     return statisticOptions.filter((opt) => {
       const { model, aggregate } = opt.value;
-      if (model === "NBAPlayerStat" && aggregate === "player") {
+      if (model === "MLBPlayerStat" && aggregate === "player") {
         return Boolean(filters.player_id);
       }
-      if (model === "NBATeamPtsStat") {
+      if (model === "MLBTeamPtsStat") {
         return Boolean(filters.team_id);
       }
-      if (model === "NBATotalBet") {
+      if (model === "MLBTotalBet") {
         return Boolean(filters.team_id);
       }
-      if (model === "NBAHandicapBet") {
+      if (model === "MLBHandicapBet") {
         return Boolean(filters.team_id);
       }
-      if (model === "NBAMoneylineBet") {
+      if (model === "MLBMoneylineBet") {
         return Boolean(filters.team_id);
       }
-      if (model === "NBAPlayerStat" && aggregate === "team") {
+      if (model === "MLBPlayerStat" && aggregate === "team") {
         return Boolean(filters.team_id);
       }
       return true;
@@ -42,20 +42,20 @@ export const getAvailableFilterOptions = (filterOptions, activeFilters) => {
   export const getAvailableDisplayOptions = (displayOptions, statistic, limitations) => {
     return displayOptions.filter((opt) => {
       if (opt.value === "overdrawunder") {
-        return statistic?.model === "NBATotalBet";
+        return statistic?.model === "MLBTotalBet";
       }
 
       if (opt.value === "windrawlose") {
         return (
-          statistic?.model === "NBAHandicapBet" ||
-          statistic?.model === "NBAMoneylineBet"
+          statistic?.model === "MLBHandicapBet" ||
+          statistic?.model === "MLBMoneylineBet"
         );
       }
 
       if (opt.value === "avg") {
         return (
-          statistic?.model === "NBATeamPtsStat" ||
-          statistic?.model === "NBAPlayerStat"
+          statistic?.model === "MLBTeamPtsStat" ||
+          statistic?.model === "MLBPlayerStat"
         );
       }
 

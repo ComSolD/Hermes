@@ -115,7 +115,6 @@ class OddsMLB(object):
                     
                     if self.open_matches_link(url) == 'enough':
                         return
-                    
 
             except Exception as e:
                 logging.error(f"Ошибка на странице {page}: {e}\n{traceback.format_exc()}")     
@@ -190,7 +189,7 @@ class OddsMLB(object):
 
             self.match_id += f"_{match_date.replace('-', '_')}_{dates[2].replace(':', '_')}"
 
-            if match_table(self.match_id, teams_id, self.season, match_date, ''):
+            if match_table(self.match_id, teams_id, self.season, match_date, '', ''):
 
                 return 0
 

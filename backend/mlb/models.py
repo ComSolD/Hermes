@@ -15,7 +15,20 @@ class MLBMatch(models.Model):
     team1 = models.ForeignKey(MLBTeam, related_name='away_matches', on_delete=models.CASCADE)
     team2 = models.ForeignKey(MLBTeam, related_name='home_matches', on_delete=models.CASCADE)
     season = models.CharField(max_length=10)
-    stage = models.CharField(null=True, blank=True, max_length=50)
+    time = models.TimeField(null=True, blank=True)
+    stage = models.CharField(null=True, blank=True, max_length=50,
+        choices=[
+            ('regular', 'Регулярный сезон'),
+            ('all-star', 'Матч всех звезд'),
+            ('alwc', 'ALWC'),
+            ('nlwc', 'NLWC'),
+            ('nlds', 'NLDS'),
+            ('alds', 'ALDS'),
+            ('nlcs', 'NLCS'),
+            ('alcs', 'ALCS'),
+            ('world series', 'Мировая Серия'),
+            ('world tour', 'Мировой Тур'),
+        ])
     date = models.DateField()
 
     class Meta():
@@ -157,6 +170,13 @@ class MLBMoneylineBet(models.Model):
         verbose_name_plural = 'Ставки на победу'
 
 class MLBTotalBet(models.Model):
+
+    RESULT_CHOICES = [
+        ('over', 'Больше'),
+        ('draw', 'Равно'),
+        ('under', 'Меньше')
+    ]
+
     total_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(MLBMatch, on_delete=models.CASCADE)
 
@@ -181,7 +201,7 @@ class MLBTotalBet(models.Model):
     total = models.FloatField()
     over_odds = models.FloatField(null=True, blank=True)
     under_odds = models.FloatField(null=True, blank=True)
-    total_result = models.CharField(max_length=10, null=True, blank=True)
+    total_result = models.CharField(max_length=10, null=True, blank=True, choices=RESULT_CHOICES)
 
     class Meta():
         db_table = 'mlb_total_bet'
@@ -189,6 +209,13 @@ class MLBTotalBet(models.Model):
         verbose_name_plural = 'Ставки на тоталы'
 
 class MLBHandicapBet(models.Model):
+
+    RESULT_CHOICES = [
+        ('win', 'Победа'),
+        ('draw', 'Ничья'),
+        ('lose', 'Поражение')
+    ]
+
     handicap_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(MLBMatch, on_delete=models.CASCADE)
 
@@ -212,8 +239,8 @@ class MLBHandicapBet(models.Model):
     handicap = models.FloatField(null=True, blank=True)
     handicap_team1_odds = models.FloatField(null=True, blank=True)
     handicap_team2_odds = models.FloatField(null=True, blank=True)
-    handicap_team1_result = models.CharField(max_length=5, null=True, blank=True)
-    handicap_team2_result = models.CharField(max_length=5, null=True, blank=True)
+    handicap_team1_result = models.CharField(max_length=5, null=True, blank=True, choices=RESULT_CHOICES)
+    handicap_team2_result = models.CharField(max_length=5, null=True, blank=True, choices=RESULT_CHOICES)
 
     class Meta():
         db_table = 'mlb_handicap_bet'

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from nba.models import NBAHandicapBet, NBAPlayer, NBAPlayerStat, NBATeamPtsStat, NBATeamStat, NBAMatch, NBAMoneylineBet, NBATeam, NBATotalBet
+from nba.models import NBAHandicapBet, NBAPlayer, NBAPlayerStat, NBATeamPtsStat, NBAMatch, NBAMoneylineBet, NBATeam, NBATotalBet
 
 class NBAMatchSerializer(serializers.ModelSerializer):
     match_info = serializers.SerializerMethodField()

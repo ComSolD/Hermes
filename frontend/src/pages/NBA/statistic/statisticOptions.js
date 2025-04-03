@@ -52,11 +52,11 @@ export const filterOptions = [
       label: "2-я Четверть тотал",
     },
     {
-      value: { model: "NBATeamPtsStat", fields: ["total_q3", "total_q2_missed"] },
+      value: { model: "NBATeamPtsStat", fields: ["total_q3", "total_q3_missed"] },
       label: "3-я Четверть тотал",
     },
     {
-      value: { model: "NBATeamPtsStat", fields: ["total_q4", "total_q2_missed"] },
+      value: { model: "NBATeamPtsStat", fields: ["total_q4", "total_q4_missed"] },
       label: "4-я Четверть тотал",
     },
     {

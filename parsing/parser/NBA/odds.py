@@ -49,7 +49,7 @@ class OddsNBA(object):
         self.driver.get(url)
         
         time.sleep(5)
-
+ 
         try:
             if self.first_year == "get":
                 self.process_matches_on_page()

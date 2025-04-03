@@ -10,8 +10,8 @@ const MatchHeader = ({ match, id }) => {
       <div className="match-title">
         <h1>{match.match_info.home_team} vs {match.match_info.away_team}</h1>
         <div>
-          <td>Стадия: {match.stage}</td>
-          <td>Дата: {match.match_info.date}</td>
+          <td>{match.match_info.stage}</td>
+          <td>{match.match_info.date} {match.match_info.time}</td>
         </div>
 
         <table>
@@ -27,6 +27,7 @@ const MatchHeader = ({ match, id }) => {
               <th>7</th>
               <th>8</th>
               <th>9</th>
+              {match.match_info.ot !== 0 && <th>OT</th>}
               <th>H</th>
               <th>R</th>
               <th>E</th>
@@ -44,6 +45,7 @@ const MatchHeader = ({ match, id }) => {
               <td>{match.match_info.total.home_i7}</td>
               <td>{match.match_info.total.home_i8}</td>
               <td>{match.match_info.total.home_i9}</td>
+              {match.match_info.ot !== 0 && <td>{match.match_info.total.home_total - match.match_info.total.home_i1 - match.match_info.total.home_i2 - match.match_info.total.home_i3 - match.match_info.total.home_i4 - match.match_info.total.home_i5 - match.match_info.total.home_i6 - match.match_info.total.home_i7 - match.match_info.total.home_i8 - match.match_info.total.home_i9}</td>}
               <td>{match.match_info.total.home_hit}</td>
               <td>{match.match_info.total.home_total}</td>
               <td>{match.match_info.total.home_error}</td>
@@ -61,6 +63,7 @@ const MatchHeader = ({ match, id }) => {
               <td>{match.match_info.total.away_i7}</td>
               <td>{match.match_info.total.away_i8}</td>
               <td>{match.match_info.total.away_i9}</td>
+              {match.match_info.ot !== 0 && <td>{match.match_info.total.away_total - match.match_info.total.away_i1 - match.match_info.total.away_i2 - match.match_info.total.away_i3 - match.match_info.total.away_i4 - match.match_info.total.away_i5 - match.match_info.total.away_i6 - match.match_info.total.away_i7 - match.match_info.total.away_i8 - match.match_info.total.away_i9}</td>}
               <td>{match.match_info.total.away_hit}</td>
               <td>{match.match_info.total.away_total}</td>
               <td>{match.match_info.total.away_error}</td>

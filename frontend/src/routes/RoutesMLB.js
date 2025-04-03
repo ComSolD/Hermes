@@ -5,7 +5,7 @@ import MoneylineDetailMLB from "../pages/MLB/MoneylineDetailMLB";
 import HandicapDetailMLB from "../pages/MLB/HandicapDetailMLB";
 import ScheduleMLB from "../pages/MLB/ScheduleMLB";
 // import TeamsMLB from "../pages/MLB/TeamsMLB";
-// import StatisticMLB from "../pages/MLB/StatisticMLB";
+import StatisticMLB from "../pages/MLB/StatisticMLB";
 
 const RoutesMLB = () => {
   return (
@@ -16,7 +16,7 @@ const RoutesMLB = () => {
       <Route path="match/:id/handicap/:period" element={<HandicapDetailMLB />} />
       <Route path="schedule/:date?" element={<ScheduleMLB />} />
       {/* <Route path="teams" element={<TeamsMLB />} /> */}
-      {/* <Route path="statistic" element={<StatisticMLB />} /> */}
+      <Route path="statistic" element={<StatisticMLB />} />
     </Routes>
   );
 };

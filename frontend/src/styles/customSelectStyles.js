@@ -4,6 +4,10 @@ export const customMainSelectorStyles = {
       width: '100%', // 🔹 растягиваем весь селект по ширине
       flex: 1,
     }),
+    valueContainer: (provided) => ({
+      ...provided,
+      justifyContent: 'center',
+    }),
     control: (provided, state) => ({
       ...provided,
       backgroundColor: '#fff',

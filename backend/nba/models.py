@@ -1,3 +1,4 @@
+from random import choice
 from django.db import models
 import uuid
 
@@ -196,6 +197,13 @@ class NBATotalBet(models.Model):
         verbose_name_plural = 'Ставки на тоталы'
 
 class NBAHandicapBet(models.Model):
+
+    RESULT_CHOICES = [
+        ('win', 'Победа'),
+        ('draw', 'Ничья'),
+        ('lose', 'Поражение')
+    ]
+
     handicap_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NBAMatch, on_delete=models.CASCADE)
 
@@ -214,8 +222,8 @@ class NBAHandicapBet(models.Model):
     handicap = models.FloatField(null=True, blank=True)
     handicap_team1_odds = models.FloatField(null=True, blank=True)
     handicap_team2_odds = models.FloatField(null=True, blank=True)
-    handicap_team1_result = models.CharField(max_length=5, null=True, blank=True)
-    handicap_team2_result = models.CharField(max_length=5, null=True, blank=True)
+    handicap_team1_result = models.CharField(max_length=5, null=True, blank=True, choices=RESULT_CHOICES)
+    handicap_team2_result = models.CharField(max_length=5, null=True, blank=True, choices=RESULT_CHOICES)
 
     class Meta():
         db_table = 'nba_handicap_bet'
