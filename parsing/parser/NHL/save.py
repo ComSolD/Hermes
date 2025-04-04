@@ -44,7 +44,7 @@ def team_table(name_team1, name_team2):
     return team1_id, team2_id
 
 
-def match_table(match_id, teams, season, date_match, stage, status):
+def match_table(match_id, teams, season, date_match, stage, status, time):
     config = configparser.ConfigParser()
     config.read("config.ini")
 
@@ -70,7 +70,7 @@ def match_table(match_id, teams, season, date_match, stage, status):
         return False
     
     elif exists and stage_check[0] is None and stage != '':
-        cur.execute(f'''UPDATE nhl_match SET stage = '{stage}', status = '{status}' WHERE match_id = '{match_id}';''')
+        cur.execute(f'''UPDATE nhl_match SET stage = '{stage}', status = '{status}', time = '{time}' WHERE match_id = '{match_id}';''')
         conn.commit()
 
         return False

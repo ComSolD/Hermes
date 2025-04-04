@@ -51,7 +51,7 @@ export const createFilterHandlers = (
     if (!isValid) return;
   
     const num = parseFloat(raw);
-    if (!isNaN(num) && num >= 0 && num <= 500) {
+    if (!isNaN(num) && num >= 1 && num <= 500) {
       setStatistic((prev) => ({
         ...prev,
         threshold: raw,
@@ -96,7 +96,7 @@ export const blurTotal = (e, setStatistic) => {
 
   if (!isNaN(num)) {
     const fixed = Math.round(num * 2) / 2;
-    const clamped = Math.max(0, Math.min(500, fixed));
+    const clamped = Math.max(1, Math.min(500, fixed));
 
     setStatistic((prev) => ({
       ...prev,

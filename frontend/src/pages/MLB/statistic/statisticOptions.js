@@ -97,6 +97,16 @@ export const filterOptions = [
       value: {
         model: "MLBTotalBet",
         fields: ["total"],
+        aggregate: "1st_half",
+        dynamicValue: true,
+        threshold: 5 // начальное значение
+      },
+      label: "Частота пробития общего тотала от букмекера (с 1 по 5 иннинг)"
+    },
+    {
+      value: {
+        model: "MLBTotalBet",
+        fields: ["total"],
         aggregate: "1st_inning",
         dynamicValue: true,
         threshold: 0.5 // начальное значение

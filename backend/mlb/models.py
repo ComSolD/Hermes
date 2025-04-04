@@ -1,9 +1,17 @@
 from django.db import models
 import uuid
 
+def team_logo_upload_path(instance, filename):
+    return f"mlb/team_logos/{instance.team_id}/{filename}"
+
 class MLBTeam(models.Model):
     team_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
+    logo = models.ImageField(
+        upload_to=team_logo_upload_path,
+        null=True,
+        blank=True
+    )
 
     class Meta():
         db_table = 'mlb_team'
@@ -16,16 +24,16 @@ class MLBMatch(models.Model):
     team2 = models.ForeignKey(MLBTeam, related_name='home_matches', on_delete=models.CASCADE)
     season = models.CharField(max_length=10)
     time = models.TimeField(null=True, blank=True)
-    stage = models.CharField(null=True, blank=True, max_length=50,
+    stage = models.CharField(null=True, blank=True, max_length=100,
         choices=[
             ('regular', 'Регулярный сезон'),
             ('all-star', 'Матч всех звезд'),
-            ('alwc', 'ALWC'),
-            ('nlwc', 'NLWC'),
-            ('nlds', 'NLDS'),
-            ('alds', 'ALDS'),
-            ('nlcs', 'NLCS'),
-            ('alcs', 'ALCS'),
+            ('alwc', 'AL Wild Card'),
+            ('nlwc', 'NL Wild Card'),
+            ('nlds', 'NL Дивизионная Серия'),
+            ('alds', 'AL Дивизионная Серия'),
+            ('nlcs', 'NL Чемпионская Cерия'),
+            ('alcs', 'AL Чемпионская Cерия'),
             ('world series', 'Мировая Серия'),
             ('world tour', 'Мировой Тур'),
         ])

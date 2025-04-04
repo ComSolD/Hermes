@@ -196,8 +196,8 @@ def stage_check(stages):
         ('alcs',): "alcs",
         ('world', 'tour'): "world tour",
         ('world', 'series'): "world series",
-        ('wild', 'al'): "ALWC",
-        ('wild', 'nl'): "NLWC"
+        ('wild', 'al'): "alwc",
+        ('wild', 'nl'): "nlwc"
     }
     
     # Проверяем соответствие шаблонам

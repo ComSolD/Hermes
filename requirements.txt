@@ -9,3 +9,4 @@ numpy
 beautifulsoup4
 lxml
 PyQt5
+Pillow

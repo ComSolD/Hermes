@@ -149,6 +149,10 @@ class NHLMatchSerializer(serializers.ModelSerializer):
             "away_defenseman_players": away_defenseman_players_info,
             "away_goalie_players": away_goalie_players_info,
 
+            "stage": match.get_stage_display(),
+
+            "time": match.time.strftime("%H:%M"),
+
             "date": match.date.strftime("%d-%m-%Y"),
         }
 
@@ -499,4 +503,16 @@ class NHLMatchesSchedule(serializers.ModelSerializer):
             },
         }
 
+
+class NHLTeamStatisticSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = NHLTeam
+        fields = ['team_id', 'name', 'logo']
+
+
+class NHLPlayerStatisticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NHLPlayer
+        fields = ['player_id', 'name']
 

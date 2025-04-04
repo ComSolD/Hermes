@@ -12,7 +12,13 @@ urlpatterns = [
     path('match/<str:match_id>/handicap/<int:period>', views.match_handicap, name='match_handicap'),
 
     path('schedule/', views.schedule, name='schedule'),
-    # path('statistic/', views.statistic, name='statistic'),
-    # path('filterstat/', views.filter_stat, name='filter_stat'),
+    
+    path('filterstat/', views.filter_stat, name='filter_stat'),
+    path('seasons_by_filters/', views.seasons_by_filters, name='seasons_by_filters'),
+    path('teams_by_filters/', views.teams_by_filters, name='teams_by_filters'),
+    path('opponents_by_filters/', views.opponents_by_filters, name='opponents_by_filters'),
+    path('stages_by_filters/', views.stages_by_filters, name='stages_by_filters'),
+    path('homeaway_by_filters/', views.homeaway_by_filters, name='homeaway_by_filters'),
+    path('players_by_filters/', views.players_by_filters, name='players_by_filters'),
 
 ]

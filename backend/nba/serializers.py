@@ -439,7 +439,7 @@ class NBATeamStatisticSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NBATeam
-        fields = ['team_id', 'name']
+        fields = ['team_id', 'name', 'logo']
 
 
 class NBAPlayerStatisticSerializer(serializers.ModelSerializer):

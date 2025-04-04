@@ -199,7 +199,7 @@ class ParsingNHL(object):
         if not self.open_box_score():
             return 0
         
-        if not match_table(self.match_id, self.teams_id, '', self.date_match, stage, status):
+        if not match_table(self.match_id, self.teams_id, '', self.date_match, stage, status, match_date):
             
             try:
                 x_result_table(self.match_id, self.teams_id, total[0])

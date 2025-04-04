@@ -507,7 +507,7 @@ class MLBTeamStatisticSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MLBTeam
-        fields = ['team_id', 'name']
+        fields = ['team_id', 'name', 'logo']
 
 
 class MLBPlayerStatisticSerializer(serializers.ModelSerializer):

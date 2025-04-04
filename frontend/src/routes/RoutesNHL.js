@@ -6,7 +6,7 @@ import XBetDetailNHL from "../pages/NHL/XBetDetailNHL";
 import HandicapDetailNHL from "../pages/NHL/HandicapDetailNHL";
 import ScheduleNHL from "../pages/NHL/ScheduleNHL";
 // import TeamsNHL from "../pages/NHL/TeamsNHL";
-// import StatisticNHL from "../pages/NHL/StatisticNHL";
+import StatisticNHL from "../pages/NHL/StatisticNHL";
 
 const RoutesNHL = () => {
   return (
@@ -18,7 +18,7 @@ const RoutesNHL = () => {
       <Route path="match/:id/handicap/:period" element={<HandicapDetailNHL />} />
       <Route path="schedule/:date?" element={<ScheduleNHL />} />
       {/* <Route path="teams" element={<TeamsNHL />} /> */}
-      {/* <Route path="statistic" element={<StatisticNHL />} /> */}
+      <Route path="statistic" element={<StatisticNHL />} />
     </Routes>
   );
 };

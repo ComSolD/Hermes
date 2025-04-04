@@ -1,9 +1,17 @@
 from django.db import models
 import uuid
 
+def team_logo_upload_path(instance, filename):
+    return f"mlb/team_logos/{instance.team_id}/{filename}"
+
 class NHLTeam(models.Model):
     team_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
+    logo = models.ImageField(
+        upload_to=team_logo_upload_path,
+        null=True,
+        blank=True
+    )
 
     class Meta():
         db_table = 'nhl_team'
@@ -16,7 +24,22 @@ class NHLMatch(models.Model):
     team2 = models.ForeignKey(NHLTeam, related_name='away_matches', on_delete=models.CASCADE)
     status = models.CharField(null=True, blank=True, max_length=20)
     season = models.CharField(max_length=10)
-    stage = models.CharField(null=True, blank=True, max_length=20)
+    time = models.TimeField(null=True, blank=True)
+    stage = models.CharField(null=True, blank=True, max_length=100,
+        choices=[
+            ('regular', 'Регулярный сезон'),
+            ('preseason', 'Пресезон'),
+            ('in-season championship', 'Внутрисезонный финал'),
+            ('in-season semifinals', 'Внутрисезонный полуфинал'),
+            ('in-season quarterfinals', 'Внутрисезонный четвертьфинал'),
+            ('east finals', 'Финал востока'),
+            ('west finals', 'Финал запада'),
+            ('east semifinals', 'Полуфинал востока'),
+            ('west semifinals', 'Полуфинал запада'),
+            ('east 1st round', 'Первый раунд востока'),
+            ('west 1st round', 'Первый раунд запада'),
+            ('stanley cup final', 'Финал Кубка Стенли'),
+        ])
     date = models.DateField()
 
     class Meta():
@@ -149,6 +172,13 @@ class NHLXBet(models.Model):
         verbose_name_plural = 'Ставки на победу или ничью'
 
 class NHLTotalBet(models.Model):
+
+    RESULT_CHOICES = [
+        ('over', 'Больше'),
+        ('draw', 'Равно'),
+        ('under', 'Меньше')
+    ]
+
     total_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NHLMatch, on_delete=models.CASCADE)
 
@@ -165,7 +195,7 @@ class NHLTotalBet(models.Model):
     total = models.FloatField()
     over_odds = models.FloatField(null=True, blank=True)
     under_odds = models.FloatField(null=True, blank=True)
-    total_result = models.CharField(max_length=10, null=True, blank=True)
+    total_result = models.CharField(max_length=10, null=True, blank=True, choices=RESULT_CHOICES)
 
     class Meta():
         db_table = 'nhl_total_bet'
@@ -173,6 +203,13 @@ class NHLTotalBet(models.Model):
         verbose_name_plural = 'Ставки на тоталы'
 
 class NHLHandicapBet(models.Model):
+
+    RESULT_CHOICES = [
+        ('win', 'Победа'),
+        ('draw', 'Ничья'),
+        ('lose', 'Поражение')
+    ]
+
     handicap_bet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     match = models.ForeignKey(NHLMatch, on_delete=models.CASCADE)
 
@@ -188,8 +225,8 @@ class NHLHandicapBet(models.Model):
     handicap = models.FloatField(null=True, blank=True)
     handicap_team1_odds = models.FloatField(null=True, blank=True)
     handicap_team2_odds = models.FloatField(null=True, blank=True)
-    handicap_team1_result = models.CharField(max_length=5, null=True, blank=True)
-    handicap_team2_result = models.CharField(max_length=5, null=True, blank=True)
+    handicap_team1_result = models.CharField(max_length=5, null=True, blank=True, choices=RESULT_CHOICES)
+    handicap_team2_result = models.CharField(max_length=5, null=True, blank=True, choices=RESULT_CHOICES)
 
     class Meta():
         db_table = 'nhl_handicap_bet'

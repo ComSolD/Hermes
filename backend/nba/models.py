@@ -2,9 +2,17 @@ from random import choice
 from django.db import models
 import uuid
 
+def team_logo_upload_path(instance, filename):
+    return f"mlb/team_logos/{instance.team_id}/{filename}"
+
 class NBATeam(models.Model):
     team_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
+    logo = models.ImageField(
+        upload_to=team_logo_upload_path,
+        null=True,
+        blank=True
+    )
 
     class Meta():
         db_table = 'nba_team'
@@ -17,10 +25,11 @@ class NBAMatch(models.Model):
     team2 = models.ForeignKey(NBATeam, related_name='home_matches', on_delete=models.CASCADE)
     season = models.CharField(max_length=10)
     time = models.TimeField(null=True, blank=True)
-    stage = models.CharField(null=True, blank=True, max_length=50,
+    stage = models.CharField(null=True, blank=True, max_length=100,
         choices=[
             ('regular', 'Регулярный сезон'),
             ('preseason', 'Пресезон'),
+            ('nba finals', 'Финал NBA'),
             ('in-season championship', 'Внутрисезонный финал'),
             ('in-season semifinals', 'Внутрисезонный полуфинал'),
             ('in-season quarterfinals', 'Внутрисезонный четвертьфинал'),
@@ -38,7 +47,7 @@ class NBAMatch(models.Model):
             ('play-in west 8th seed', 'Play-in запада'),
             ('cup group play', 'Кубок - групповая стадия'),
             ('cup quarterfinals', 'Кубок - четвертьфинал'),
-            ('cup championship', 'Кубок - чемпионат'),
+            ('cup championship', 'Кубок - Финал'),
         ])
     date = models.DateField()
 
