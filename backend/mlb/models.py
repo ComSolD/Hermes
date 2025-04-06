@@ -5,8 +5,15 @@ def team_logo_upload_path(instance, filename):
     return f"mlb/team_logos/{instance.team_id}/{filename}"
 
 class MLBTeam(models.Model):
+
+    LEAGUE_CHOICES = [
+        ('American League', 'Американская Лига'),
+        ('National League', 'Национальная Лига')
+    ]
+
     team_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
+    league = models.CharField(max_length=100, null=True, blank=True, choices=LEAGUE_CHOICES)
     logo = models.ImageField(
         upload_to=team_logo_upload_path,
         null=True,

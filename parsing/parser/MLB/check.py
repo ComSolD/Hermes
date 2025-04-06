@@ -194,7 +194,7 @@ def stage_check(stages):
         ('alds',): "alds",
         ('nlcs',): "nlcs",
         ('alcs',): "alcs",
-        ('world', 'tour'): "world tour",
+        ('mlb', 'world', 'tour'): "world tour",
         ('world', 'series'): "world series",
         ('wild', 'al'): "alwc",
         ('wild', 'nl'): "nlwc"

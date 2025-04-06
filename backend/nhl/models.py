@@ -5,8 +5,15 @@ def team_logo_upload_path(instance, filename):
     return f"mlb/team_logos/{instance.team_id}/{filename}"
 
 class NHLTeam(models.Model):
+
+    CONFERENCE_CHOICES = [
+        ('Eastern Conference', 'Восточная Конференция'),
+        ('Western Conference', 'Западная Конференция')
+    ]
+    
     team_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
+    conference = models.CharField(max_length=100, null=True, blank=True, choices=CONFERENCE_CHOICES)
     logo = models.ImageField(
         upload_to=team_logo_upload_path,
         null=True,
