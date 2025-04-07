@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from mlb.models import MLBHandicapBet, MLBPlayer, MLBPlayerStat, MLBTeamPtsStat, MLBTeamStat, MLBMatch, MLBMoneylineBet, MLBTeam, MLBTotalBet
+from django.db.models import Q
 
 
 class MLBMatchSerializer(serializers.ModelSerializer):
@@ -12,6 +13,8 @@ class MLBMatchSerializer(serializers.ModelSerializer):
     def get_match_info(self, obj):
         """Форматирует информацию о конкретном матче."""
         match = obj  # Здесь уже передан нужный матч через сериализатор
+
+        request = self.context.get("request")
 
         pts = MLBTeamPtsStat.objects.filter(match_id=match.match_id, team_id=match.team1_id).first()
 
@@ -95,6 +98,8 @@ class MLBMatchSerializer(serializers.ModelSerializer):
             "match_id": match.match_id,
             "home_team": home_team.name if home_team else "Unknown",
             "away_team": away_team.name if away_team else "Unknown",
+            "home_team_logo": request.build_absolute_uri(home_team.logo.url) if home_team.logo else None,
+            "away_team_logo": request.build_absolute_uri(away_team.logo.url) if away_team.logo else None,
             "total": {
                 "away_total": pts.total if pts else "N/A",
                 "away_hit": pts.hit if pts else "N/A",
@@ -192,6 +197,8 @@ class MLBTotalSerializer(serializers.ModelSerializer):
         
         match = obj  # Здесь уже передан нужный матч через сериализатор
 
+        request = self.context.get("request")
+
         period = self.context.get("period")
 
         period = MLBTotalBet._meta.get_field('period').choices
@@ -244,10 +251,14 @@ class MLBTotalSerializer(serializers.ModelSerializer):
         # Выездная команда
         away_team = MLBTeam.objects.filter(team_id=match.team1_id).first()
 
+        ot = (pts.total_i1 + pts.total_i2 + pts.total_i3 + pts.total_i4 + pts.total_i5 + pts.total_i6 + pts.total_i7 + pts.total_i8 + pts.total_i9 + pts.total_i1_missed + pts.total_i2_missed + pts.total_i3_missed + pts.total_i4_missed + pts.total_i5_missed + pts.total_i6_missed + pts.total_i7_missed + pts.total_i8_missed + pts.total_i9_missed) - (pts.total + pts.total_missed)
+
         return {
             "match_id": match.match_id,
             "home_team": home_team.name if home_team else "Unknown",
             "away_team": away_team.name if away_team else "Unknown",
+            "home_team_logo": request.build_absolute_uri(home_team.logo.url) if home_team.logo else None,
+            "away_team_logo": request.build_absolute_uri(away_team.logo.url) if away_team.logo else None,
             "total": {
                 "away_total": pts.total if pts else "N/A",
                 "away_hit": pts.hit if pts else "N/A",
@@ -279,6 +290,12 @@ class MLBTotalSerializer(serializers.ModelSerializer):
             "periods": periods,
             "total_odds": total_odds_info,
 
+            "ot": ot,
+
+            "stage": match.get_stage_display(),
+
+            "time": match.time.strftime("%H:%M"),
+
             "date": match.date.strftime("%d-%m-%Y"),
         }
     
@@ -293,6 +310,8 @@ class MLBMoneylineSerializer(serializers.ModelSerializer):
     def get_match_info(self, obj):
         """Форматирует информацию о конкретном матче."""
         match = obj  # Здесь уже передан нужный матч через сериализатор
+
+        request = self.context.get("request")
 
         order_map = {
             'Весь Матч': 0,
@@ -327,10 +346,14 @@ class MLBMoneylineSerializer(serializers.ModelSerializer):
         # Выездная команда
         away_team = MLBTeam.objects.filter(team_id=match.team1_id).first()
 
+        ot = (pts.total_i1 + pts.total_i2 + pts.total_i3 + pts.total_i4 + pts.total_i5 + pts.total_i6 + pts.total_i7 + pts.total_i8 + pts.total_i9 + pts.total_i1_missed + pts.total_i2_missed + pts.total_i3_missed + pts.total_i4_missed + pts.total_i5_missed + pts.total_i6_missed + pts.total_i7_missed + pts.total_i8_missed + pts.total_i9_missed) - (pts.total + pts.total_missed)
+
         return {
             "match_id": match.match_id,
             "home_team": home_team.name if home_team else "Unknown",
             "away_team": away_team.name if away_team else "Unknown",
+            "home_team_logo": request.build_absolute_uri(home_team.logo.url) if home_team.logo else None,
+            "away_team_logo": request.build_absolute_uri(away_team.logo.url) if away_team.logo else None,
             "total": {
                 "away_total": pts.total if pts else "N/A",
                 "away_hit": pts.hit if pts else "N/A",
@@ -361,6 +384,12 @@ class MLBMoneylineSerializer(serializers.ModelSerializer):
 
             "moneyline_info": moneyline_info,
 
+            "ot": ot,
+
+            "stage": match.get_stage_display(),
+
+            "time": match.time.strftime("%H:%M"),
+
             "date": match.date.strftime("%d-%m-%Y"),
         }
 
@@ -375,6 +404,8 @@ class MLBHandicapSerializer(serializers.ModelSerializer):
     def get_match_info(self, obj):
         """Форматирует информацию о конкретном матче."""
         match = obj  # Здесь уже передан нужный матч через сериализатор
+
+        request = self.context.get("request")
 
         period = self.context.get("period")
 
@@ -430,12 +461,14 @@ class MLBHandicapSerializer(serializers.ModelSerializer):
         # Выездная команда
         away_team = MLBTeam.objects.filter(team_id=match.team1_id).first()
 
-        print(home_team.name, away_team.name, handicap_odds_info)
+        ot = (pts.total_i1 + pts.total_i2 + pts.total_i3 + pts.total_i4 + pts.total_i5 + pts.total_i6 + pts.total_i7 + pts.total_i8 + pts.total_i9 + pts.total_i1_missed + pts.total_i2_missed + pts.total_i3_missed + pts.total_i4_missed + pts.total_i5_missed + pts.total_i6_missed + pts.total_i7_missed + pts.total_i8_missed + pts.total_i9_missed) - (pts.total + pts.total_missed)
 
         return {
             "match_id": match.match_id,
             "home_team": home_team.name if home_team else "Unknown",
             "away_team": away_team.name if away_team else "Unknown",
+            "home_team_logo": request.build_absolute_uri(home_team.logo.url) if home_team.logo else None,
+            "away_team_logo": request.build_absolute_uri(away_team.logo.url) if away_team.logo else None,
             "total": {
                 "away_total": pts.total if pts else "N/A",
                 "away_hit": pts.hit if pts else "N/A",
@@ -466,6 +499,12 @@ class MLBHandicapSerializer(serializers.ModelSerializer):
 
             "periods": periods,
             "handicap_odds": handicap_odds_info,
+
+            "ot": ot,
+
+            "stage": match.get_stage_display(),
+
+            "time": match.time.strftime("%H:%M"),
 
             "date": match.date.strftime("%d-%m-%Y"),
         }
@@ -514,3 +553,90 @@ class MLBPlayerStatisticSerializer(serializers.ModelSerializer):
     class Meta:
         model = MLBPlayer
         fields = ['player_id', 'name']
+
+
+class MLBStandingsSerializer(serializers.ModelSerializer):
+    wins = serializers.SerializerMethodField()
+    losses = serializers.SerializerMethodField()
+    home_record = serializers.SerializerMethodField()
+    away_record = serializers.SerializerMethodField()
+    avg_score = serializers.SerializerMethodField()
+    avg_conceded = serializers.SerializerMethodField()
+    logo = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MLBTeam
+        fields = [
+            "team_id", "logo", "name", "league",
+            "wins", "losses", "home_record", "away_record",
+            "avg_score", "avg_conceded",
+        ]
+
+    def _get_match_ids(self, team):
+        season = self.context.get("season")
+        return MLBMatch.objects.filter(
+            season=season,
+            stage__in=["regular", "world tour"]
+        ).exclude(stage="all-star").filter(
+            Q(team1=team) | Q(team2=team)
+        ).values_list("match_id", flat=True)
+    
+    def get_logo(self, team):
+        request = self.context.get("request")
+        if team.logo:
+            return request.build_absolute_uri(team.logo.url)
+        return None
+
+    def _get_results(self, team):
+        match_ids = self._get_match_ids(team)
+
+        stats = MLBTeamStat.objects.filter(
+            match_id__in=match_ids,
+            team=team,
+        )
+
+        wins = losses = home_wins = home_losses = away_wins = away_losses = 0
+        for s in stats:
+            is_home = s.status == "home"
+            if s.result == "win":
+                wins += 1
+                home_wins += int(is_home)
+                away_wins += int(not is_home)
+            elif s.result == "lose":
+                losses += 1
+                home_losses += int(is_home)
+                away_losses += int(not is_home)
+
+        return {
+            "wins": wins, "losses": losses,
+            "home_wins": home_wins, "home_losses": home_losses,
+            "away_wins": away_wins, "away_losses": away_losses
+        }
+
+    def get_wins(self, team):
+        return self._get_results(team)["wins"]
+
+    def get_losses(self, team):
+        return self._get_results(team)["losses"]
+
+    def get_home_record(self, team):
+        r = self._get_results(team)
+        return f"{r['home_wins']}-{r['home_losses']}"
+
+    def get_away_record(self, team):
+        r = self._get_results(team)
+        return f"{r['away_wins']}-{r['away_losses']}"
+    
+    def get_avg_score(self, team):
+        match_ids = self._get_match_ids(team)
+        pts = MLBTeamPtsStat.objects.filter(match_id__in=match_ids, team=team)
+        total = sum(p.total or 0 for p in pts)
+        count = pts.count()
+        return round(total / count, 2) if count > 0 else 0.0
+    
+    def get_avg_conceded(self, team):
+        match_ids = self._get_match_ids(team)
+        pts = MLBTeamPtsStat.objects.filter(match_id__in=match_ids, team=team)
+        total = sum(p.total_missed or 0 for p in pts)
+        count = pts.count()
+        return round(total / count, 2) if count > 0 else 0.0

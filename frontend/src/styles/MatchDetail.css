@@ -18,6 +18,33 @@
 }
 
 
+.team-name-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.team-name-table {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 8px;
+}
+  
+
+.team-logo {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+.team-logo-stat {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
 .bet-info {
     font-size: 24px;
     line-height: 1.8; /* Увеличивает расстояние между строками */

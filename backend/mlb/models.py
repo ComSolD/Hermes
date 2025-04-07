@@ -24,6 +24,10 @@ class MLBTeam(models.Model):
         db_table = 'mlb_team'
         verbose_name = 'Команда'
         verbose_name_plural = 'Команды'
+        ordering = ['name']  # 👈 сортировка по имени
+
+    def __str__(self):
+        return self.name  # 👈 отображение в админке
 
 class MLBMatch(models.Model):
     match_id = models.CharField(max_length=200, primary_key=True, editable=False)

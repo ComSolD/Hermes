@@ -7,7 +7,7 @@ from django.db.models import Q
 
 
 from .models import NHLMatch, NHLPlayer, NHLPlayerStat, NHLTeam, NHLTeamStat
-from .serializers import NHLMatchSerializer, NHLTotalSerializer, NHLMoneylineSerializer, NHL1x2Serializer, NHLHandicapSerializer, NHLMatchesSchedule, NHLPlayerStatisticSerializer, NHLTeamStatisticSerializer  # Импортируем сериализатор матча
+from .serializers import NHLMatchSerializer, NHLTotalSerializer, NHLMoneylineSerializer, NHL1x2Serializer, NHLHandicapSerializer, NHLMatchesSchedule, NHLPlayerStatisticSerializer, NHLTeamStatisticSerializer, NHLStandingsSerializer # Импортируем сериализатор матча
 from .utils import calculate_statistic_display, handle_statistic_data
 
 
@@ -18,7 +18,7 @@ def match_statistic(request, match_id):
     match = get_object_or_404(NHLMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = NHLMatchSerializer(match)
+    serializer = NHLMatchSerializer(match, context={"request": request})
 
     
     return Response(serializer.data)
@@ -31,7 +31,7 @@ def match_total(request, match_id, period):
     match = get_object_or_404(NHLMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = NHLTotalSerializer(match, context={"period": period})
+    serializer = NHLTotalSerializer(match, context={"period": period, "request": request})
 
     
     return Response(serializer.data)
@@ -44,7 +44,7 @@ def match_moneyline(request, match_id):
     match = get_object_or_404(NHLMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = NHLMoneylineSerializer(match)
+    serializer = NHLMoneylineSerializer(match, context={"request": request})
 
     
     return Response(serializer.data)
@@ -57,7 +57,7 @@ def match_1x2(request, match_id):
     match = get_object_or_404(NHLMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = NHL1x2Serializer(match)
+    serializer = NHL1x2Serializer(match, context={"request": request})
 
     
     return Response(serializer.data)
@@ -70,7 +70,7 @@ def match_handicap(request, match_id, period):
     match = get_object_or_404(NHLMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = NHLHandicapSerializer(match, context={"period": period})
+    serializer = NHLHandicapSerializer(match, context={"period": period, "request": request})
 
     
     return Response(serializer.data)
@@ -550,3 +550,41 @@ def filter_stat(request):
         "answer": result
     })
    
+
+@api_view(['GET'])
+def standings(request):
+    season = request.GET.get('season')
+    league = request.GET.get('league')
+
+    if not season:
+        return Response({"error": "Season is required."}, status=400)
+
+    # Получаем все team_id, участвовавшие в regular или world_tour
+    matches = NHLMatch.objects.filter(
+        season=season,
+        stage__in=["regular", "world tour"]
+    ).values_list("team1_id", "team2_id")
+
+    # Собираем уникальные ID команд
+    team_ids = set()
+    for t1, t2 in matches:
+        team_ids.update([t1, t2])
+
+    # Получаем команды, участвующие в этих матчах
+    teams = NHLTeam.objects.filter(team_id__in=team_ids)
+    if league:
+        teams = teams.filter(league=league)
+
+    # Сериализация с контекстом
+    serializer = NHLStandingsSerializer(teams, many=True, context={"request": request, "season": season})
+
+    # Сортировка по количеству побед
+    sorted_data = sorted(serializer.data, key=lambda x: x["wins"], reverse=True)
+
+    return Response({"results": sorted_data})
+
+
+@api_view(['GET'])
+def seasons(request):
+    seasons = NHLMatch.objects.values_list("season", flat=True).distinct()
+    return Response({"seasons": sorted(seasons, reverse=True)})

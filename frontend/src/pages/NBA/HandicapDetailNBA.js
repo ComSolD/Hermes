@@ -56,8 +56,18 @@ function TotalDetailNBA() {
           <table className="odds-list">
             <thead>
               <th>Фора</th>
-              <th>{match.match_info.home_team}</th>
-              <th>{match.match_info.away_team}</th>
+              <th>
+                <div className="team-name-cell">
+                  <img src={match.match_info.home_team_logo || '/default_logo.png'} alt="logo" className="team-logo" />
+                  <span>{match.match_info.home_team}</span>
+                </div>
+              </th>
+              <th>
+                <div className="team-name-cell">
+                  <img src={match.match_info.away_team_logo || '/default_logo.png'} alt="logo" className="team-logo" />
+                  <span>{match.match_info.away_team}</span>
+                </div>
+              </th>
             </thead>
             <tbody>
               {match.match_info.handicap_odds.map((h, index) => {

@@ -40,7 +40,10 @@ function MatchDetailMLB() {
         {/* Нижние два блока */}
           {/* Блок 1 - Инфа о первой команде */}
           <div className="block-info">
-            <h1>{match.match_info.home_team}</h1>
+            <div className="team-name-cell">
+              <img src={match.match_info.home_team_logo || '/default_logo.png'} alt="logo" className="team-logo-stat" />
+              <h1>{match.match_info.home_team}</h1>
+            </div>
             <table className="stat-info">
               <colgroup>
                 <col style={{ width: '150px' }} />
@@ -135,7 +138,10 @@ function MatchDetailMLB() {
 
           {/* Блок 2 - Инфа о второй команде */}
           <div className="block-info">
-            <h1>{match.match_info.away_team}</h1>
+            <div className="team-name-cell">
+              <img src={match.match_info.away_team_logo || '/default_logo.png'} alt="logo" className="team-logo-stat" />
+              <h1>{match.match_info.away_team}</h1>
+            </div>
             <table className="stat-info">
               <colgroup>
                 <col style={{ width: '150px' }} />

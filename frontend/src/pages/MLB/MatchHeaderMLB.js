@@ -18,6 +18,7 @@ const MatchHeader = ({ match, id }) => {
           <thead>
             <tr>
               <th></th>
+              <th></th>
               <th>1</th>
               <th>2</th>
               <th>3</th>
@@ -27,7 +28,7 @@ const MatchHeader = ({ match, id }) => {
               <th>7</th>
               <th>8</th>
               <th>9</th>
-              {match.match_info.ot !== 0 && <th>OT</th>}
+              {match.match_info.ot !== 0 && <th>EI</th>}
               <th>H</th>
               <th>R</th>
               <th>E</th>
@@ -35,6 +36,7 @@ const MatchHeader = ({ match, id }) => {
           </thead>
           <tbody>
             <tr>
+              <td><img src={match.match_info.home_team_logo || '/default_logo.png'} alt='logo' className="team-logo"/></td>
               <td>{match.match_info.home_team}</td>
               <td>{match.match_info.total.home_i1}</td>
               <td>{match.match_info.total.home_i2}</td>
@@ -53,6 +55,7 @@ const MatchHeader = ({ match, id }) => {
           </tbody>
           <tbody>
             <tr>
+              <td><img src={match.match_info.away_team_logo || '/default_logo.png'} alt='logo' className="team-logo"/></td>
               <td>{match.match_info.away_team}</td>
               <td>{match.match_info.total.away_i1}</td>
               <td>{match.match_info.total.away_i2}</td>

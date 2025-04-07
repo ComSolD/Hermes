@@ -7,6 +7,7 @@ import HandicapDetailNHL from "../pages/NHL/HandicapDetailNHL";
 import ScheduleNHL from "../pages/NHL/ScheduleNHL";
 // import TeamsNHL from "../pages/NHL/TeamsNHL";
 import StatisticNHL from "../pages/NHL/StatisticNHL";
+import StandingsNHL from "../pages/NHL/StandingsNHL";
 
 const RoutesNHL = () => {
   return (
@@ -19,6 +20,7 @@ const RoutesNHL = () => {
       <Route path="schedule/:date?" element={<ScheduleNHL />} />
       {/* <Route path="teams" element={<TeamsNHL />} /> */}
       <Route path="statistic" element={<StatisticNHL />} />
+      <Route path="standings" element={<StandingsNHL />} />
     </Routes>
   );
 };

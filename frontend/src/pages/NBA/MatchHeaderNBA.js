@@ -13,6 +13,7 @@ const MatchHeader = ({ match, id }) => {
           <thead>
             <tr>
               <th></th>
+              <th></th>
               <th>1</th>
               <th>2</th>
               <th>3</th>
@@ -24,6 +25,7 @@ const MatchHeader = ({ match, id }) => {
           </thead>
           <tbody>
             <tr>
+              <td><img src={match.match_info.home_team_logo || '/default_logo.png'} alt='logo' className="team-logo"/></td>
               <td>{match.match_info.home_team}</td>
               <td>{match.match_info.total.home_q1}</td>
               <td>{match.match_info.total.home_q2}</td>
@@ -36,6 +38,7 @@ const MatchHeader = ({ match, id }) => {
           </tbody>
           <tbody>
             <tr>
+              <td><img src={match.match_info.away_team_logo || '/default_logo.png'} alt='logo' className="team-logo"/></td>
               <td>{match.match_info.away_team}</td>
               <td>{match.match_info.total.away_q1}</td>
               <td>{match.match_info.total.away_q2}</td>

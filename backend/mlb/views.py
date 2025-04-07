@@ -7,7 +7,7 @@ from django.db.models import Q
 
 
 from .models import MLBMatch, MLBPlayer, MLBPlayerStat, MLBTeam, MLBTeamStat
-from .serializers import MLBMatchSerializer, MLBMoneylineSerializer, MLBTotalSerializer, MLBHandicapSerializer, MLBMatchesSchedule, MLBTeamStatisticSerializer, MLBPlayerStatisticSerializer  # Импортируем сериализатор матча
+from .serializers import MLBMatchSerializer, MLBMoneylineSerializer, MLBTotalSerializer, MLBHandicapSerializer, MLBMatchesSchedule, MLBTeamStatisticSerializer, MLBPlayerStatisticSerializer, MLBStandingsSerializer  # Импортируем сериализатор матча
 from .utils import calculate_statistic_display, handle_statistic_data
 
 
@@ -18,7 +18,7 @@ def match_statistic(request, match_id):
     match = get_object_or_404(MLBMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = MLBMatchSerializer(match)
+    serializer = MLBMatchSerializer(match, context={"request": request})
 
     
     return Response(serializer.data)
@@ -31,7 +31,7 @@ def match_total(request, match_id, period):
     match = get_object_or_404(MLBMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = MLBTotalSerializer(match, context={"period": period})
+    serializer = MLBTotalSerializer(match, context={"period": period, "request": request})
 
     
     return Response(serializer.data)
@@ -44,7 +44,7 @@ def match_moneyline(request, match_id):
     match = get_object_or_404(MLBMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = MLBMoneylineSerializer(match)
+    serializer = MLBMoneylineSerializer(match, context={"request": request})
 
     
     return Response(serializer.data)
@@ -57,7 +57,7 @@ def match_handicap(request, match_id, period):
     match = get_object_or_404(MLBMatch, match_id=match_id)
 
     # Сериализуем данные
-    serializer = MLBHandicapSerializer(match, context={"period": period})
+    serializer = MLBHandicapSerializer(match, context={"period": period, "request": request})
 
     
     return Response(serializer.data)
@@ -537,4 +537,41 @@ def filter_stat(request):
         "answer": result
     })
     
-    
+
+@api_view(['GET'])
+def standings(request):
+    season = request.GET.get('season')
+    league = request.GET.get('league')
+
+    if not season:
+        return Response({"error": "Season is required."}, status=400)
+
+    # Получаем все team_id, участвовавшие в regular или world_tour
+    matches = MLBMatch.objects.filter(
+        season=season,
+        stage__in=["regular", "world tour"]
+    ).values_list("team1_id", "team2_id")
+
+    # Собираем уникальные ID команд
+    team_ids = set()
+    for t1, t2 in matches:
+        team_ids.update([t1, t2])
+
+    # Получаем команды, участвующие в этих матчах
+    teams = MLBTeam.objects.filter(team_id__in=team_ids)
+    if league:
+        teams = teams.filter(league=league)
+
+    # Сериализация с контекстом
+    serializer = MLBStandingsSerializer(teams, many=True, context={"request": request, "season": season})
+
+    # Сортировка по количеству побед
+    sorted_data = sorted(serializer.data, key=lambda x: x["wins"], reverse=True)
+
+    return Response({"results": sorted_data})
+
+
+@api_view(['GET'])
+def seasons(request):
+    seasons = MLBMatch.objects.values_list("season", flat=True).distinct()
+    return Response({"seasons": sorted(seasons, reverse=True)})

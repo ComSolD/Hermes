@@ -21,4 +21,7 @@ urlpatterns = [
     path('homeaway_by_filters/', views.homeaway_by_filters, name='homeaway_by_filters'),
     path('players_by_filters/', views.players_by_filters, name='players_by_filters'),
 
+    path('standings/', views.standings, name='standings'),
+    path('seasons/', views.seasons, name='seasons'),
+
 ]
