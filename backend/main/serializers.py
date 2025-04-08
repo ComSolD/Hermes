@@ -49,6 +49,8 @@ class TournamentSerializer(serializers.ModelSerializer):
         MatchModel, BetModel, TeamModel, PTSModel = MATCH_MODELS.get(obj.name, (None, None, None, None))
         if not MatchModel or not BetModel or not TeamModel or not PTSModel:
             return []
+        
+        request = self.context.get("request")
 
         if obj.name == "NFL":
 
@@ -93,6 +95,8 @@ class TournamentSerializer(serializers.ModelSerializer):
                 "match_id": match.match_id,
                 "home_team": home_team.name if home_team else "Unknown",
                 "away_team": away_team.name if away_team else "Unknown",
+                "home_team_logo": request.build_absolute_uri(home_team.logo.url) if home_team.logo else None,
+                "away_team_logo": request.build_absolute_uri(away_team.logo.url) if away_team.logo else None,
                 "away_pts": pts.total if pts else "Unknown",
                 "home_pts": pts.total_missed if pts else "Unknown",
                 "match_bet": {

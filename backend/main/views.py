@@ -16,7 +16,7 @@ def home(request):
 
 
     tournaments = Tournament.objects.filter(is_active=True)[:3]  # Берём 3 активных турнира
-    serializer = TournamentSerializer(tournaments, many=True)
+    serializer = TournamentSerializer(tournaments, many=True, context={"request": request})
 
     
 

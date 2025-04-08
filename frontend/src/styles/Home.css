@@ -31,6 +31,19 @@ a:hover {
   color: #64ffda;
 }
 
+.team-name-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.team-logo-home {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
 .main-content {
   display: flex;
   justify-content: center;

@@ -27,7 +27,7 @@ function Home() {
               tournament.past_matches.map((match) => (
                 <div key={match.match_id} className="match">
                   <Link to={`/${tournament.name.toLowerCase()}/match/${match.match_id}`}>
-                    <h3>{match.home_team} vs {match.away_team}</h3>
+                    <h3 className="team-name-home"><img src={match.home_team_logo || '/default_logo.png'} alt='logo' className="team-logo-home"/>{match.home_team} vs {match.away_team}<img src={match.away_team_logo || '/default_logo.png'} alt='logo' className="team-logo-home"/></h3>
                   </Link>
                   <table>
                     <tbody>
