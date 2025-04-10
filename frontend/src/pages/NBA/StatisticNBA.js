@@ -93,7 +93,7 @@ function StatisticNBA() {
 
   const [answer, setAnswer] = useState("");
 
-  document.title = `Статистика NBA`;
+  document.title = `Гибкая статистика NBA`;
 
 
   // Взаимодействует с useFetchFilters.js

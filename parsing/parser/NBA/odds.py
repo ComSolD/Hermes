@@ -230,7 +230,6 @@ class OddsNBA(object):
     # Функции для работы с ставками
     def process_odds_for_periods(self, driver, action_function):
         periods = {
-            "full_time": "",  # Без клика, сразу вызываем функцию
             "1st_half": "1st Half",
             "2nd_half": "2nd Half",
             "1st_quarter": "1st Quarter",
@@ -238,6 +237,16 @@ class OddsNBA(object):
             "3rd_quarter": "3rd Quarter",
             "4th_quarter": "4th Quarter",
         }
+
+        period_selenium = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.tab-wrapper div'))
+        )
+
+        periods_lst = list()
+
+        for period in period_selenium:
+            periods_lst.append(period.get_attribute("textContent"))
+
 
         try:
             action_function("full_time")
@@ -248,24 +257,26 @@ class OddsNBA(object):
             
             action_function("full_time") 
 
-        for key, period_text in periods.items():
-            if period_text:
-                try:
-                    div_element = WebDriverWait(driver, 1).until(
-                        EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
-                    )
-                    driver.execute_script("arguments[0].click();", div_element)
-                except:
-                    continue
-                
-                try:
-                    action_function(key)
-                except:
-                    self.driver.refresh()
 
-                    time.sleep(1)
-                    
-                    action_function(key)
+        for key, period_text in periods.items():
+            if period_text not in periods_lst:
+                continue
+            try:
+                div_element = WebDriverWait(driver, 1).until(
+                    EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
+                )
+                driver.execute_script("arguments[0].click();", div_element)
+            except:
+                continue
+            
+            try:
+                action_function(key)
+            except:
+                self.driver.refresh()
+
+                time.sleep(1)
+                
+                action_function(key)
    
 
     def handicap(self, period):
@@ -303,7 +314,7 @@ class OddsNBA(object):
     def moneyline(self, period):
 
         odds_selenium = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, '//*[@double-parameter]//p[@class="height-content"]'))
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.border-black-borders p.height-content'))
         )
 
         odds = list()
@@ -312,9 +323,9 @@ class OddsNBA(object):
             odds.append(odd.get_attribute("textContent"))
 
 
-        team1_moneyline = odds[1]
+        team1_moneyline = odds[2]
 
-        team2_moneyline = odds[0]
+        team2_moneyline = odds[1]
 
         if team1_moneyline and team2_moneyline:
         

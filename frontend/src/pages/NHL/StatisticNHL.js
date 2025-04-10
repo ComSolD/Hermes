@@ -93,7 +93,7 @@ function StatisticNHL() {
 
   const [answer, setAnswer] = useState("");
 
-  document.title = `Статистика NHL`;
+  document.title = `Гибкая статистика NHL`;
 
 
   // Взаимодействует с useFetchFilters.js

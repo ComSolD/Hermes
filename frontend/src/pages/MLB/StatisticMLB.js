@@ -93,7 +93,7 @@ function StatisticMLB() {
 
   const [answer, setAnswer] = useState("");
 
-  document.title = `Статистика MLB`;
+  document.title = `Гибкая статистика MLB`;
 
 
   // Взаимодействует с useFetchFilters.js

@@ -246,6 +246,16 @@ class OddsNHL(object):
             "3rd_period": "3rd Period",
         }
 
+        period_selenium = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.tab-wrapper div'))
+        )
+
+        periods_lst = list()
+
+        for period in period_selenium:
+            periods_lst.append(period.get_attribute("textContent"))
+
+
         if action_function == self.moneyline:
             try:
                 action_function("full_time")
@@ -256,24 +266,27 @@ class OddsNHL(object):
                 
                 action_function("full_time") 
 
-        for key, period_text in periods.items():
-            if period_text:
-                try:
-                    div_element = WebDriverWait(driver, 2).until(
-                        EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
-                    )
-                    driver.execute_script("arguments[0].click();", div_element)
-                except:
-                    continue
-                
-                try:
-                    action_function(key)
-                except:
-                    self.driver.refresh()
 
-                    time.sleep(1)
-                    
-                    action_function(key)
+        for key, period_text in periods.items():
+            if period_text not in periods_lst:
+                continue
+
+            try:
+                div_element = WebDriverWait(driver, 2).until(
+                    EC.presence_of_element_located((By.XPATH, f'//div[contains(text(), "{period_text}")]'))
+                )
+                driver.execute_script("arguments[0].click();", div_element)
+            except:
+                continue
+            
+            try:
+                action_function(key)
+            except:
+                self.driver.refresh()
+
+                time.sleep(1)
+                
+                action_function(key)
 
 
     def handicap(self, period):
@@ -311,27 +324,7 @@ class OddsNHL(object):
     def moneyline(self, period):
 
         odds_selenium = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, '//*[@double-parameter]//p[@class="height-content"]'))
-        )
-
-        odds = list()
-
-        for odd in odds_selenium:
-            odds.append(odd.get_attribute("textContent"))
-
-
-        team1_moneyline = odds[1]
-
-        team2_moneyline = odds[0]
-
-        if team1_moneyline and team2_moneyline:
-        
-            odds_moneyline_table(self.match_id, team1_moneyline, team2_moneyline, period)
-
-
-    def onextwo(self, period):
-        odds_selenium = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, '//*[@double-parameter]//p[@class="height-content"]'))
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.border-black-borders p.height-content'))
         )
 
         odds = list()
@@ -341,10 +334,34 @@ class OddsNHL(object):
 
 
         team1_moneyline = odds[2]
-            
-        draw = odds[1]
 
-        team2_moneyline = odds[0]
+        team2_moneyline = odds[1]
+
+        if team1_moneyline and team2_moneyline:
+        
+            odds_moneyline_table(self.match_id, team1_moneyline, team2_moneyline, period)
+
+
+    def onextwo(self, period):
+        odds_selenium = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.border-black-borders p.height-content'))
+        )
+
+        # odds_selenium = WebDriverWait(self.driver, 10).until(
+        #     EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.border-black-borders p.height-content'))
+        # )
+
+        odds = list()
+
+        for odd in odds_selenium:
+            odds.append(odd.get_attribute("textContent"))
+
+
+        team1_moneyline = odds[3]
+            
+        draw = odds[2]
+
+        team2_moneyline = odds[1]
 
         if team1_moneyline and team2_moneyline and draw:
         
