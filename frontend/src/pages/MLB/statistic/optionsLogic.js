@@ -62,6 +62,15 @@ export const getAvailableFilterOptions = (filterOptions, activeFilters) => {
       if (opt.value === "list") {
         return Boolean(limitations); // Показываем только если ограничение выбрано
       }
+
+      if (opt.value === "graph" || opt.value === "boxplot") {
+        return (
+          (statistic?.model === "MLBTeamPtsStat" ||
+          statistic?.model === "MLBPlayerStat") &&
+          Boolean(limitations)
+        );
+      }
+
       return true;
     });
   };

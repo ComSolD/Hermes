@@ -40,6 +40,8 @@ import {
   getAvailableDisplayOptions,
 } from "./statistic/optionsLogic";
 
+import { GraphDisplay, BoxPlotChart } from "./statistic/GraphsDisplay";
+
 
 // Взаимодействует с FilterSelectors.jsx
 const filterRenderMap = {
@@ -82,6 +84,7 @@ function StatisticMLB() {
   const [activeFilters, setActiveFilters] = useState([]);
   const [selectedFilterType, setSelectedFilterType] = useState(null);
 
+  const [submittedDisplayMode, setSubmittedDisplayMode] = useState(null);
 
   const [limitations, setLimitations] = useState(null); // ✅ обязательно null
 
@@ -124,6 +127,8 @@ function StatisticMLB() {
  
 
   const handleSubmit = () => {
+    setSubmittedDisplayMode(displayMode);
+
     const requestData = {
       ...filters,
       limitation: limitations
@@ -364,11 +369,15 @@ function StatisticMLB() {
 
           <div className="results">
             <h3>Результаты</h3>
-            <strong>
-              {Array.isArray(answer.statistic_display)
-                ? answer.statistic_display.join(', ')
-                : answer.statistic_display}
-            </strong>
+            {submittedDisplayMode === "graph" && Array.isArray(answer.statistic_display) ? (
+              <GraphDisplay data={answer.statistic_display} />
+            ) : submittedDisplayMode === "boxplot" && answer.statistic_display && typeof answer.statistic_display === "object" && !Array.isArray(answer.statistic_display) ? (
+              <BoxPlotChart data={answer.statistic_display} />
+            ) : Array.isArray(answer.statistic_display) ? (
+              <strong>{answer.statistic_display.join(", ")}</strong>
+            ) : (
+              <strong>{String(answer.statistic_display)}</strong>
+            )}
 
             {(
               !Object.values(filters).some((v) => v) ||

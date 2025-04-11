@@ -1,34 +1,72 @@
+from collections import Counter
+import statistics
+
+def _display_avg(values):
+    return round(sum(values) / len(values), 2)
+
+def _display_list(values):
+    return values
+
+def _display_overdrawunder(values):
+    counts = Counter(values)
+    return [
+        f"{label} — {counts[label]} раз(а)"
+        for label in ["Больше", "Равно", "Меньше"]
+        if label in counts
+    ]
+
+def _display_windrawlose(values):
+    counts = Counter(values)
+    return [
+        f"{label} — {counts[label]} раз(а)"
+        for label in ["Победа", "Ничья", "Поражение"]
+        if label in counts
+    ]
+
+def _display_graph(values):
+    return values
+
+
+def _display_boxplot(values):
+    sorted_vals = sorted(values)
+    n = len(sorted_vals)
+
+    if n == 0:
+        return None
+
+    q2 = statistics.median(sorted_vals)
+    q1 = statistics.median(sorted_vals[:n//2])
+    q3 = statistics.median(sorted_vals[(n+1)//2:])
+
+    return {
+        "min": sorted_vals[0],
+        "q1": q1,
+        "median": q2,
+        "q3": q3,
+        "max": sorted_vals[-1],
+    }
+
+
+# 👇 Главное обновление — регистр функций по режимам
+DISPLAY_HANDLERS = {
+    "avg": _display_avg,
+    "list": _display_list,
+    "overdrawunder": _display_overdrawunder,
+    "windrawlose": _display_windrawlose,
+    "graph": _display_graph,
+    "boxplot": _display_boxplot,
+}
 
 
 def calculate_statistic_display(statistic_values, mode):
     if not statistic_values:
         return None
 
-    if mode == "avg":
-        return round(sum(statistic_values) / len(statistic_values), 2)
-    elif mode == "list":
-        return statistic_values
-    elif mode == "overdrawunder":
-        from collections import Counter
-        counts = Counter(statistic_values)
+    handler = DISPLAY_HANDLERS.get(mode)
+    if handler:
+        return handler(statistic_values)
 
-        # Отображаем в читаемом порядке
-        result = []
-        for key in ["Больше", "Равно", "Меньше"]:
-            if key in counts:
-                result.append(f"{key} — {counts[key]} раз(а)")
-        return result
-    elif mode == "windrawlose":
-        from collections import Counter
-        counts = Counter(statistic_values)
-
-        # Отображаем в читаемом порядке
-        result = []
-        for key in ["Победа", "Ничья", "Поражение"]:
-            if key in counts:
-                result.append(f"{key} — {counts[key]} раз(а)")
-        return result
-
+    return statistic_values  # fallback
 
 def handle_statistic_data(statistic_data, matches, data, player_id=None):
     from nhl.models import (

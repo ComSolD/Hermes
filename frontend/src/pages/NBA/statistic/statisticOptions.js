@@ -12,6 +12,8 @@ export const filterOptions = [
     { value: "overdrawunder", label: "Больше/Равно/Меньше" },
     { value: "windrawlose", label: "Победа/Ничья/Поражение" },
     { value: "list", label: "Список" },
+    { value: "graph", label: "Диаграмма" },
+    { value: "boxplot", label: "Box Plot" },
   ];
   
   export const statisticOptions = [

@@ -503,6 +503,10 @@ def filter_stat(request):
         match_ids = [mid for mid, tid in valid_match_team_pairs]
         matches = matches.filter(match_id__in=match_ids)
 
+    match_ids = list(
+        matches.order_by("date", "time").values_list("match_id", flat=True)
+    )
+    
     # 3. Ограничение по лимиту матчей
     limitation = data.get("limitation")
 
