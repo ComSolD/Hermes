@@ -146,6 +146,14 @@ export const filterOptions = [
       label: "Частота пробития форы от букмекера"
     },
     {
+      value: { model: "MLBPlayerStat", fields: ["r"], aggregate: "player" },
+      label: "Раны игрока",
+    },
+    {
+      value: { model: "MLBPlayerStat", fields: ["h"], aggregate: "player" },
+      label: "Хиты игрока",
+    },
+    {
       value: { model: "MLBPlayerStat", fields: ["avg"], aggregate: "player" },
       label: "AVG игрока",
     },

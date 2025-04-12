@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart, Rectangle
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart
 } from "recharts";
 
 
@@ -75,14 +75,15 @@ const CustomBoxPlot = ({ x, y, width, height, payload }) => {
   const yQ3 = y + (max - q3) * pxPerUnit;
   const yMedian = y + (max - median) * pxPerUnit;
 
-  const renderLabel = (label, value, posY) => (
+  const renderLabel = (label, value, posY, alignLeft = false) => (
     <text
-      x={labelX}
+      x={alignLeft ? centerX - 16 : labelX}
       y={posY}
       fontSize={13}
       fill="#e0e0e0" // светло-серый
       dominantBaseline="middle"
       fontWeight="500"
+      textAnchor={alignLeft ? "end" : "start"}
     >
       {label}: {Number(value).toFixed(1)}
     </text>
@@ -121,7 +122,7 @@ const CustomBoxPlot = ({ x, y, width, height, payload }) => {
       {/* Подписи */}
       {renderLabel("Максимальное значение", max, yMax)}
       {renderLabel("Верхняя граница", q3, yQ3)}
-      {renderLabel("Медиана", median, yMedian)}
+      {renderLabel("Медиана", median, yMedian, true)}
       {renderLabel("Нижняя граница", q1, yQ1)}
       {renderLabel("Минимальное значение", min, yMin)}
     </g>

@@ -187,6 +187,7 @@ def stage_check(stages):
     
     # Карта матчей для быстрого поиска
     stage_mapping = {
+        ('mlb', 'world', 'tour:'): "world tour",
         ('all-star',): "all-star",
         ('alwc',): "alwc",
         ('nlwc',): "nlwc",
@@ -194,7 +195,6 @@ def stage_check(stages):
         ('alds',): "alds",
         ('nlcs',): "nlcs",
         ('alcs',): "alcs",
-        ('mlb', 'world', 'tour'): "world tour",
         ('world', 'series'): "world series",
         ('wild', 'al'): "alwc",
         ('wild', 'nl'): "nlwc"

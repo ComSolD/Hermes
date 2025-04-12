@@ -142,7 +142,7 @@ def seasons_by_filters(request):
     # 8. Получаем сезоны из NBAMatch
     seasons = NBAMatch.objects.filter(match_id__in=filtered_match_ids).values_list("season", flat=True).distinct()
 
-    return Response({"seasons": list(seasons)})
+    return Response({"seasons": sorted(list(seasons), reverse=True)})
 
 
 @api_view(['POST'])

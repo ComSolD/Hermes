@@ -369,15 +369,37 @@ function StatisticMLB() {
 
           <div className="results">
             <h3>Результаты</h3>
-            {submittedDisplayMode === "graph" && Array.isArray(answer.statistic_display) ? (
-              <GraphDisplay data={answer.statistic_display} />
-            ) : submittedDisplayMode === "boxplot" && answer.statistic_display && typeof answer.statistic_display === "object" && !Array.isArray(answer.statistic_display) ? (
-              <BoxPlotChart data={answer.statistic_display} />
-            ) : Array.isArray(answer.statistic_display) ? (
-              <strong>{answer.statistic_display.join(", ")}</strong>
-            ) : (
-              <strong>{String(answer.statistic_display)}</strong>
-            )}
+            {(() => {
+              const data = answer.statistic_display;
+
+              if (
+                data === undefined ||
+                data === null ||
+                (typeof data === "string" && data.trim() === "") ||
+                (Array.isArray(data) && data.length === 0) ||
+                (typeof data === "object" && !Array.isArray(data) && Object.keys(data).length === 0)
+              ) {
+                return null;
+              }
+
+              if (submittedDisplayMode === "graph" && Array.isArray(data)) {
+                return <GraphDisplay data={data} />;
+              }
+
+              if (
+                submittedDisplayMode === "boxplot" &&
+                typeof data === "object" &&
+                !Array.isArray(data)
+              ) {
+                return <BoxPlotChart data={data} />;
+              }
+
+              if (Array.isArray(data)) {
+                return <strong>{data.join(", ")}</strong>;
+              }
+
+              return <strong>{String(data)}</strong>;
+            })()}
 
             {(
               !Object.values(filters).some((v) => v) ||
