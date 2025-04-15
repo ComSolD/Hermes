@@ -63,11 +63,18 @@ export const getAvailableFilterOptions = (filterOptions, activeFilters) => {
         return Boolean(limitations); // Показываем только если ограничение выбрано
       }
 
-      if (opt.value === "graph" || opt.value === "boxplot") {
+      if (opt.value === "graph") {
         return (
           (statistic?.model === "NHLTeamPtsStat" ||
           statistic?.model === "NHLPlayerStat") &&
           Boolean(limitations)
+        );
+      }
+
+      if (opt.value === "boxplot") {
+        return (
+          (statistic?.model === "MLBTeamPtsStat" ||
+          statistic?.model === "MLBPlayerStat")
         );
       }
       

@@ -87,6 +87,8 @@ class OddsNBA(object):
         dropdown_item = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Decimal Odds')]")))
         dropdown_item.click()
 
+        time.sleep(1)
+
         max_page = max(int(link.get_attribute("data-number")) for link in pagination_links)
 
         pages = range(max_page, 0, -1) if self.first_year != "now forward" else range(1, max_page + 1)
