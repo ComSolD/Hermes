@@ -206,7 +206,7 @@ class ParsingMLB(object):
 
         if not self.open_box_score():
             return 0
-                
+
         if not match_table(self.match_id, self.teams_id, '', self.date_match, stage, match_time):
 
             try:

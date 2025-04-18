@@ -229,13 +229,16 @@ def check_stat(player_names, player_stats, player_roles, player_IDs):
 
     redact_list = list()
 
+    error_players_num = 1
+    error_players_lst = []
 
     while True:
-        if '.' not in player_stats[-1] and player_stats[-1] != '---' and player_stats[-1] != 'INF':
+        if '.' not in player_stats[-1] and player_stats[-1] != '--' and player_stats[-1] != 'INF':
             break
         else:
-            check_null = player_stats.pop(-9)
-            if check_null == '--':
+
+            if player_stats[-1] == '--':
+                player_stats.pop(-9)
                 player_stats.pop(-8)
                 player_stats.pop(-7)
                 player_stats.pop(-6)
@@ -244,8 +247,10 @@ def check_stat(player_names, player_stats, player_roles, player_IDs):
                 player_stats.pop(-3)
                 player_stats.pop(-2)
                 player_stats.pop(-1)
+
+                error_players_lst.append(error_players_num)
             else:
-                redact_list.append(check_null)
+                redact_list.append(player_stats.pop(-9))
                 redact_list.append(player_stats.pop(-8))
                 redact_list.append(player_stats.pop(-7))
                 redact_list.append(player_stats.pop(-6))
@@ -259,10 +264,17 @@ def check_stat(player_names, player_stats, player_roles, player_IDs):
                 redact_list.append(pc_pitcher[1])
 
                 era_check = player_stats.pop(-1)
-                if era_check == '---'or era_check == 'INF':
+                if era_check == '---' or era_check == 'INF':
                     redact_list.append(0)
                 else:
                     redact_list.append(era_check)
+            
+            error_players_num += 1
+
+    error_players_lst.reverse()
+
+    for num in error_players_lst:
+        player_names.pop(-num)
 
     redact_list.reverse()
 
@@ -297,13 +309,16 @@ def check_stat(player_names, player_stats, player_roles, player_IDs):
     
     redact_list = list()
 
+    error_players_num = 1
+    error_players_lst = []
 
     while True:
-        if '.' not in player_stats[-1] and player_stats[-1] != '---' and player_stats[-1] != 'INF':
+        if '.' not in player_stats[-1] and player_stats[-1] != '--' and player_stats[-1] != 'INF':
             break
         else:
-            check_null = player_stats.pop(-9)
-            if check_null == '--':
+
+            if player_stats[-1] == '--':
+                player_stats.pop(-9)
                 player_stats.pop(-8)
                 player_stats.pop(-7)
                 player_stats.pop(-6)
@@ -312,8 +327,10 @@ def check_stat(player_names, player_stats, player_roles, player_IDs):
                 player_stats.pop(-3)
                 player_stats.pop(-2)
                 player_stats.pop(-1)
+
+                error_players_lst.append(error_players_num)
             else:
-                redact_list.append(check_null)
+                redact_list.append(player_stats.pop(-9))
                 redact_list.append(player_stats.pop(-8))
                 redact_list.append(player_stats.pop(-7))
                 redact_list.append(player_stats.pop(-6))
@@ -331,6 +348,13 @@ def check_stat(player_names, player_stats, player_roles, player_IDs):
                     redact_list.append(0)
                 else:
                     redact_list.append(era_check)
+
+            error_players_num += 1
+    
+    error_players_lst.reverse()
+
+    for num in error_players_lst:
+        player_names.pop(-num)
 
     redact_list.reverse()
 
